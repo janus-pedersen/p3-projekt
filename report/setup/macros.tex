@@ -1,0 +1,132 @@
+% see, e.g., http://en.wikibooks.org/wiki/LaTeX/Customizing_LaTeX#New_commands
+% for more information on how to create macros
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Macros for the titlepage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%Creates the aau titlepage
+\newcommand{\aautitlepage}[3]{%
+  {
+    %set up various length
+    \ifx\titlepageleftcolumnwidth\undefined
+      \newlength{\titlepageleftcolumnwidth}
+      \newlength{\titlepagerightcolumnwidth}
+    \fi
+    \setlength{\titlepageleftcolumnwidth}{0.47\textwidth-\tabcolsep}
+    \setlength{\titlepagerightcolumnwidth}{\textwidth-2\tabcolsep-\titlepageleftcolumnwidth}
+    %create title page
+    \thispagestyle{empty}
+    \noindent%
+    \begin{tabular}{@{}ll@{}}
+      \parbox{\titlepageleftcolumnwidth}{
+        \iflanguage{danish}{%
+          \includegraphics[width=\titlepageleftcolumnwidth]{AAUgraphics/aau_logo_da}
+        }{%
+          \includegraphics[width=\titlepageleftcolumnwidth]{AAUgraphics/aau_logo_en}
+        }
+      } &
+      \parbox{\titlepagerightcolumnwidth}{\raggedleft\sf\small
+        #2
+      }\bigskip\\
+       #1 &
+      \parbox[t]{\titlepagerightcolumnwidth}{%
+      \textbf{Abstract:}\bigskip\par
+        \fbox{\parbox{\titlepagerightcolumnwidth-2\fboxsep-2\fboxrule}{%
+          #3
+        }}
+      }\\
+    \end{tabular}
+    \vfill
+    \iflanguage{danish}{%
+      \noindent{\footnotesize\emph{Rapportens indhold er frit tilgængeligt, men offentliggørelse (med kildeangivelse) må kun ske efter aftale med forfatterne.}}
+    }{%
+      \noindent{\footnotesize\emph{When uploading this document to Digital Exam each group member confirms that all have participated equally in the project work and that they collectively are responsible for the content of the project report. Furthermore each group member is liable for that there is no plagiarism in the report.}}
+    }
+    \clearpage
+  }
+}
+
+%Create english project info
+\newcommand{\englishprojectinfo}[8]{%
+  \newcounter{mainpages}
+  \setcounter{mainpages}{\getpagerefnumber{main:end} - 1}
+  \parbox[t]{\titlepageleftcolumnwidth}{
+    \textbf{Semester:} #1\bigskip\par
+    \textbf{Title:}\\ #2\bigskip\par
+    \textbf{Theme:}\\ #3\bigskip\par
+    \textbf{Project Period:}\\ #4\bigskip\par
+    \textbf{Project Group:} #5\bigskip\par
+    \textbf{Members:}\\ #6\bigskip\par
+    \textbf{Supervisor:}\\ #7\bigskip\par
+    \textbf{Page Count:} \themainpages\bigskip\par
+    \textbf{Date of Completion:}\\ #8
+  }
+}
+
+%Create danish project info
+\newcommand{\danishprojectinfo}[8]{%
+  \parbox[t]{\titlepageleftcolumnwidth}{
+    \textbf{Titel:}\\ #1\bigskip\par
+    \textbf{Tema:}\\ #2\bigskip\par
+    \textbf{Projektperiode:}\\ #3\bigskip\par
+    \textbf{Projektgruppe:}\\ #4\bigskip\par
+    \textbf{Deltager(e):}\\ #5\bigskip\par
+    \textbf{Vejleder(e):}\\ #6\bigskip\par
+    \textbf{Oplagstal:} #7\bigskip\par
+    \textbf{Sidetal:} \pageref{LastPage}\bigskip\par
+    \textbf{Afleveringsdato:}\\ #8
+  }
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Define the command to insert a source code file
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\insertcode}[1]{
+  \begin{sourceblock}
+    \captionof{source}{#1}
+    \label{code:#1}
+    \inputminted[
+      frame=lines,
+      framesep=2mm,
+      baselinestretch=0.9,
+      fontsize=\footnotesize,
+      linenos,
+      breaklines,
+      breakanywhere=true
+    ]{csharp}{../code/#1}
+  \end{sourceblock}
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Define the command to insert a code block from a file
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\insertcodeblock}[3]{
+  \begin{codeblock}
+    \captionof{code}{\hyperref[code:#1]{#1} (#2-#3)}
+    \label{code-block:#1(#2-#3)}
+    \inputminted[
+      frame=lines,
+      framesep=2mm,
+      baselinestretch=0.9,
+      fontsize=\footnotesize,
+      firstline=#2,
+      lastline=#3,
+      linenos,
+      breaklines,
+       breakanywhere=true
+    ]{csharp}{../code/#1}
+  \end{codeblock}
+}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% An example environment
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\theoremheaderfont{\normalfont\bfseries}
+\theorembodyfont{\normalfont}
+\theoremstyle{break}
+\def\theoremframecommand{{\color{gray!50}\vrule width 5pt \hspace{5pt}}}
+%\newshadedtheorem{exa}{Example}[chapter]
+\newenvironment{example}[1]{%
+		\begin{exa}[#1]
+}{%
+		\end{exa}
+}

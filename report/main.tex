@@ -1,0 +1,47 @@
+\input{setup/preamble.tex}% package inclusion and set up of the document
+\input{setup/hyphenations.tex}% 
+\input{setup/macros.tex}% my new macros
+
+\begin{document}
+% --- Front Page ---
+\pagestyle{empty} %disable headers and footers
+\pagenumbering{roman}
+% \pagenumbering{gobble}
+% \input{content/colophon.tex}
+\input{content/titlepages.tex}
+\input{content/frontpageImage.tex}
+
+\cleardoublepage
+\pdfbookmark{Contents}{label:contents}
+% Remove the chapter numbers
+\renewcommand{\thesection}{\arabic{section}} 
+\tableofcontents
+\newpage
+\pagestyle{fancy} % enable headers and footers again
+\fancyhf{} % clears all header/footer fields
+\fancyhead[R]{\thepage} % or L if you want it on the left
+\listoffigures
+% \listoftables % We dont have any tables
+
+\newpage
+\pagenumbering{arabic}
+
+% --- Indsæt content filer her ---
+
+\input{report/content/sections/introduction}
+
+% --- Ikke flere content filer efter her ---
+
+\cleardoublepage
+\label{main:end} % <-- Sidetal stopper her
+
+\addcontentsline{toc}{section}{Bibliography}
+\printbibliography
+\cleardoublepage
+
+\appendix
+\renewcommand{\thesubsection}{\Alph{subsection}}
+
+\input{content/sections/appendix}
+
+\end{document}
