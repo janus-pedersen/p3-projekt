@@ -1,0 +1,78 @@
+# Mutations for fall detection system - managing users and relationships
+
+# Upsert (update or insert) a user's profile
+mutation UpsertUser(
+  $username: String!, 
+  $email: String, 
+  $phone: String!, 
+  $firstName: String!, 
+  $lastName: String!,
+  $deviceId: String
+) @auth(level: USER) {
+  # The "auth.uid" server value ensures that users can only register their own profile
+  user_upsert(data: { 
+    id_expr: "auth.uid", 
+    username: $username,
+    email: $email,
+    phone: $phone,
+    firstName: $firstName,
+    lastName: $lastName,
+    deviceId: $deviceId
+  })
+}
+
+# Update user's device ID (when they pair a new device)
+mutation UpdateUserDevice($deviceId: String!) @auth(level: USER) {
+  user_update(
+    key: { id_expr: "auth.uid" },
+    data: { deviceId: $deviceId }
+  )
+}
+
+# Add a relationship between a patient and relative
+mutation AddRelation(
+  $patientId: String!, 
+  $relativeId: String!, 
+  $relationshipType: String,
+  $isEmergencyContact: Boolean
+) @auth(level: USER) {
+  relation_insert(data: { 
+    patientId: $patientId,
+    relativeId: $relativeId,
+    relationshipType: $relationshipType,
+    isEmergencyContact: $isEmergencyContact
+  })
+}
+
+# Update a relationship (e.g., change emergency contact status)
+mutation UpdateRelation(
+  $relationId: String!,
+  $relationshipType: String,
+  $isEmergencyContact: Boolean
+) @auth(level: USER) {
+  relation_update(
+    key: { id: $relationId },
+    data: {
+      relationshipType: $relationshipType,
+      isEmergencyContact: $isEmergencyContact
+    }
+  )
+}
+
+# Remove a relationship between patient and relative
+mutation RemoveRelation($relationId: String!) @auth(level: USER) {
+  relation_delete(key: { id: $relationId })
+}
+
+# Quick mutation to add yourself as a relative to a patient (using patient's device ID or user ID)
+mutation AddMyselfAsRelative(
+  $patientId: String!, 
+  $relationshipType: String!
+) @auth(level: USER) {
+  relation_insert(data: { 
+    patientId: $patientId,
+    relativeId_expr: "auth.uid",
+    relationshipType: $relationshipType,
+    isEmergencyContact: true
+  })
+}

@@ -1,0 +1,15 @@
+{
+  "appId": "com.lapsus.app",
+  "appName": "Lapsus",
+  "webDir": "dist",
+  "server": {
+    "url": "http://172.20.10.10:5173",
+    "cleartext": true
+  },
+  "plugins": {
+    "Keyboard": {
+      "resize": "ionic",
+      "scroll": false
+    }
+  }
+}

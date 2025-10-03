@@ -1,0 +1,10 @@
+.indicator {
+//   background-color: var(--mantine-color-primary);
+  border-radius: var(--mantine-radius-xl);
+  border: 1px solid var(--mantine-color-gray-2);
+  box-shadow: var(--mantine-shadow-sm);
+}
+
+.root {
+  position: relative;
+}

@@ -1,0 +1,151 @@
+# Queries for fall detection system - users and relationships
+
+# Get current user's profile
+query GetMyProfile @auth(level: USER) {
+  user(key: { id_expr: "auth.uid" }) {
+    id
+    username
+    email
+    phone
+    firstName
+    lastName
+    deviceId
+    createdAt
+    updatedAt
+  }
+}
+
+# Get a user by their ID (for finding patients/relatives)
+query GetUserById($userId: String!) @auth(level: USER) {
+  user(key: { id: $userId }) {
+    id
+    username
+    email
+    phone
+    firstName
+    lastName
+    deviceId
+  }
+}
+
+# Find a user by device ID (useful for emergency situations)
+query GetUserByDeviceId($deviceId: String!) @auth(level: USER) {
+  users(where: { deviceId: { eq: $deviceId } }) {
+    id
+    username
+    email
+    phone
+    firstName
+    lastName
+    deviceId
+  }
+}
+
+# Get all emergency contacts for a specific patient
+query GetEmergencyContacts($patientId: String!) @auth(level: USER) {
+  relations(where: { 
+    _and: [
+      { patientId: { eq: $patientId } },
+      { isEmergencyContact: { eq: true } }
+    ]
+  }) {
+    id
+    relationshipType
+    relative {
+      id
+      username
+      phone
+      email
+      firstName
+      lastName
+    }
+  }
+}
+
+# Get all patients that the current user is an emergency contact for
+query GetMyPatients @auth(level: USER) {
+  relations(where: { 
+    _and: [
+      { relativeId: { eq: "auth.uid" } },
+      { isEmergencyContact: { eq: true } }
+    ]
+  }) {
+    id
+    relationshipType
+    patient {
+      id
+      username
+      phone
+      firstName
+      lastName
+      deviceId
+    }
+  }
+}
+
+# Get all relatives for the current user (if they are a patient)
+query GetMyRelatives @auth(level: USER) {
+  relations(where: { patientId: { eq: "auth.uid" } }) {
+    id
+    relationshipType
+    isEmergencyContact
+    relative {
+      id
+      username
+      phone
+      email
+      firstName
+      lastName
+    }
+    createdAt
+  }
+}
+
+# Get all relationships for a specific user (both as patient and relative)
+query GetAllUserRelationships($userId: String!) @auth(level: USER) {
+  # Relationships where user is the patient
+  asPatient: relations(where: { patientId: { eq: $userId } }) {
+    id
+    relationshipType
+    isEmergencyContact
+    relative {
+      id
+      username
+      phone
+      firstName
+      lastName
+    }
+  }
+  
+  # Relationships where user is the relative
+  asRelative: relations(where: { relativeId: { eq: $userId } }) {
+    id
+    relationshipType
+    isEmergencyContact
+    patient {
+      id
+      username
+      phone
+      firstName
+      lastName
+      deviceId
+    }
+  }
+}
+
+# Search for users by name or username (for adding new relatives)
+query SearchUsers($searchTerm: String!) @auth(level: USER) {
+  users(where: {
+    _or: [
+      { username: { contains: $searchTerm } },
+      { firstName: { contains: $searchTerm } },
+      { lastName: { contains: $searchTerm } }
+    ]
+  }) {
+    id
+    username
+    firstName
+    lastName
+    phone
+  }
+}

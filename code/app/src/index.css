@@ -1,0 +1,39 @@
+:root {
+  --safe-top: env(safe-area-inset-top);
+  --safe-bottom: env(safe-area-inset-bottom);
+  --safe-left: env(safe-area-inset-left);
+  --safe-right: env(safe-area-inset-right);
+}
+
+
+body, html {
+  overflow: hidden;
+  height: 100%;
+  
+}
+
+.app-shell-root {
+  padding-top: calc(var(--safe-top) + var(--padding));
+  padding-bottom: calc(var(--safe-bottom) + var(--padding));
+  padding-left: calc(var(--safe-left) + var(--padding));
+  padding-right: calc(var(--safe-right) + var(--padding));
+  box-sizing: border-box;
+  /* height: 100vh; */
+  /* overflow: hidden; */
+}
+
+.mantine-AppShell-main {
+    padding: 1rem;
+    padding-top: var(--safe-top);
+}
+
+.mantine-AppShell-header {
+    padding: 1rem;
+    padding-top: var(--safe-top);
+}
+
+.mantine-AppShell-footer {
+    padding: 1rem;
+    padding-bottom: var(--safe-bottom);
+}
+
