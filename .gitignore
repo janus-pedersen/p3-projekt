@@ -2,7 +2,7 @@
 .DS_Store
 
 # Visual Studio (Code) settings
-.vscode
+# .vscode
 .vs
 **/.vs
 
