@@ -1,0 +1,41 @@
+# --- CRUD for Relative ---
+
+# Get a relative by uid
+query GetRelativeByUid($uid: String!) {
+  relative(key: { uid: $uid }) {
+    uid
+    phone
+  }
+}
+
+# Get all relatives
+query GetAllRelatives {
+  relatives {
+    uid
+    phone
+  }
+}
+
+# --- CRUD for Snapshot ---
+
+# Get a snapshot by id
+query GetSnapshotById($id: String!) {
+  snapshot(key: { id: $id }) {
+    id
+    uid
+    latitude
+    longitude
+    timestamp
+  }
+}
+
+# Get all snapshots for a user
+query GetSnapshotsByUid($uid: String!) {
+  snapshots(where: { uid: { eq: $uid } }) {
+    id
+    uid
+    latitude
+    longitude
+    timestamp
+  }
+}

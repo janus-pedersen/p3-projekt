@@ -8,21 +8,17 @@ This README will guide you through the process of using the generated JavaScript
 - [**Accessing the connector**](#accessing-the-connector)
   - [*Connecting to the local Emulator*](#connecting-to-the-local-emulator)
 - [**Queries**](#queries)
-  - [*GetMyProfile*](#getmyprofile)
-  - [*GetUserById*](#getuserbyid)
-  - [*GetUserByDeviceId*](#getuserbydeviceid)
-  - [*GetEmergencyContacts*](#getemergencycontacts)
-  - [*GetMyPatients*](#getmypatients)
-  - [*GetMyRelatives*](#getmyrelatives)
-  - [*GetAllUserRelationships*](#getalluserrelationships)
-  - [*SearchUsers*](#searchusers)
+  - [*GetRelativeByUid*](#getrelativebyuid)
+  - [*GetAllRelatives*](#getallrelatives)
+  - [*GetSnapshotById*](#getsnapshotbyid)
+  - [*GetSnapshotsByUid*](#getsnapshotsbyuid)
 - [**Mutations**](#mutations)
-  - [*UpsertUser*](#upsertuser)
-  - [*UpdateUserDevice*](#updateuserdevice)
-  - [*AddRelation*](#addrelation)
-  - [*UpdateRelation*](#updaterelation)
-  - [*RemoveRelation*](#removerelation)
-  - [*AddMyselfAsRelative*](#addmyselfasrelative)
+  - [*InsertRelative*](#insertrelative)
+  - [*UpdateRelative*](#updaterelative)
+  - [*DeleteRelative*](#deleterelative)
+  - [*InsertSnapshot*](#insertsnapshot)
+  - [*UpdateSnapshot*](#updatesnapshot)
+  - [*DeleteSnapshot*](#deletesnapshot)
 
 # Accessing the connector
 A connector is a collection of Queries and Mutations. One SDK is generated for each connector - this SDK is generated for the connector `example`. You can find more information about connectors in the [Data Connect documentation](https://firebase.google.com/docs/data-connect#how-does).
@@ -69,916 +65,439 @@ The following is true for both the action shortcut function and the `QueryRef` f
 
 Below are examples of how to use the `example` connector's generated functions to execute each query. You can also follow the examples from the [Data Connect documentation](https://firebase.google.com/docs/data-connect/web-sdk#using-queries).
 
-## GetMyProfile
-You can execute the `GetMyProfile` query using the following action shortcut function, or by calling `executeQuery()` after calling the following `QueryRef` function, both of which are defined in [dataconnect-generated/index.d.ts](./index.d.ts):
+## GetRelativeByUid
+You can execute the `GetRelativeByUid` query using the following action shortcut function, or by calling `executeQuery()` after calling the following `QueryRef` function, both of which are defined in [dataconnect-generated/index.d.ts](./index.d.ts):
 ```typescript
-getMyProfile(): QueryPromise<GetMyProfileData, undefined>;
+getRelativeByUid(vars: GetRelativeByUidVariables): QueryPromise<GetRelativeByUidData, GetRelativeByUidVariables>;
 
-interface GetMyProfileRef {
+interface GetRelativeByUidRef {
   ...
   /* Allow users to create refs without passing in DataConnect */
-  (): QueryRef<GetMyProfileData, undefined>;
+  (vars: GetRelativeByUidVariables): QueryRef<GetRelativeByUidData, GetRelativeByUidVariables>;
 }
-export const getMyProfileRef: GetMyProfileRef;
+export const getRelativeByUidRef: GetRelativeByUidRef;
 ```
 You can also pass in a `DataConnect` instance to the action shortcut function or `QueryRef` function.
 ```typescript
-getMyProfile(dc: DataConnect): QueryPromise<GetMyProfileData, undefined>;
+getRelativeByUid(dc: DataConnect, vars: GetRelativeByUidVariables): QueryPromise<GetRelativeByUidData, GetRelativeByUidVariables>;
 
-interface GetMyProfileRef {
+interface GetRelativeByUidRef {
   ...
-  (dc: DataConnect): QueryRef<GetMyProfileData, undefined>;
+  (dc: DataConnect, vars: GetRelativeByUidVariables): QueryRef<GetRelativeByUidData, GetRelativeByUidVariables>;
 }
-export const getMyProfileRef: GetMyProfileRef;
+export const getRelativeByUidRef: GetRelativeByUidRef;
 ```
 
-If you need the name of the operation without creating a ref, you can retrieve the operation name by calling the `operationName` property on the getMyProfileRef:
+If you need the name of the operation without creating a ref, you can retrieve the operation name by calling the `operationName` property on the getRelativeByUidRef:
 ```typescript
-const name = getMyProfileRef.operationName;
+const name = getRelativeByUidRef.operationName;
 console.log(name);
 ```
 
 ### Variables
-The `GetMyProfile` query has no variables.
-### Return Type
-Recall that executing the `GetMyProfile` query returns a `QueryPromise` that resolves to an object with a `data` property.
+The `GetRelativeByUid` query requires an argument of type `GetRelativeByUidVariables`, which is defined in [dataconnect-generated/index.d.ts](./index.d.ts). It has the following fields:
 
-The `data` property is an object of type `GetMyProfileData`, which is defined in [dataconnect-generated/index.d.ts](./index.d.ts). It has the following fields:
 ```typescript
-export interface GetMyProfileData {
-  user?: {
-    id: string;
-    username: string;
-    email?: string | null;
+export interface GetRelativeByUidVariables {
+  uid: string;
+}
+```
+### Return Type
+Recall that executing the `GetRelativeByUid` query returns a `QueryPromise` that resolves to an object with a `data` property.
+
+The `data` property is an object of type `GetRelativeByUidData`, which is defined in [dataconnect-generated/index.d.ts](./index.d.ts). It has the following fields:
+```typescript
+export interface GetRelativeByUidData {
+  relative?: {
+    uid: string;
     phone: string;
-    firstName: string;
-    lastName: string;
-    deviceId?: string | null;
-    createdAt: TimestampString;
-    updatedAt: TimestampString;
-  } & User_Key;
+  };
 }
 ```
-### Using `GetMyProfile`'s action shortcut function
+### Using `GetRelativeByUid`'s action shortcut function
 
 ```typescript
 import { getDataConnect } from 'firebase/data-connect';
-import { connectorConfig, getMyProfile } from '@dataconnect/generated';
+import { connectorConfig, getRelativeByUid, GetRelativeByUidVariables } from '@dataconnect/generated';
 
+// The `GetRelativeByUid` query requires an argument of type `GetRelativeByUidVariables`:
+const getRelativeByUidVars: GetRelativeByUidVariables = {
+  uid: ..., 
+};
 
-// Call the `getMyProfile()` function to execute the query.
+// Call the `getRelativeByUid()` function to execute the query.
 // You can use the `await` keyword to wait for the promise to resolve.
-const { data } = await getMyProfile();
+const { data } = await getRelativeByUid(getRelativeByUidVars);
+// Variables can be defined inline as well.
+const { data } = await getRelativeByUid({ uid: ..., });
 
 // You can also pass in a `DataConnect` instance to the action shortcut function.
 const dataConnect = getDataConnect(connectorConfig);
-const { data } = await getMyProfile(dataConnect);
+const { data } = await getRelativeByUid(dataConnect, getRelativeByUidVars);
 
-console.log(data.user);
+console.log(data.relative);
 
 // Or, you can use the `Promise` API.
-getMyProfile().then((response) => {
+getRelativeByUid(getRelativeByUidVars).then((response) => {
   const data = response.data;
-  console.log(data.user);
+  console.log(data.relative);
 });
 ```
 
-### Using `GetMyProfile`'s `QueryRef` function
+### Using `GetRelativeByUid`'s `QueryRef` function
 
 ```typescript
 import { getDataConnect, executeQuery } from 'firebase/data-connect';
-import { connectorConfig, getMyProfileRef } from '@dataconnect/generated';
+import { connectorConfig, getRelativeByUidRef, GetRelativeByUidVariables } from '@dataconnect/generated';
 
+// The `GetRelativeByUid` query requires an argument of type `GetRelativeByUidVariables`:
+const getRelativeByUidVars: GetRelativeByUidVariables = {
+  uid: ..., 
+};
 
-// Call the `getMyProfileRef()` function to get a reference to the query.
-const ref = getMyProfileRef();
+// Call the `getRelativeByUidRef()` function to get a reference to the query.
+const ref = getRelativeByUidRef(getRelativeByUidVars);
+// Variables can be defined inline as well.
+const ref = getRelativeByUidRef({ uid: ..., });
 
 // You can also pass in a `DataConnect` instance to the `QueryRef` function.
 const dataConnect = getDataConnect(connectorConfig);
-const ref = getMyProfileRef(dataConnect);
+const ref = getRelativeByUidRef(dataConnect, getRelativeByUidVars);
 
 // Call `executeQuery()` on the reference to execute the query.
 // You can use the `await` keyword to wait for the promise to resolve.
 const { data } = await executeQuery(ref);
 
-console.log(data.user);
+console.log(data.relative);
 
 // Or, you can use the `Promise` API.
 executeQuery(ref).then((response) => {
   const data = response.data;
-  console.log(data.user);
+  console.log(data.relative);
 });
 ```
 
-## GetUserById
-You can execute the `GetUserById` query using the following action shortcut function, or by calling `executeQuery()` after calling the following `QueryRef` function, both of which are defined in [dataconnect-generated/index.d.ts](./index.d.ts):
+## GetAllRelatives
+You can execute the `GetAllRelatives` query using the following action shortcut function, or by calling `executeQuery()` after calling the following `QueryRef` function, both of which are defined in [dataconnect-generated/index.d.ts](./index.d.ts):
 ```typescript
-getUserById(vars: GetUserByIdVariables): QueryPromise<GetUserByIdData, GetUserByIdVariables>;
+getAllRelatives(): QueryPromise<GetAllRelativesData, undefined>;
 
-interface GetUserByIdRef {
+interface GetAllRelativesRef {
   ...
   /* Allow users to create refs without passing in DataConnect */
-  (vars: GetUserByIdVariables): QueryRef<GetUserByIdData, GetUserByIdVariables>;
+  (): QueryRef<GetAllRelativesData, undefined>;
 }
-export const getUserByIdRef: GetUserByIdRef;
+export const getAllRelativesRef: GetAllRelativesRef;
 ```
 You can also pass in a `DataConnect` instance to the action shortcut function or `QueryRef` function.
 ```typescript
-getUserById(dc: DataConnect, vars: GetUserByIdVariables): QueryPromise<GetUserByIdData, GetUserByIdVariables>;
+getAllRelatives(dc: DataConnect): QueryPromise<GetAllRelativesData, undefined>;
 
-interface GetUserByIdRef {
+interface GetAllRelativesRef {
   ...
-  (dc: DataConnect, vars: GetUserByIdVariables): QueryRef<GetUserByIdData, GetUserByIdVariables>;
+  (dc: DataConnect): QueryRef<GetAllRelativesData, undefined>;
 }
-export const getUserByIdRef: GetUserByIdRef;
+export const getAllRelativesRef: GetAllRelativesRef;
 ```
 
-If you need the name of the operation without creating a ref, you can retrieve the operation name by calling the `operationName` property on the getUserByIdRef:
+If you need the name of the operation without creating a ref, you can retrieve the operation name by calling the `operationName` property on the getAllRelativesRef:
 ```typescript
-const name = getUserByIdRef.operationName;
+const name = getAllRelativesRef.operationName;
 console.log(name);
 ```
 
 ### Variables
-The `GetUserById` query requires an argument of type `GetUserByIdVariables`, which is defined in [dataconnect-generated/index.d.ts](./index.d.ts). It has the following fields:
-
-```typescript
-export interface GetUserByIdVariables {
-  userId: string;
-}
-```
+The `GetAllRelatives` query has no variables.
 ### Return Type
-Recall that executing the `GetUserById` query returns a `QueryPromise` that resolves to an object with a `data` property.
+Recall that executing the `GetAllRelatives` query returns a `QueryPromise` that resolves to an object with a `data` property.
 
-The `data` property is an object of type `GetUserByIdData`, which is defined in [dataconnect-generated/index.d.ts](./index.d.ts). It has the following fields:
+The `data` property is an object of type `GetAllRelativesData`, which is defined in [dataconnect-generated/index.d.ts](./index.d.ts). It has the following fields:
 ```typescript
-export interface GetUserByIdData {
-  user?: {
-    id: string;
-    username: string;
-    email?: string | null;
+export interface GetAllRelativesData {
+  relatives: ({
+    uid: string;
     phone: string;
-    firstName: string;
-    lastName: string;
-    deviceId?: string | null;
-  } & User_Key;
+  })[];
 }
 ```
-### Using `GetUserById`'s action shortcut function
+### Using `GetAllRelatives`'s action shortcut function
 
 ```typescript
 import { getDataConnect } from 'firebase/data-connect';
-import { connectorConfig, getUserById, GetUserByIdVariables } from '@dataconnect/generated';
+import { connectorConfig, getAllRelatives } from '@dataconnect/generated';
 
-// The `GetUserById` query requires an argument of type `GetUserByIdVariables`:
-const getUserByIdVars: GetUserByIdVariables = {
-  userId: ..., 
-};
 
-// Call the `getUserById()` function to execute the query.
+// Call the `getAllRelatives()` function to execute the query.
 // You can use the `await` keyword to wait for the promise to resolve.
-const { data } = await getUserById(getUserByIdVars);
-// Variables can be defined inline as well.
-const { data } = await getUserById({ userId: ..., });
+const { data } = await getAllRelatives();
 
 // You can also pass in a `DataConnect` instance to the action shortcut function.
 const dataConnect = getDataConnect(connectorConfig);
-const { data } = await getUserById(dataConnect, getUserByIdVars);
+const { data } = await getAllRelatives(dataConnect);
 
-console.log(data.user);
+console.log(data.relatives);
 
 // Or, you can use the `Promise` API.
-getUserById(getUserByIdVars).then((response) => {
+getAllRelatives().then((response) => {
   const data = response.data;
-  console.log(data.user);
+  console.log(data.relatives);
 });
 ```
 
-### Using `GetUserById`'s `QueryRef` function
+### Using `GetAllRelatives`'s `QueryRef` function
 
 ```typescript
 import { getDataConnect, executeQuery } from 'firebase/data-connect';
-import { connectorConfig, getUserByIdRef, GetUserByIdVariables } from '@dataconnect/generated';
+import { connectorConfig, getAllRelativesRef } from '@dataconnect/generated';
 
-// The `GetUserById` query requires an argument of type `GetUserByIdVariables`:
-const getUserByIdVars: GetUserByIdVariables = {
-  userId: ..., 
-};
 
-// Call the `getUserByIdRef()` function to get a reference to the query.
-const ref = getUserByIdRef(getUserByIdVars);
-// Variables can be defined inline as well.
-const ref = getUserByIdRef({ userId: ..., });
+// Call the `getAllRelativesRef()` function to get a reference to the query.
+const ref = getAllRelativesRef();
 
 // You can also pass in a `DataConnect` instance to the `QueryRef` function.
 const dataConnect = getDataConnect(connectorConfig);
-const ref = getUserByIdRef(dataConnect, getUserByIdVars);
+const ref = getAllRelativesRef(dataConnect);
 
 // Call `executeQuery()` on the reference to execute the query.
 // You can use the `await` keyword to wait for the promise to resolve.
 const { data } = await executeQuery(ref);
 
-console.log(data.user);
+console.log(data.relatives);
 
 // Or, you can use the `Promise` API.
 executeQuery(ref).then((response) => {
   const data = response.data;
-  console.log(data.user);
+  console.log(data.relatives);
 });
 ```
 
-## GetUserByDeviceId
-You can execute the `GetUserByDeviceId` query using the following action shortcut function, or by calling `executeQuery()` after calling the following `QueryRef` function, both of which are defined in [dataconnect-generated/index.d.ts](./index.d.ts):
+## GetSnapshotById
+You can execute the `GetSnapshotById` query using the following action shortcut function, or by calling `executeQuery()` after calling the following `QueryRef` function, both of which are defined in [dataconnect-generated/index.d.ts](./index.d.ts):
 ```typescript
-getUserByDeviceId(vars: GetUserByDeviceIdVariables): QueryPromise<GetUserByDeviceIdData, GetUserByDeviceIdVariables>;
+getSnapshotById(vars: GetSnapshotByIdVariables): QueryPromise<GetSnapshotByIdData, GetSnapshotByIdVariables>;
 
-interface GetUserByDeviceIdRef {
+interface GetSnapshotByIdRef {
   ...
   /* Allow users to create refs without passing in DataConnect */
-  (vars: GetUserByDeviceIdVariables): QueryRef<GetUserByDeviceIdData, GetUserByDeviceIdVariables>;
+  (vars: GetSnapshotByIdVariables): QueryRef<GetSnapshotByIdData, GetSnapshotByIdVariables>;
 }
-export const getUserByDeviceIdRef: GetUserByDeviceIdRef;
+export const getSnapshotByIdRef: GetSnapshotByIdRef;
 ```
 You can also pass in a `DataConnect` instance to the action shortcut function or `QueryRef` function.
 ```typescript
-getUserByDeviceId(dc: DataConnect, vars: GetUserByDeviceIdVariables): QueryPromise<GetUserByDeviceIdData, GetUserByDeviceIdVariables>;
+getSnapshotById(dc: DataConnect, vars: GetSnapshotByIdVariables): QueryPromise<GetSnapshotByIdData, GetSnapshotByIdVariables>;
 
-interface GetUserByDeviceIdRef {
+interface GetSnapshotByIdRef {
   ...
-  (dc: DataConnect, vars: GetUserByDeviceIdVariables): QueryRef<GetUserByDeviceIdData, GetUserByDeviceIdVariables>;
+  (dc: DataConnect, vars: GetSnapshotByIdVariables): QueryRef<GetSnapshotByIdData, GetSnapshotByIdVariables>;
 }
-export const getUserByDeviceIdRef: GetUserByDeviceIdRef;
+export const getSnapshotByIdRef: GetSnapshotByIdRef;
 ```
 
-If you need the name of the operation without creating a ref, you can retrieve the operation name by calling the `operationName` property on the getUserByDeviceIdRef:
+If you need the name of the operation without creating a ref, you can retrieve the operation name by calling the `operationName` property on the getSnapshotByIdRef:
 ```typescript
-const name = getUserByDeviceIdRef.operationName;
+const name = getSnapshotByIdRef.operationName;
 console.log(name);
 ```
 
 ### Variables
-The `GetUserByDeviceId` query requires an argument of type `GetUserByDeviceIdVariables`, which is defined in [dataconnect-generated/index.d.ts](./index.d.ts). It has the following fields:
+The `GetSnapshotById` query requires an argument of type `GetSnapshotByIdVariables`, which is defined in [dataconnect-generated/index.d.ts](./index.d.ts). It has the following fields:
 
 ```typescript
-export interface GetUserByDeviceIdVariables {
-  deviceId: string;
+export interface GetSnapshotByIdVariables {
+  id: string;
 }
 ```
 ### Return Type
-Recall that executing the `GetUserByDeviceId` query returns a `QueryPromise` that resolves to an object with a `data` property.
+Recall that executing the `GetSnapshotById` query returns a `QueryPromise` that resolves to an object with a `data` property.
 
-The `data` property is an object of type `GetUserByDeviceIdData`, which is defined in [dataconnect-generated/index.d.ts](./index.d.ts). It has the following fields:
+The `data` property is an object of type `GetSnapshotByIdData`, which is defined in [dataconnect-generated/index.d.ts](./index.d.ts). It has the following fields:
 ```typescript
-export interface GetUserByDeviceIdData {
-  users: ({
+export interface GetSnapshotByIdData {
+  snapshot?: {
     id: string;
-    username: string;
-    email?: string | null;
-    phone: string;
-    firstName: string;
-    lastName: string;
-    deviceId?: string | null;
-  } & User_Key)[];
+    uid: string;
+    latitude: number;
+    longitude: number;
+    timestamp: TimestampString;
+  } & Snapshot_Key;
 }
 ```
-### Using `GetUserByDeviceId`'s action shortcut function
+### Using `GetSnapshotById`'s action shortcut function
 
 ```typescript
 import { getDataConnect } from 'firebase/data-connect';
-import { connectorConfig, getUserByDeviceId, GetUserByDeviceIdVariables } from '@dataconnect/generated';
+import { connectorConfig, getSnapshotById, GetSnapshotByIdVariables } from '@dataconnect/generated';
 
-// The `GetUserByDeviceId` query requires an argument of type `GetUserByDeviceIdVariables`:
-const getUserByDeviceIdVars: GetUserByDeviceIdVariables = {
-  deviceId: ..., 
+// The `GetSnapshotById` query requires an argument of type `GetSnapshotByIdVariables`:
+const getSnapshotByIdVars: GetSnapshotByIdVariables = {
+  id: ..., 
 };
 
-// Call the `getUserByDeviceId()` function to execute the query.
+// Call the `getSnapshotById()` function to execute the query.
 // You can use the `await` keyword to wait for the promise to resolve.
-const { data } = await getUserByDeviceId(getUserByDeviceIdVars);
+const { data } = await getSnapshotById(getSnapshotByIdVars);
 // Variables can be defined inline as well.
-const { data } = await getUserByDeviceId({ deviceId: ..., });
+const { data } = await getSnapshotById({ id: ..., });
 
 // You can also pass in a `DataConnect` instance to the action shortcut function.
 const dataConnect = getDataConnect(connectorConfig);
-const { data } = await getUserByDeviceId(dataConnect, getUserByDeviceIdVars);
+const { data } = await getSnapshotById(dataConnect, getSnapshotByIdVars);
 
-console.log(data.users);
+console.log(data.snapshot);
 
 // Or, you can use the `Promise` API.
-getUserByDeviceId(getUserByDeviceIdVars).then((response) => {
+getSnapshotById(getSnapshotByIdVars).then((response) => {
   const data = response.data;
-  console.log(data.users);
+  console.log(data.snapshot);
 });
 ```
 
-### Using `GetUserByDeviceId`'s `QueryRef` function
+### Using `GetSnapshotById`'s `QueryRef` function
 
 ```typescript
 import { getDataConnect, executeQuery } from 'firebase/data-connect';
-import { connectorConfig, getUserByDeviceIdRef, GetUserByDeviceIdVariables } from '@dataconnect/generated';
+import { connectorConfig, getSnapshotByIdRef, GetSnapshotByIdVariables } from '@dataconnect/generated';
 
-// The `GetUserByDeviceId` query requires an argument of type `GetUserByDeviceIdVariables`:
-const getUserByDeviceIdVars: GetUserByDeviceIdVariables = {
-  deviceId: ..., 
+// The `GetSnapshotById` query requires an argument of type `GetSnapshotByIdVariables`:
+const getSnapshotByIdVars: GetSnapshotByIdVariables = {
+  id: ..., 
 };
 
-// Call the `getUserByDeviceIdRef()` function to get a reference to the query.
-const ref = getUserByDeviceIdRef(getUserByDeviceIdVars);
+// Call the `getSnapshotByIdRef()` function to get a reference to the query.
+const ref = getSnapshotByIdRef(getSnapshotByIdVars);
 // Variables can be defined inline as well.
-const ref = getUserByDeviceIdRef({ deviceId: ..., });
+const ref = getSnapshotByIdRef({ id: ..., });
 
 // You can also pass in a `DataConnect` instance to the `QueryRef` function.
 const dataConnect = getDataConnect(connectorConfig);
-const ref = getUserByDeviceIdRef(dataConnect, getUserByDeviceIdVars);
+const ref = getSnapshotByIdRef(dataConnect, getSnapshotByIdVars);
 
 // Call `executeQuery()` on the reference to execute the query.
 // You can use the `await` keyword to wait for the promise to resolve.
 const { data } = await executeQuery(ref);
 
-console.log(data.users);
+console.log(data.snapshot);
 
 // Or, you can use the `Promise` API.
 executeQuery(ref).then((response) => {
   const data = response.data;
-  console.log(data.users);
+  console.log(data.snapshot);
 });
 ```
 
-## GetEmergencyContacts
-You can execute the `GetEmergencyContacts` query using the following action shortcut function, or by calling `executeQuery()` after calling the following `QueryRef` function, both of which are defined in [dataconnect-generated/index.d.ts](./index.d.ts):
+## GetSnapshotsByUid
+You can execute the `GetSnapshotsByUid` query using the following action shortcut function, or by calling `executeQuery()` after calling the following `QueryRef` function, both of which are defined in [dataconnect-generated/index.d.ts](./index.d.ts):
 ```typescript
-getEmergencyContacts(vars: GetEmergencyContactsVariables): QueryPromise<GetEmergencyContactsData, GetEmergencyContactsVariables>;
+getSnapshotsByUid(vars: GetSnapshotsByUidVariables): QueryPromise<GetSnapshotsByUidData, GetSnapshotsByUidVariables>;
 
-interface GetEmergencyContactsRef {
+interface GetSnapshotsByUidRef {
   ...
   /* Allow users to create refs without passing in DataConnect */
-  (vars: GetEmergencyContactsVariables): QueryRef<GetEmergencyContactsData, GetEmergencyContactsVariables>;
+  (vars: GetSnapshotsByUidVariables): QueryRef<GetSnapshotsByUidData, GetSnapshotsByUidVariables>;
 }
-export const getEmergencyContactsRef: GetEmergencyContactsRef;
+export const getSnapshotsByUidRef: GetSnapshotsByUidRef;
 ```
 You can also pass in a `DataConnect` instance to the action shortcut function or `QueryRef` function.
 ```typescript
-getEmergencyContacts(dc: DataConnect, vars: GetEmergencyContactsVariables): QueryPromise<GetEmergencyContactsData, GetEmergencyContactsVariables>;
+getSnapshotsByUid(dc: DataConnect, vars: GetSnapshotsByUidVariables): QueryPromise<GetSnapshotsByUidData, GetSnapshotsByUidVariables>;
 
-interface GetEmergencyContactsRef {
+interface GetSnapshotsByUidRef {
   ...
-  (dc: DataConnect, vars: GetEmergencyContactsVariables): QueryRef<GetEmergencyContactsData, GetEmergencyContactsVariables>;
+  (dc: DataConnect, vars: GetSnapshotsByUidVariables): QueryRef<GetSnapshotsByUidData, GetSnapshotsByUidVariables>;
 }
-export const getEmergencyContactsRef: GetEmergencyContactsRef;
+export const getSnapshotsByUidRef: GetSnapshotsByUidRef;
 ```
 
-If you need the name of the operation without creating a ref, you can retrieve the operation name by calling the `operationName` property on the getEmergencyContactsRef:
+If you need the name of the operation without creating a ref, you can retrieve the operation name by calling the `operationName` property on the getSnapshotsByUidRef:
 ```typescript
-const name = getEmergencyContactsRef.operationName;
+const name = getSnapshotsByUidRef.operationName;
 console.log(name);
 ```
 
 ### Variables
-The `GetEmergencyContacts` query requires an argument of type `GetEmergencyContactsVariables`, which is defined in [dataconnect-generated/index.d.ts](./index.d.ts). It has the following fields:
+The `GetSnapshotsByUid` query requires an argument of type `GetSnapshotsByUidVariables`, which is defined in [dataconnect-generated/index.d.ts](./index.d.ts). It has the following fields:
 
 ```typescript
-export interface GetEmergencyContactsVariables {
-  patientId: string;
+export interface GetSnapshotsByUidVariables {
+  uid: string;
 }
 ```
 ### Return Type
-Recall that executing the `GetEmergencyContacts` query returns a `QueryPromise` that resolves to an object with a `data` property.
+Recall that executing the `GetSnapshotsByUid` query returns a `QueryPromise` that resolves to an object with a `data` property.
 
-The `data` property is an object of type `GetEmergencyContactsData`, which is defined in [dataconnect-generated/index.d.ts](./index.d.ts). It has the following fields:
+The `data` property is an object of type `GetSnapshotsByUidData`, which is defined in [dataconnect-generated/index.d.ts](./index.d.ts). It has the following fields:
 ```typescript
-export interface GetEmergencyContactsData {
-  relations: ({
+export interface GetSnapshotsByUidData {
+  snapshots: ({
     id: string;
-    relationshipType?: string | null;
-    relative: {
-      id: string;
-      username: string;
-      phone: string;
-      email?: string | null;
-      firstName: string;
-      lastName: string;
-    } & User_Key;
-  } & Relation_Key)[];
+    uid: string;
+    latitude: number;
+    longitude: number;
+    timestamp: TimestampString;
+  } & Snapshot_Key)[];
 }
 ```
-### Using `GetEmergencyContacts`'s action shortcut function
+### Using `GetSnapshotsByUid`'s action shortcut function
 
 ```typescript
 import { getDataConnect } from 'firebase/data-connect';
-import { connectorConfig, getEmergencyContacts, GetEmergencyContactsVariables } from '@dataconnect/generated';
+import { connectorConfig, getSnapshotsByUid, GetSnapshotsByUidVariables } from '@dataconnect/generated';
 
-// The `GetEmergencyContacts` query requires an argument of type `GetEmergencyContactsVariables`:
-const getEmergencyContactsVars: GetEmergencyContactsVariables = {
-  patientId: ..., 
+// The `GetSnapshotsByUid` query requires an argument of type `GetSnapshotsByUidVariables`:
+const getSnapshotsByUidVars: GetSnapshotsByUidVariables = {
+  uid: ..., 
 };
 
-// Call the `getEmergencyContacts()` function to execute the query.
+// Call the `getSnapshotsByUid()` function to execute the query.
 // You can use the `await` keyword to wait for the promise to resolve.
-const { data } = await getEmergencyContacts(getEmergencyContactsVars);
+const { data } = await getSnapshotsByUid(getSnapshotsByUidVars);
 // Variables can be defined inline as well.
-const { data } = await getEmergencyContacts({ patientId: ..., });
+const { data } = await getSnapshotsByUid({ uid: ..., });
 
 // You can also pass in a `DataConnect` instance to the action shortcut function.
 const dataConnect = getDataConnect(connectorConfig);
-const { data } = await getEmergencyContacts(dataConnect, getEmergencyContactsVars);
+const { data } = await getSnapshotsByUid(dataConnect, getSnapshotsByUidVars);
 
-console.log(data.relations);
+console.log(data.snapshots);
 
 // Or, you can use the `Promise` API.
-getEmergencyContacts(getEmergencyContactsVars).then((response) => {
+getSnapshotsByUid(getSnapshotsByUidVars).then((response) => {
   const data = response.data;
-  console.log(data.relations);
+  console.log(data.snapshots);
 });
 ```
 
-### Using `GetEmergencyContacts`'s `QueryRef` function
+### Using `GetSnapshotsByUid`'s `QueryRef` function
 
 ```typescript
 import { getDataConnect, executeQuery } from 'firebase/data-connect';
-import { connectorConfig, getEmergencyContactsRef, GetEmergencyContactsVariables } from '@dataconnect/generated';
+import { connectorConfig, getSnapshotsByUidRef, GetSnapshotsByUidVariables } from '@dataconnect/generated';
 
-// The `GetEmergencyContacts` query requires an argument of type `GetEmergencyContactsVariables`:
-const getEmergencyContactsVars: GetEmergencyContactsVariables = {
-  patientId: ..., 
+// The `GetSnapshotsByUid` query requires an argument of type `GetSnapshotsByUidVariables`:
+const getSnapshotsByUidVars: GetSnapshotsByUidVariables = {
+  uid: ..., 
 };
 
-// Call the `getEmergencyContactsRef()` function to get a reference to the query.
-const ref = getEmergencyContactsRef(getEmergencyContactsVars);
+// Call the `getSnapshotsByUidRef()` function to get a reference to the query.
+const ref = getSnapshotsByUidRef(getSnapshotsByUidVars);
 // Variables can be defined inline as well.
-const ref = getEmergencyContactsRef({ patientId: ..., });
+const ref = getSnapshotsByUidRef({ uid: ..., });
 
 // You can also pass in a `DataConnect` instance to the `QueryRef` function.
 const dataConnect = getDataConnect(connectorConfig);
-const ref = getEmergencyContactsRef(dataConnect, getEmergencyContactsVars);
+const ref = getSnapshotsByUidRef(dataConnect, getSnapshotsByUidVars);
 
 // Call `executeQuery()` on the reference to execute the query.
 // You can use the `await` keyword to wait for the promise to resolve.
 const { data } = await executeQuery(ref);
 
-console.log(data.relations);
+console.log(data.snapshots);
 
 // Or, you can use the `Promise` API.
 executeQuery(ref).then((response) => {
   const data = response.data;
-  console.log(data.relations);
-});
-```
-
-## GetMyPatients
-You can execute the `GetMyPatients` query using the following action shortcut function, or by calling `executeQuery()` after calling the following `QueryRef` function, both of which are defined in [dataconnect-generated/index.d.ts](./index.d.ts):
-```typescript
-getMyPatients(): QueryPromise<GetMyPatientsData, undefined>;
-
-interface GetMyPatientsRef {
-  ...
-  /* Allow users to create refs without passing in DataConnect */
-  (): QueryRef<GetMyPatientsData, undefined>;
-}
-export const getMyPatientsRef: GetMyPatientsRef;
-```
-You can also pass in a `DataConnect` instance to the action shortcut function or `QueryRef` function.
-```typescript
-getMyPatients(dc: DataConnect): QueryPromise<GetMyPatientsData, undefined>;
-
-interface GetMyPatientsRef {
-  ...
-  (dc: DataConnect): QueryRef<GetMyPatientsData, undefined>;
-}
-export const getMyPatientsRef: GetMyPatientsRef;
-```
-
-If you need the name of the operation without creating a ref, you can retrieve the operation name by calling the `operationName` property on the getMyPatientsRef:
-```typescript
-const name = getMyPatientsRef.operationName;
-console.log(name);
-```
-
-### Variables
-The `GetMyPatients` query has no variables.
-### Return Type
-Recall that executing the `GetMyPatients` query returns a `QueryPromise` that resolves to an object with a `data` property.
-
-The `data` property is an object of type `GetMyPatientsData`, which is defined in [dataconnect-generated/index.d.ts](./index.d.ts). It has the following fields:
-```typescript
-export interface GetMyPatientsData {
-  relations: ({
-    id: string;
-    relationshipType?: string | null;
-    patient: {
-      id: string;
-      username: string;
-      phone: string;
-      firstName: string;
-      lastName: string;
-      deviceId?: string | null;
-    } & User_Key;
-  } & Relation_Key)[];
-}
-```
-### Using `GetMyPatients`'s action shortcut function
-
-```typescript
-import { getDataConnect } from 'firebase/data-connect';
-import { connectorConfig, getMyPatients } from '@dataconnect/generated';
-
-
-// Call the `getMyPatients()` function to execute the query.
-// You can use the `await` keyword to wait for the promise to resolve.
-const { data } = await getMyPatients();
-
-// You can also pass in a `DataConnect` instance to the action shortcut function.
-const dataConnect = getDataConnect(connectorConfig);
-const { data } = await getMyPatients(dataConnect);
-
-console.log(data.relations);
-
-// Or, you can use the `Promise` API.
-getMyPatients().then((response) => {
-  const data = response.data;
-  console.log(data.relations);
-});
-```
-
-### Using `GetMyPatients`'s `QueryRef` function
-
-```typescript
-import { getDataConnect, executeQuery } from 'firebase/data-connect';
-import { connectorConfig, getMyPatientsRef } from '@dataconnect/generated';
-
-
-// Call the `getMyPatientsRef()` function to get a reference to the query.
-const ref = getMyPatientsRef();
-
-// You can also pass in a `DataConnect` instance to the `QueryRef` function.
-const dataConnect = getDataConnect(connectorConfig);
-const ref = getMyPatientsRef(dataConnect);
-
-// Call `executeQuery()` on the reference to execute the query.
-// You can use the `await` keyword to wait for the promise to resolve.
-const { data } = await executeQuery(ref);
-
-console.log(data.relations);
-
-// Or, you can use the `Promise` API.
-executeQuery(ref).then((response) => {
-  const data = response.data;
-  console.log(data.relations);
-});
-```
-
-## GetMyRelatives
-You can execute the `GetMyRelatives` query using the following action shortcut function, or by calling `executeQuery()` after calling the following `QueryRef` function, both of which are defined in [dataconnect-generated/index.d.ts](./index.d.ts):
-```typescript
-getMyRelatives(): QueryPromise<GetMyRelativesData, undefined>;
-
-interface GetMyRelativesRef {
-  ...
-  /* Allow users to create refs without passing in DataConnect */
-  (): QueryRef<GetMyRelativesData, undefined>;
-}
-export const getMyRelativesRef: GetMyRelativesRef;
-```
-You can also pass in a `DataConnect` instance to the action shortcut function or `QueryRef` function.
-```typescript
-getMyRelatives(dc: DataConnect): QueryPromise<GetMyRelativesData, undefined>;
-
-interface GetMyRelativesRef {
-  ...
-  (dc: DataConnect): QueryRef<GetMyRelativesData, undefined>;
-}
-export const getMyRelativesRef: GetMyRelativesRef;
-```
-
-If you need the name of the operation without creating a ref, you can retrieve the operation name by calling the `operationName` property on the getMyRelativesRef:
-```typescript
-const name = getMyRelativesRef.operationName;
-console.log(name);
-```
-
-### Variables
-The `GetMyRelatives` query has no variables.
-### Return Type
-Recall that executing the `GetMyRelatives` query returns a `QueryPromise` that resolves to an object with a `data` property.
-
-The `data` property is an object of type `GetMyRelativesData`, which is defined in [dataconnect-generated/index.d.ts](./index.d.ts). It has the following fields:
-```typescript
-export interface GetMyRelativesData {
-  relations: ({
-    id: string;
-    relationshipType?: string | null;
-    isEmergencyContact: boolean;
-    relative: {
-      id: string;
-      username: string;
-      phone: string;
-      email?: string | null;
-      firstName: string;
-      lastName: string;
-    } & User_Key;
-      createdAt: TimestampString;
-  } & Relation_Key)[];
-}
-```
-### Using `GetMyRelatives`'s action shortcut function
-
-```typescript
-import { getDataConnect } from 'firebase/data-connect';
-import { connectorConfig, getMyRelatives } from '@dataconnect/generated';
-
-
-// Call the `getMyRelatives()` function to execute the query.
-// You can use the `await` keyword to wait for the promise to resolve.
-const { data } = await getMyRelatives();
-
-// You can also pass in a `DataConnect` instance to the action shortcut function.
-const dataConnect = getDataConnect(connectorConfig);
-const { data } = await getMyRelatives(dataConnect);
-
-console.log(data.relations);
-
-// Or, you can use the `Promise` API.
-getMyRelatives().then((response) => {
-  const data = response.data;
-  console.log(data.relations);
-});
-```
-
-### Using `GetMyRelatives`'s `QueryRef` function
-
-```typescript
-import { getDataConnect, executeQuery } from 'firebase/data-connect';
-import { connectorConfig, getMyRelativesRef } from '@dataconnect/generated';
-
-
-// Call the `getMyRelativesRef()` function to get a reference to the query.
-const ref = getMyRelativesRef();
-
-// You can also pass in a `DataConnect` instance to the `QueryRef` function.
-const dataConnect = getDataConnect(connectorConfig);
-const ref = getMyRelativesRef(dataConnect);
-
-// Call `executeQuery()` on the reference to execute the query.
-// You can use the `await` keyword to wait for the promise to resolve.
-const { data } = await executeQuery(ref);
-
-console.log(data.relations);
-
-// Or, you can use the `Promise` API.
-executeQuery(ref).then((response) => {
-  const data = response.data;
-  console.log(data.relations);
-});
-```
-
-## GetAllUserRelationships
-You can execute the `GetAllUserRelationships` query using the following action shortcut function, or by calling `executeQuery()` after calling the following `QueryRef` function, both of which are defined in [dataconnect-generated/index.d.ts](./index.d.ts):
-```typescript
-getAllUserRelationships(vars: GetAllUserRelationshipsVariables): QueryPromise<GetAllUserRelationshipsData, GetAllUserRelationshipsVariables>;
-
-interface GetAllUserRelationshipsRef {
-  ...
-  /* Allow users to create refs without passing in DataConnect */
-  (vars: GetAllUserRelationshipsVariables): QueryRef<GetAllUserRelationshipsData, GetAllUserRelationshipsVariables>;
-}
-export const getAllUserRelationshipsRef: GetAllUserRelationshipsRef;
-```
-You can also pass in a `DataConnect` instance to the action shortcut function or `QueryRef` function.
-```typescript
-getAllUserRelationships(dc: DataConnect, vars: GetAllUserRelationshipsVariables): QueryPromise<GetAllUserRelationshipsData, GetAllUserRelationshipsVariables>;
-
-interface GetAllUserRelationshipsRef {
-  ...
-  (dc: DataConnect, vars: GetAllUserRelationshipsVariables): QueryRef<GetAllUserRelationshipsData, GetAllUserRelationshipsVariables>;
-}
-export const getAllUserRelationshipsRef: GetAllUserRelationshipsRef;
-```
-
-If you need the name of the operation without creating a ref, you can retrieve the operation name by calling the `operationName` property on the getAllUserRelationshipsRef:
-```typescript
-const name = getAllUserRelationshipsRef.operationName;
-console.log(name);
-```
-
-### Variables
-The `GetAllUserRelationships` query requires an argument of type `GetAllUserRelationshipsVariables`, which is defined in [dataconnect-generated/index.d.ts](./index.d.ts). It has the following fields:
-
-```typescript
-export interface GetAllUserRelationshipsVariables {
-  userId: string;
-}
-```
-### Return Type
-Recall that executing the `GetAllUserRelationships` query returns a `QueryPromise` that resolves to an object with a `data` property.
-
-The `data` property is an object of type `GetAllUserRelationshipsData`, which is defined in [dataconnect-generated/index.d.ts](./index.d.ts). It has the following fields:
-```typescript
-export interface GetAllUserRelationshipsData {
-  asPatient: ({
-    id: string;
-    relationshipType?: string | null;
-    isEmergencyContact: boolean;
-    relative: {
-      id: string;
-      username: string;
-      phone: string;
-      firstName: string;
-      lastName: string;
-    } & User_Key;
-  } & Relation_Key)[];
-    asRelative: ({
-      id: string;
-      relationshipType?: string | null;
-      isEmergencyContact: boolean;
-      patient: {
-        id: string;
-        username: string;
-        phone: string;
-        firstName: string;
-        lastName: string;
-        deviceId?: string | null;
-      } & User_Key;
-    } & Relation_Key)[];
-}
-```
-### Using `GetAllUserRelationships`'s action shortcut function
-
-```typescript
-import { getDataConnect } from 'firebase/data-connect';
-import { connectorConfig, getAllUserRelationships, GetAllUserRelationshipsVariables } from '@dataconnect/generated';
-
-// The `GetAllUserRelationships` query requires an argument of type `GetAllUserRelationshipsVariables`:
-const getAllUserRelationshipsVars: GetAllUserRelationshipsVariables = {
-  userId: ..., 
-};
-
-// Call the `getAllUserRelationships()` function to execute the query.
-// You can use the `await` keyword to wait for the promise to resolve.
-const { data } = await getAllUserRelationships(getAllUserRelationshipsVars);
-// Variables can be defined inline as well.
-const { data } = await getAllUserRelationships({ userId: ..., });
-
-// You can also pass in a `DataConnect` instance to the action shortcut function.
-const dataConnect = getDataConnect(connectorConfig);
-const { data } = await getAllUserRelationships(dataConnect, getAllUserRelationshipsVars);
-
-console.log(data.asPatient);
-console.log(data.asRelative);
-
-// Or, you can use the `Promise` API.
-getAllUserRelationships(getAllUserRelationshipsVars).then((response) => {
-  const data = response.data;
-  console.log(data.asPatient);
-  console.log(data.asRelative);
-});
-```
-
-### Using `GetAllUserRelationships`'s `QueryRef` function
-
-```typescript
-import { getDataConnect, executeQuery } from 'firebase/data-connect';
-import { connectorConfig, getAllUserRelationshipsRef, GetAllUserRelationshipsVariables } from '@dataconnect/generated';
-
-// The `GetAllUserRelationships` query requires an argument of type `GetAllUserRelationshipsVariables`:
-const getAllUserRelationshipsVars: GetAllUserRelationshipsVariables = {
-  userId: ..., 
-};
-
-// Call the `getAllUserRelationshipsRef()` function to get a reference to the query.
-const ref = getAllUserRelationshipsRef(getAllUserRelationshipsVars);
-// Variables can be defined inline as well.
-const ref = getAllUserRelationshipsRef({ userId: ..., });
-
-// You can also pass in a `DataConnect` instance to the `QueryRef` function.
-const dataConnect = getDataConnect(connectorConfig);
-const ref = getAllUserRelationshipsRef(dataConnect, getAllUserRelationshipsVars);
-
-// Call `executeQuery()` on the reference to execute the query.
-// You can use the `await` keyword to wait for the promise to resolve.
-const { data } = await executeQuery(ref);
-
-console.log(data.asPatient);
-console.log(data.asRelative);
-
-// Or, you can use the `Promise` API.
-executeQuery(ref).then((response) => {
-  const data = response.data;
-  console.log(data.asPatient);
-  console.log(data.asRelative);
-});
-```
-
-## SearchUsers
-You can execute the `SearchUsers` query using the following action shortcut function, or by calling `executeQuery()` after calling the following `QueryRef` function, both of which are defined in [dataconnect-generated/index.d.ts](./index.d.ts):
-```typescript
-searchUsers(vars: SearchUsersVariables): QueryPromise<SearchUsersData, SearchUsersVariables>;
-
-interface SearchUsersRef {
-  ...
-  /* Allow users to create refs without passing in DataConnect */
-  (vars: SearchUsersVariables): QueryRef<SearchUsersData, SearchUsersVariables>;
-}
-export const searchUsersRef: SearchUsersRef;
-```
-You can also pass in a `DataConnect` instance to the action shortcut function or `QueryRef` function.
-```typescript
-searchUsers(dc: DataConnect, vars: SearchUsersVariables): QueryPromise<SearchUsersData, SearchUsersVariables>;
-
-interface SearchUsersRef {
-  ...
-  (dc: DataConnect, vars: SearchUsersVariables): QueryRef<SearchUsersData, SearchUsersVariables>;
-}
-export const searchUsersRef: SearchUsersRef;
-```
-
-If you need the name of the operation without creating a ref, you can retrieve the operation name by calling the `operationName` property on the searchUsersRef:
-```typescript
-const name = searchUsersRef.operationName;
-console.log(name);
-```
-
-### Variables
-The `SearchUsers` query requires an argument of type `SearchUsersVariables`, which is defined in [dataconnect-generated/index.d.ts](./index.d.ts). It has the following fields:
-
-```typescript
-export interface SearchUsersVariables {
-  searchTerm: string;
-}
-```
-### Return Type
-Recall that executing the `SearchUsers` query returns a `QueryPromise` that resolves to an object with a `data` property.
-
-The `data` property is an object of type `SearchUsersData`, which is defined in [dataconnect-generated/index.d.ts](./index.d.ts). It has the following fields:
-```typescript
-export interface SearchUsersData {
-  users: ({
-    id: string;
-    username: string;
-    firstName: string;
-    lastName: string;
-    phone: string;
-  } & User_Key)[];
-}
-```
-### Using `SearchUsers`'s action shortcut function
-
-```typescript
-import { getDataConnect } from 'firebase/data-connect';
-import { connectorConfig, searchUsers, SearchUsersVariables } from '@dataconnect/generated';
-
-// The `SearchUsers` query requires an argument of type `SearchUsersVariables`:
-const searchUsersVars: SearchUsersVariables = {
-  searchTerm: ..., 
-};
-
-// Call the `searchUsers()` function to execute the query.
-// You can use the `await` keyword to wait for the promise to resolve.
-const { data } = await searchUsers(searchUsersVars);
-// Variables can be defined inline as well.
-const { data } = await searchUsers({ searchTerm: ..., });
-
-// You can also pass in a `DataConnect` instance to the action shortcut function.
-const dataConnect = getDataConnect(connectorConfig);
-const { data } = await searchUsers(dataConnect, searchUsersVars);
-
-console.log(data.users);
-
-// Or, you can use the `Promise` API.
-searchUsers(searchUsersVars).then((response) => {
-  const data = response.data;
-  console.log(data.users);
-});
-```
-
-### Using `SearchUsers`'s `QueryRef` function
-
-```typescript
-import { getDataConnect, executeQuery } from 'firebase/data-connect';
-import { connectorConfig, searchUsersRef, SearchUsersVariables } from '@dataconnect/generated';
-
-// The `SearchUsers` query requires an argument of type `SearchUsersVariables`:
-const searchUsersVars: SearchUsersVariables = {
-  searchTerm: ..., 
-};
-
-// Call the `searchUsersRef()` function to get a reference to the query.
-const ref = searchUsersRef(searchUsersVars);
-// Variables can be defined inline as well.
-const ref = searchUsersRef({ searchTerm: ..., });
-
-// You can also pass in a `DataConnect` instance to the `QueryRef` function.
-const dataConnect = getDataConnect(connectorConfig);
-const ref = searchUsersRef(dataConnect, searchUsersVars);
-
-// Call `executeQuery()` on the reference to execute the query.
-// You can use the `await` keyword to wait for the promise to resolve.
-const { data } = await executeQuery(ref);
-
-console.log(data.users);
-
-// Or, you can use the `Promise` API.
-executeQuery(ref).then((response) => {
-  const data = response.data;
-  console.log(data.users);
+  console.log(data.snapshots);
 });
 ```
 
@@ -997,690 +516,681 @@ The following is true for both the action shortcut function and the `MutationRef
 
 Below are examples of how to use the `example` connector's generated functions to execute each mutation. You can also follow the examples from the [Data Connect documentation](https://firebase.google.com/docs/data-connect/web-sdk#using-mutations).
 
-## UpsertUser
-You can execute the `UpsertUser` mutation using the following action shortcut function, or by calling `executeMutation()` after calling the following `MutationRef` function, both of which are defined in [dataconnect-generated/index.d.ts](./index.d.ts):
+## InsertRelative
+You can execute the `InsertRelative` mutation using the following action shortcut function, or by calling `executeMutation()` after calling the following `MutationRef` function, both of which are defined in [dataconnect-generated/index.d.ts](./index.d.ts):
 ```typescript
-upsertUser(vars: UpsertUserVariables): MutationPromise<UpsertUserData, UpsertUserVariables>;
+insertRelative(vars: InsertRelativeVariables): MutationPromise<InsertRelativeData, InsertRelativeVariables>;
 
-interface UpsertUserRef {
+interface InsertRelativeRef {
   ...
   /* Allow users to create refs without passing in DataConnect */
-  (vars: UpsertUserVariables): MutationRef<UpsertUserData, UpsertUserVariables>;
+  (vars: InsertRelativeVariables): MutationRef<InsertRelativeData, InsertRelativeVariables>;
 }
-export const upsertUserRef: UpsertUserRef;
+export const insertRelativeRef: InsertRelativeRef;
 ```
 You can also pass in a `DataConnect` instance to the action shortcut function or `MutationRef` function.
 ```typescript
-upsertUser(dc: DataConnect, vars: UpsertUserVariables): MutationPromise<UpsertUserData, UpsertUserVariables>;
+insertRelative(dc: DataConnect, vars: InsertRelativeVariables): MutationPromise<InsertRelativeData, InsertRelativeVariables>;
 
-interface UpsertUserRef {
+interface InsertRelativeRef {
   ...
-  (dc: DataConnect, vars: UpsertUserVariables): MutationRef<UpsertUserData, UpsertUserVariables>;
+  (dc: DataConnect, vars: InsertRelativeVariables): MutationRef<InsertRelativeData, InsertRelativeVariables>;
 }
-export const upsertUserRef: UpsertUserRef;
+export const insertRelativeRef: InsertRelativeRef;
 ```
 
-If you need the name of the operation without creating a ref, you can retrieve the operation name by calling the `operationName` property on the upsertUserRef:
+If you need the name of the operation without creating a ref, you can retrieve the operation name by calling the `operationName` property on the insertRelativeRef:
 ```typescript
-const name = upsertUserRef.operationName;
+const name = insertRelativeRef.operationName;
 console.log(name);
 ```
 
 ### Variables
-The `UpsertUser` mutation requires an argument of type `UpsertUserVariables`, which is defined in [dataconnect-generated/index.d.ts](./index.d.ts). It has the following fields:
+The `InsertRelative` mutation requires an argument of type `InsertRelativeVariables`, which is defined in [dataconnect-generated/index.d.ts](./index.d.ts). It has the following fields:
 
 ```typescript
-export interface UpsertUserVariables {
-  username: string;
-  email?: string | null;
+export interface InsertRelativeVariables {
+  uid: string;
   phone: string;
-  firstName: string;
-  lastName: string;
-  deviceId?: string | null;
 }
 ```
 ### Return Type
-Recall that executing the `UpsertUser` mutation returns a `MutationPromise` that resolves to an object with a `data` property.
+Recall that executing the `InsertRelative` mutation returns a `MutationPromise` that resolves to an object with a `data` property.
 
-The `data` property is an object of type `UpsertUserData`, which is defined in [dataconnect-generated/index.d.ts](./index.d.ts). It has the following fields:
+The `data` property is an object of type `InsertRelativeData`, which is defined in [dataconnect-generated/index.d.ts](./index.d.ts). It has the following fields:
 ```typescript
-export interface UpsertUserData {
-  user_upsert: User_Key;
+export interface InsertRelativeData {
+  relative_insert: Relative_Key;
 }
 ```
-### Using `UpsertUser`'s action shortcut function
+### Using `InsertRelative`'s action shortcut function
 
 ```typescript
 import { getDataConnect } from 'firebase/data-connect';
-import { connectorConfig, upsertUser, UpsertUserVariables } from '@dataconnect/generated';
+import { connectorConfig, insertRelative, InsertRelativeVariables } from '@dataconnect/generated';
 
-// The `UpsertUser` mutation requires an argument of type `UpsertUserVariables`:
-const upsertUserVars: UpsertUserVariables = {
-  username: ..., 
-  email: ..., // optional
+// The `InsertRelative` mutation requires an argument of type `InsertRelativeVariables`:
+const insertRelativeVars: InsertRelativeVariables = {
+  uid: ..., 
   phone: ..., 
-  firstName: ..., 
-  lastName: ..., 
-  deviceId: ..., // optional
 };
 
-// Call the `upsertUser()` function to execute the mutation.
+// Call the `insertRelative()` function to execute the mutation.
 // You can use the `await` keyword to wait for the promise to resolve.
-const { data } = await upsertUser(upsertUserVars);
+const { data } = await insertRelative(insertRelativeVars);
 // Variables can be defined inline as well.
-const { data } = await upsertUser({ username: ..., email: ..., phone: ..., firstName: ..., lastName: ..., deviceId: ..., });
+const { data } = await insertRelative({ uid: ..., phone: ..., });
 
 // You can also pass in a `DataConnect` instance to the action shortcut function.
 const dataConnect = getDataConnect(connectorConfig);
-const { data } = await upsertUser(dataConnect, upsertUserVars);
+const { data } = await insertRelative(dataConnect, insertRelativeVars);
 
-console.log(data.user_upsert);
+console.log(data.relative_insert);
 
 // Or, you can use the `Promise` API.
-upsertUser(upsertUserVars).then((response) => {
+insertRelative(insertRelativeVars).then((response) => {
   const data = response.data;
-  console.log(data.user_upsert);
+  console.log(data.relative_insert);
 });
 ```
 
-### Using `UpsertUser`'s `MutationRef` function
+### Using `InsertRelative`'s `MutationRef` function
 
 ```typescript
 import { getDataConnect, executeMutation } from 'firebase/data-connect';
-import { connectorConfig, upsertUserRef, UpsertUserVariables } from '@dataconnect/generated';
+import { connectorConfig, insertRelativeRef, InsertRelativeVariables } from '@dataconnect/generated';
 
-// The `UpsertUser` mutation requires an argument of type `UpsertUserVariables`:
-const upsertUserVars: UpsertUserVariables = {
-  username: ..., 
-  email: ..., // optional
+// The `InsertRelative` mutation requires an argument of type `InsertRelativeVariables`:
+const insertRelativeVars: InsertRelativeVariables = {
+  uid: ..., 
   phone: ..., 
-  firstName: ..., 
-  lastName: ..., 
-  deviceId: ..., // optional
 };
 
-// Call the `upsertUserRef()` function to get a reference to the mutation.
-const ref = upsertUserRef(upsertUserVars);
+// Call the `insertRelativeRef()` function to get a reference to the mutation.
+const ref = insertRelativeRef(insertRelativeVars);
 // Variables can be defined inline as well.
-const ref = upsertUserRef({ username: ..., email: ..., phone: ..., firstName: ..., lastName: ..., deviceId: ..., });
+const ref = insertRelativeRef({ uid: ..., phone: ..., });
 
 // You can also pass in a `DataConnect` instance to the `MutationRef` function.
 const dataConnect = getDataConnect(connectorConfig);
-const ref = upsertUserRef(dataConnect, upsertUserVars);
+const ref = insertRelativeRef(dataConnect, insertRelativeVars);
 
 // Call `executeMutation()` on the reference to execute the mutation.
 // You can use the `await` keyword to wait for the promise to resolve.
 const { data } = await executeMutation(ref);
 
-console.log(data.user_upsert);
+console.log(data.relative_insert);
 
 // Or, you can use the `Promise` API.
 executeMutation(ref).then((response) => {
   const data = response.data;
-  console.log(data.user_upsert);
+  console.log(data.relative_insert);
 });
 ```
 
-## UpdateUserDevice
-You can execute the `UpdateUserDevice` mutation using the following action shortcut function, or by calling `executeMutation()` after calling the following `MutationRef` function, both of which are defined in [dataconnect-generated/index.d.ts](./index.d.ts):
+## UpdateRelative
+You can execute the `UpdateRelative` mutation using the following action shortcut function, or by calling `executeMutation()` after calling the following `MutationRef` function, both of which are defined in [dataconnect-generated/index.d.ts](./index.d.ts):
 ```typescript
-updateUserDevice(vars: UpdateUserDeviceVariables): MutationPromise<UpdateUserDeviceData, UpdateUserDeviceVariables>;
+updateRelative(vars: UpdateRelativeVariables): MutationPromise<UpdateRelativeData, UpdateRelativeVariables>;
 
-interface UpdateUserDeviceRef {
+interface UpdateRelativeRef {
   ...
   /* Allow users to create refs without passing in DataConnect */
-  (vars: UpdateUserDeviceVariables): MutationRef<UpdateUserDeviceData, UpdateUserDeviceVariables>;
+  (vars: UpdateRelativeVariables): MutationRef<UpdateRelativeData, UpdateRelativeVariables>;
 }
-export const updateUserDeviceRef: UpdateUserDeviceRef;
+export const updateRelativeRef: UpdateRelativeRef;
 ```
 You can also pass in a `DataConnect` instance to the action shortcut function or `MutationRef` function.
 ```typescript
-updateUserDevice(dc: DataConnect, vars: UpdateUserDeviceVariables): MutationPromise<UpdateUserDeviceData, UpdateUserDeviceVariables>;
+updateRelative(dc: DataConnect, vars: UpdateRelativeVariables): MutationPromise<UpdateRelativeData, UpdateRelativeVariables>;
 
-interface UpdateUserDeviceRef {
+interface UpdateRelativeRef {
   ...
-  (dc: DataConnect, vars: UpdateUserDeviceVariables): MutationRef<UpdateUserDeviceData, UpdateUserDeviceVariables>;
+  (dc: DataConnect, vars: UpdateRelativeVariables): MutationRef<UpdateRelativeData, UpdateRelativeVariables>;
 }
-export const updateUserDeviceRef: UpdateUserDeviceRef;
+export const updateRelativeRef: UpdateRelativeRef;
 ```
 
-If you need the name of the operation without creating a ref, you can retrieve the operation name by calling the `operationName` property on the updateUserDeviceRef:
+If you need the name of the operation without creating a ref, you can retrieve the operation name by calling the `operationName` property on the updateRelativeRef:
 ```typescript
-const name = updateUserDeviceRef.operationName;
+const name = updateRelativeRef.operationName;
 console.log(name);
 ```
 
 ### Variables
-The `UpdateUserDevice` mutation requires an argument of type `UpdateUserDeviceVariables`, which is defined in [dataconnect-generated/index.d.ts](./index.d.ts). It has the following fields:
+The `UpdateRelative` mutation requires an argument of type `UpdateRelativeVariables`, which is defined in [dataconnect-generated/index.d.ts](./index.d.ts). It has the following fields:
 
 ```typescript
-export interface UpdateUserDeviceVariables {
-  deviceId: string;
+export interface UpdateRelativeVariables {
+  uid: string;
+  phone: string;
 }
 ```
 ### Return Type
-Recall that executing the `UpdateUserDevice` mutation returns a `MutationPromise` that resolves to an object with a `data` property.
+Recall that executing the `UpdateRelative` mutation returns a `MutationPromise` that resolves to an object with a `data` property.
 
-The `data` property is an object of type `UpdateUserDeviceData`, which is defined in [dataconnect-generated/index.d.ts](./index.d.ts). It has the following fields:
+The `data` property is an object of type `UpdateRelativeData`, which is defined in [dataconnect-generated/index.d.ts](./index.d.ts). It has the following fields:
 ```typescript
-export interface UpdateUserDeviceData {
-  user_update?: User_Key | null;
+export interface UpdateRelativeData {
+  relative_update?: Relative_Key | null;
 }
 ```
-### Using `UpdateUserDevice`'s action shortcut function
+### Using `UpdateRelative`'s action shortcut function
 
 ```typescript
 import { getDataConnect } from 'firebase/data-connect';
-import { connectorConfig, updateUserDevice, UpdateUserDeviceVariables } from '@dataconnect/generated';
+import { connectorConfig, updateRelative, UpdateRelativeVariables } from '@dataconnect/generated';
 
-// The `UpdateUserDevice` mutation requires an argument of type `UpdateUserDeviceVariables`:
-const updateUserDeviceVars: UpdateUserDeviceVariables = {
-  deviceId: ..., 
+// The `UpdateRelative` mutation requires an argument of type `UpdateRelativeVariables`:
+const updateRelativeVars: UpdateRelativeVariables = {
+  uid: ..., 
+  phone: ..., 
 };
 
-// Call the `updateUserDevice()` function to execute the mutation.
+// Call the `updateRelative()` function to execute the mutation.
 // You can use the `await` keyword to wait for the promise to resolve.
-const { data } = await updateUserDevice(updateUserDeviceVars);
+const { data } = await updateRelative(updateRelativeVars);
 // Variables can be defined inline as well.
-const { data } = await updateUserDevice({ deviceId: ..., });
+const { data } = await updateRelative({ uid: ..., phone: ..., });
 
 // You can also pass in a `DataConnect` instance to the action shortcut function.
 const dataConnect = getDataConnect(connectorConfig);
-const { data } = await updateUserDevice(dataConnect, updateUserDeviceVars);
+const { data } = await updateRelative(dataConnect, updateRelativeVars);
 
-console.log(data.user_update);
+console.log(data.relative_update);
 
 // Or, you can use the `Promise` API.
-updateUserDevice(updateUserDeviceVars).then((response) => {
+updateRelative(updateRelativeVars).then((response) => {
   const data = response.data;
-  console.log(data.user_update);
+  console.log(data.relative_update);
 });
 ```
 
-### Using `UpdateUserDevice`'s `MutationRef` function
+### Using `UpdateRelative`'s `MutationRef` function
 
 ```typescript
 import { getDataConnect, executeMutation } from 'firebase/data-connect';
-import { connectorConfig, updateUserDeviceRef, UpdateUserDeviceVariables } from '@dataconnect/generated';
+import { connectorConfig, updateRelativeRef, UpdateRelativeVariables } from '@dataconnect/generated';
 
-// The `UpdateUserDevice` mutation requires an argument of type `UpdateUserDeviceVariables`:
-const updateUserDeviceVars: UpdateUserDeviceVariables = {
-  deviceId: ..., 
+// The `UpdateRelative` mutation requires an argument of type `UpdateRelativeVariables`:
+const updateRelativeVars: UpdateRelativeVariables = {
+  uid: ..., 
+  phone: ..., 
 };
 
-// Call the `updateUserDeviceRef()` function to get a reference to the mutation.
-const ref = updateUserDeviceRef(updateUserDeviceVars);
+// Call the `updateRelativeRef()` function to get a reference to the mutation.
+const ref = updateRelativeRef(updateRelativeVars);
 // Variables can be defined inline as well.
-const ref = updateUserDeviceRef({ deviceId: ..., });
+const ref = updateRelativeRef({ uid: ..., phone: ..., });
 
 // You can also pass in a `DataConnect` instance to the `MutationRef` function.
 const dataConnect = getDataConnect(connectorConfig);
-const ref = updateUserDeviceRef(dataConnect, updateUserDeviceVars);
+const ref = updateRelativeRef(dataConnect, updateRelativeVars);
 
 // Call `executeMutation()` on the reference to execute the mutation.
 // You can use the `await` keyword to wait for the promise to resolve.
 const { data } = await executeMutation(ref);
 
-console.log(data.user_update);
+console.log(data.relative_update);
 
 // Or, you can use the `Promise` API.
 executeMutation(ref).then((response) => {
   const data = response.data;
-  console.log(data.user_update);
+  console.log(data.relative_update);
 });
 ```
 
-## AddRelation
-You can execute the `AddRelation` mutation using the following action shortcut function, or by calling `executeMutation()` after calling the following `MutationRef` function, both of which are defined in [dataconnect-generated/index.d.ts](./index.d.ts):
+## DeleteRelative
+You can execute the `DeleteRelative` mutation using the following action shortcut function, or by calling `executeMutation()` after calling the following `MutationRef` function, both of which are defined in [dataconnect-generated/index.d.ts](./index.d.ts):
 ```typescript
-addRelation(vars: AddRelationVariables): MutationPromise<AddRelationData, AddRelationVariables>;
+deleteRelative(vars: DeleteRelativeVariables): MutationPromise<DeleteRelativeData, DeleteRelativeVariables>;
 
-interface AddRelationRef {
+interface DeleteRelativeRef {
   ...
   /* Allow users to create refs without passing in DataConnect */
-  (vars: AddRelationVariables): MutationRef<AddRelationData, AddRelationVariables>;
+  (vars: DeleteRelativeVariables): MutationRef<DeleteRelativeData, DeleteRelativeVariables>;
 }
-export const addRelationRef: AddRelationRef;
+export const deleteRelativeRef: DeleteRelativeRef;
 ```
 You can also pass in a `DataConnect` instance to the action shortcut function or `MutationRef` function.
 ```typescript
-addRelation(dc: DataConnect, vars: AddRelationVariables): MutationPromise<AddRelationData, AddRelationVariables>;
+deleteRelative(dc: DataConnect, vars: DeleteRelativeVariables): MutationPromise<DeleteRelativeData, DeleteRelativeVariables>;
 
-interface AddRelationRef {
+interface DeleteRelativeRef {
   ...
-  (dc: DataConnect, vars: AddRelationVariables): MutationRef<AddRelationData, AddRelationVariables>;
+  (dc: DataConnect, vars: DeleteRelativeVariables): MutationRef<DeleteRelativeData, DeleteRelativeVariables>;
 }
-export const addRelationRef: AddRelationRef;
+export const deleteRelativeRef: DeleteRelativeRef;
 ```
 
-If you need the name of the operation without creating a ref, you can retrieve the operation name by calling the `operationName` property on the addRelationRef:
+If you need the name of the operation without creating a ref, you can retrieve the operation name by calling the `operationName` property on the deleteRelativeRef:
 ```typescript
-const name = addRelationRef.operationName;
+const name = deleteRelativeRef.operationName;
 console.log(name);
 ```
 
 ### Variables
-The `AddRelation` mutation requires an argument of type `AddRelationVariables`, which is defined in [dataconnect-generated/index.d.ts](./index.d.ts). It has the following fields:
+The `DeleteRelative` mutation requires an argument of type `DeleteRelativeVariables`, which is defined in [dataconnect-generated/index.d.ts](./index.d.ts). It has the following fields:
 
 ```typescript
-export interface AddRelationVariables {
-  patientId: string;
-  relativeId: string;
-  relationshipType?: string | null;
-  isEmergencyContact?: boolean | null;
+export interface DeleteRelativeVariables {
+  uid: string;
 }
 ```
 ### Return Type
-Recall that executing the `AddRelation` mutation returns a `MutationPromise` that resolves to an object with a `data` property.
+Recall that executing the `DeleteRelative` mutation returns a `MutationPromise` that resolves to an object with a `data` property.
 
-The `data` property is an object of type `AddRelationData`, which is defined in [dataconnect-generated/index.d.ts](./index.d.ts). It has the following fields:
+The `data` property is an object of type `DeleteRelativeData`, which is defined in [dataconnect-generated/index.d.ts](./index.d.ts). It has the following fields:
 ```typescript
-export interface AddRelationData {
-  relation_insert: Relation_Key;
+export interface DeleteRelativeData {
+  relative_delete?: Relative_Key | null;
 }
 ```
-### Using `AddRelation`'s action shortcut function
+### Using `DeleteRelative`'s action shortcut function
 
 ```typescript
 import { getDataConnect } from 'firebase/data-connect';
-import { connectorConfig, addRelation, AddRelationVariables } from '@dataconnect/generated';
+import { connectorConfig, deleteRelative, DeleteRelativeVariables } from '@dataconnect/generated';
 
-// The `AddRelation` mutation requires an argument of type `AddRelationVariables`:
-const addRelationVars: AddRelationVariables = {
-  patientId: ..., 
-  relativeId: ..., 
-  relationshipType: ..., // optional
-  isEmergencyContact: ..., // optional
+// The `DeleteRelative` mutation requires an argument of type `DeleteRelativeVariables`:
+const deleteRelativeVars: DeleteRelativeVariables = {
+  uid: ..., 
 };
 
-// Call the `addRelation()` function to execute the mutation.
+// Call the `deleteRelative()` function to execute the mutation.
 // You can use the `await` keyword to wait for the promise to resolve.
-const { data } = await addRelation(addRelationVars);
+const { data } = await deleteRelative(deleteRelativeVars);
 // Variables can be defined inline as well.
-const { data } = await addRelation({ patientId: ..., relativeId: ..., relationshipType: ..., isEmergencyContact: ..., });
+const { data } = await deleteRelative({ uid: ..., });
 
 // You can also pass in a `DataConnect` instance to the action shortcut function.
 const dataConnect = getDataConnect(connectorConfig);
-const { data } = await addRelation(dataConnect, addRelationVars);
+const { data } = await deleteRelative(dataConnect, deleteRelativeVars);
 
-console.log(data.relation_insert);
+console.log(data.relative_delete);
 
 // Or, you can use the `Promise` API.
-addRelation(addRelationVars).then((response) => {
+deleteRelative(deleteRelativeVars).then((response) => {
   const data = response.data;
-  console.log(data.relation_insert);
+  console.log(data.relative_delete);
 });
 ```
 
-### Using `AddRelation`'s `MutationRef` function
+### Using `DeleteRelative`'s `MutationRef` function
 
 ```typescript
 import { getDataConnect, executeMutation } from 'firebase/data-connect';
-import { connectorConfig, addRelationRef, AddRelationVariables } from '@dataconnect/generated';
+import { connectorConfig, deleteRelativeRef, DeleteRelativeVariables } from '@dataconnect/generated';
 
-// The `AddRelation` mutation requires an argument of type `AddRelationVariables`:
-const addRelationVars: AddRelationVariables = {
-  patientId: ..., 
-  relativeId: ..., 
-  relationshipType: ..., // optional
-  isEmergencyContact: ..., // optional
+// The `DeleteRelative` mutation requires an argument of type `DeleteRelativeVariables`:
+const deleteRelativeVars: DeleteRelativeVariables = {
+  uid: ..., 
 };
 
-// Call the `addRelationRef()` function to get a reference to the mutation.
-const ref = addRelationRef(addRelationVars);
+// Call the `deleteRelativeRef()` function to get a reference to the mutation.
+const ref = deleteRelativeRef(deleteRelativeVars);
 // Variables can be defined inline as well.
-const ref = addRelationRef({ patientId: ..., relativeId: ..., relationshipType: ..., isEmergencyContact: ..., });
+const ref = deleteRelativeRef({ uid: ..., });
 
 // You can also pass in a `DataConnect` instance to the `MutationRef` function.
 const dataConnect = getDataConnect(connectorConfig);
-const ref = addRelationRef(dataConnect, addRelationVars);
+const ref = deleteRelativeRef(dataConnect, deleteRelativeVars);
 
 // Call `executeMutation()` on the reference to execute the mutation.
 // You can use the `await` keyword to wait for the promise to resolve.
 const { data } = await executeMutation(ref);
 
-console.log(data.relation_insert);
+console.log(data.relative_delete);
 
 // Or, you can use the `Promise` API.
 executeMutation(ref).then((response) => {
   const data = response.data;
-  console.log(data.relation_insert);
+  console.log(data.relative_delete);
 });
 ```
 
-## UpdateRelation
-You can execute the `UpdateRelation` mutation using the following action shortcut function, or by calling `executeMutation()` after calling the following `MutationRef` function, both of which are defined in [dataconnect-generated/index.d.ts](./index.d.ts):
+## InsertSnapshot
+You can execute the `InsertSnapshot` mutation using the following action shortcut function, or by calling `executeMutation()` after calling the following `MutationRef` function, both of which are defined in [dataconnect-generated/index.d.ts](./index.d.ts):
 ```typescript
-updateRelation(vars: UpdateRelationVariables): MutationPromise<UpdateRelationData, UpdateRelationVariables>;
+insertSnapshot(vars: InsertSnapshotVariables): MutationPromise<InsertSnapshotData, InsertSnapshotVariables>;
 
-interface UpdateRelationRef {
+interface InsertSnapshotRef {
   ...
   /* Allow users to create refs without passing in DataConnect */
-  (vars: UpdateRelationVariables): MutationRef<UpdateRelationData, UpdateRelationVariables>;
+  (vars: InsertSnapshotVariables): MutationRef<InsertSnapshotData, InsertSnapshotVariables>;
 }
-export const updateRelationRef: UpdateRelationRef;
+export const insertSnapshotRef: InsertSnapshotRef;
 ```
 You can also pass in a `DataConnect` instance to the action shortcut function or `MutationRef` function.
 ```typescript
-updateRelation(dc: DataConnect, vars: UpdateRelationVariables): MutationPromise<UpdateRelationData, UpdateRelationVariables>;
+insertSnapshot(dc: DataConnect, vars: InsertSnapshotVariables): MutationPromise<InsertSnapshotData, InsertSnapshotVariables>;
 
-interface UpdateRelationRef {
+interface InsertSnapshotRef {
   ...
-  (dc: DataConnect, vars: UpdateRelationVariables): MutationRef<UpdateRelationData, UpdateRelationVariables>;
+  (dc: DataConnect, vars: InsertSnapshotVariables): MutationRef<InsertSnapshotData, InsertSnapshotVariables>;
 }
-export const updateRelationRef: UpdateRelationRef;
+export const insertSnapshotRef: InsertSnapshotRef;
 ```
 
-If you need the name of the operation without creating a ref, you can retrieve the operation name by calling the `operationName` property on the updateRelationRef:
+If you need the name of the operation without creating a ref, you can retrieve the operation name by calling the `operationName` property on the insertSnapshotRef:
 ```typescript
-const name = updateRelationRef.operationName;
+const name = insertSnapshotRef.operationName;
 console.log(name);
 ```
 
 ### Variables
-The `UpdateRelation` mutation requires an argument of type `UpdateRelationVariables`, which is defined in [dataconnect-generated/index.d.ts](./index.d.ts). It has the following fields:
+The `InsertSnapshot` mutation requires an argument of type `InsertSnapshotVariables`, which is defined in [dataconnect-generated/index.d.ts](./index.d.ts). It has the following fields:
 
 ```typescript
-export interface UpdateRelationVariables {
-  relationId: string;
-  relationshipType?: string | null;
-  isEmergencyContact?: boolean | null;
+export interface InsertSnapshotVariables {
+  uid: string;
+  latitude: number;
+  longitude: number;
+  timestamp: TimestampString;
 }
 ```
 ### Return Type
-Recall that executing the `UpdateRelation` mutation returns a `MutationPromise` that resolves to an object with a `data` property.
+Recall that executing the `InsertSnapshot` mutation returns a `MutationPromise` that resolves to an object with a `data` property.
 
-The `data` property is an object of type `UpdateRelationData`, which is defined in [dataconnect-generated/index.d.ts](./index.d.ts). It has the following fields:
+The `data` property is an object of type `InsertSnapshotData`, which is defined in [dataconnect-generated/index.d.ts](./index.d.ts). It has the following fields:
 ```typescript
-export interface UpdateRelationData {
-  relation_update?: Relation_Key | null;
+export interface InsertSnapshotData {
+  snapshot_insert: Snapshot_Key;
 }
 ```
-### Using `UpdateRelation`'s action shortcut function
+### Using `InsertSnapshot`'s action shortcut function
 
 ```typescript
 import { getDataConnect } from 'firebase/data-connect';
-import { connectorConfig, updateRelation, UpdateRelationVariables } from '@dataconnect/generated';
+import { connectorConfig, insertSnapshot, InsertSnapshotVariables } from '@dataconnect/generated';
 
-// The `UpdateRelation` mutation requires an argument of type `UpdateRelationVariables`:
-const updateRelationVars: UpdateRelationVariables = {
-  relationId: ..., 
-  relationshipType: ..., // optional
-  isEmergencyContact: ..., // optional
+// The `InsertSnapshot` mutation requires an argument of type `InsertSnapshotVariables`:
+const insertSnapshotVars: InsertSnapshotVariables = {
+  uid: ..., 
+  latitude: ..., 
+  longitude: ..., 
+  timestamp: ..., 
 };
 
-// Call the `updateRelation()` function to execute the mutation.
+// Call the `insertSnapshot()` function to execute the mutation.
 // You can use the `await` keyword to wait for the promise to resolve.
-const { data } = await updateRelation(updateRelationVars);
+const { data } = await insertSnapshot(insertSnapshotVars);
 // Variables can be defined inline as well.
-const { data } = await updateRelation({ relationId: ..., relationshipType: ..., isEmergencyContact: ..., });
+const { data } = await insertSnapshot({ uid: ..., latitude: ..., longitude: ..., timestamp: ..., });
 
 // You can also pass in a `DataConnect` instance to the action shortcut function.
 const dataConnect = getDataConnect(connectorConfig);
-const { data } = await updateRelation(dataConnect, updateRelationVars);
+const { data } = await insertSnapshot(dataConnect, insertSnapshotVars);
 
-console.log(data.relation_update);
+console.log(data.snapshot_insert);
 
 // Or, you can use the `Promise` API.
-updateRelation(updateRelationVars).then((response) => {
+insertSnapshot(insertSnapshotVars).then((response) => {
   const data = response.data;
-  console.log(data.relation_update);
+  console.log(data.snapshot_insert);
 });
 ```
 
-### Using `UpdateRelation`'s `MutationRef` function
+### Using `InsertSnapshot`'s `MutationRef` function
 
 ```typescript
 import { getDataConnect, executeMutation } from 'firebase/data-connect';
-import { connectorConfig, updateRelationRef, UpdateRelationVariables } from '@dataconnect/generated';
+import { connectorConfig, insertSnapshotRef, InsertSnapshotVariables } from '@dataconnect/generated';
 
-// The `UpdateRelation` mutation requires an argument of type `UpdateRelationVariables`:
-const updateRelationVars: UpdateRelationVariables = {
-  relationId: ..., 
-  relationshipType: ..., // optional
-  isEmergencyContact: ..., // optional
+// The `InsertSnapshot` mutation requires an argument of type `InsertSnapshotVariables`:
+const insertSnapshotVars: InsertSnapshotVariables = {
+  uid: ..., 
+  latitude: ..., 
+  longitude: ..., 
+  timestamp: ..., 
 };
 
-// Call the `updateRelationRef()` function to get a reference to the mutation.
-const ref = updateRelationRef(updateRelationVars);
+// Call the `insertSnapshotRef()` function to get a reference to the mutation.
+const ref = insertSnapshotRef(insertSnapshotVars);
 // Variables can be defined inline as well.
-const ref = updateRelationRef({ relationId: ..., relationshipType: ..., isEmergencyContact: ..., });
+const ref = insertSnapshotRef({ uid: ..., latitude: ..., longitude: ..., timestamp: ..., });
 
 // You can also pass in a `DataConnect` instance to the `MutationRef` function.
 const dataConnect = getDataConnect(connectorConfig);
-const ref = updateRelationRef(dataConnect, updateRelationVars);
+const ref = insertSnapshotRef(dataConnect, insertSnapshotVars);
 
 // Call `executeMutation()` on the reference to execute the mutation.
 // You can use the `await` keyword to wait for the promise to resolve.
 const { data } = await executeMutation(ref);
 
-console.log(data.relation_update);
+console.log(data.snapshot_insert);
 
 // Or, you can use the `Promise` API.
 executeMutation(ref).then((response) => {
   const data = response.data;
-  console.log(data.relation_update);
+  console.log(data.snapshot_insert);
 });
 ```
 
-## RemoveRelation
-You can execute the `RemoveRelation` mutation using the following action shortcut function, or by calling `executeMutation()` after calling the following `MutationRef` function, both of which are defined in [dataconnect-generated/index.d.ts](./index.d.ts):
+## UpdateSnapshot
+You can execute the `UpdateSnapshot` mutation using the following action shortcut function, or by calling `executeMutation()` after calling the following `MutationRef` function, both of which are defined in [dataconnect-generated/index.d.ts](./index.d.ts):
 ```typescript
-removeRelation(vars: RemoveRelationVariables): MutationPromise<RemoveRelationData, RemoveRelationVariables>;
+updateSnapshot(vars: UpdateSnapshotVariables): MutationPromise<UpdateSnapshotData, UpdateSnapshotVariables>;
 
-interface RemoveRelationRef {
+interface UpdateSnapshotRef {
   ...
   /* Allow users to create refs without passing in DataConnect */
-  (vars: RemoveRelationVariables): MutationRef<RemoveRelationData, RemoveRelationVariables>;
+  (vars: UpdateSnapshotVariables): MutationRef<UpdateSnapshotData, UpdateSnapshotVariables>;
 }
-export const removeRelationRef: RemoveRelationRef;
+export const updateSnapshotRef: UpdateSnapshotRef;
 ```
 You can also pass in a `DataConnect` instance to the action shortcut function or `MutationRef` function.
 ```typescript
-removeRelation(dc: DataConnect, vars: RemoveRelationVariables): MutationPromise<RemoveRelationData, RemoveRelationVariables>;
+updateSnapshot(dc: DataConnect, vars: UpdateSnapshotVariables): MutationPromise<UpdateSnapshotData, UpdateSnapshotVariables>;
 
-interface RemoveRelationRef {
+interface UpdateSnapshotRef {
   ...
-  (dc: DataConnect, vars: RemoveRelationVariables): MutationRef<RemoveRelationData, RemoveRelationVariables>;
+  (dc: DataConnect, vars: UpdateSnapshotVariables): MutationRef<UpdateSnapshotData, UpdateSnapshotVariables>;
 }
-export const removeRelationRef: RemoveRelationRef;
+export const updateSnapshotRef: UpdateSnapshotRef;
 ```
 
-If you need the name of the operation without creating a ref, you can retrieve the operation name by calling the `operationName` property on the removeRelationRef:
+If you need the name of the operation without creating a ref, you can retrieve the operation name by calling the `operationName` property on the updateSnapshotRef:
 ```typescript
-const name = removeRelationRef.operationName;
+const name = updateSnapshotRef.operationName;
 console.log(name);
 ```
 
 ### Variables
-The `RemoveRelation` mutation requires an argument of type `RemoveRelationVariables`, which is defined in [dataconnect-generated/index.d.ts](./index.d.ts). It has the following fields:
+The `UpdateSnapshot` mutation requires an argument of type `UpdateSnapshotVariables`, which is defined in [dataconnect-generated/index.d.ts](./index.d.ts). It has the following fields:
 
 ```typescript
-export interface RemoveRelationVariables {
-  relationId: string;
+export interface UpdateSnapshotVariables {
+  id: string;
+  latitude?: number | null;
+  longitude?: number | null;
+  timestamp?: TimestampString | null;
 }
 ```
 ### Return Type
-Recall that executing the `RemoveRelation` mutation returns a `MutationPromise` that resolves to an object with a `data` property.
+Recall that executing the `UpdateSnapshot` mutation returns a `MutationPromise` that resolves to an object with a `data` property.
 
-The `data` property is an object of type `RemoveRelationData`, which is defined in [dataconnect-generated/index.d.ts](./index.d.ts). It has the following fields:
+The `data` property is an object of type `UpdateSnapshotData`, which is defined in [dataconnect-generated/index.d.ts](./index.d.ts). It has the following fields:
 ```typescript
-export interface RemoveRelationData {
-  relation_delete?: Relation_Key | null;
+export interface UpdateSnapshotData {
+  snapshot_update?: Snapshot_Key | null;
 }
 ```
-### Using `RemoveRelation`'s action shortcut function
+### Using `UpdateSnapshot`'s action shortcut function
 
 ```typescript
 import { getDataConnect } from 'firebase/data-connect';
-import { connectorConfig, removeRelation, RemoveRelationVariables } from '@dataconnect/generated';
+import { connectorConfig, updateSnapshot, UpdateSnapshotVariables } from '@dataconnect/generated';
 
-// The `RemoveRelation` mutation requires an argument of type `RemoveRelationVariables`:
-const removeRelationVars: RemoveRelationVariables = {
-  relationId: ..., 
+// The `UpdateSnapshot` mutation requires an argument of type `UpdateSnapshotVariables`:
+const updateSnapshotVars: UpdateSnapshotVariables = {
+  id: ..., 
+  latitude: ..., // optional
+  longitude: ..., // optional
+  timestamp: ..., // optional
 };
 
-// Call the `removeRelation()` function to execute the mutation.
+// Call the `updateSnapshot()` function to execute the mutation.
 // You can use the `await` keyword to wait for the promise to resolve.
-const { data } = await removeRelation(removeRelationVars);
+const { data } = await updateSnapshot(updateSnapshotVars);
 // Variables can be defined inline as well.
-const { data } = await removeRelation({ relationId: ..., });
+const { data } = await updateSnapshot({ id: ..., latitude: ..., longitude: ..., timestamp: ..., });
 
 // You can also pass in a `DataConnect` instance to the action shortcut function.
 const dataConnect = getDataConnect(connectorConfig);
-const { data } = await removeRelation(dataConnect, removeRelationVars);
+const { data } = await updateSnapshot(dataConnect, updateSnapshotVars);
 
-console.log(data.relation_delete);
+console.log(data.snapshot_update);
 
 // Or, you can use the `Promise` API.
-removeRelation(removeRelationVars).then((response) => {
+updateSnapshot(updateSnapshotVars).then((response) => {
   const data = response.data;
-  console.log(data.relation_delete);
+  console.log(data.snapshot_update);
 });
 ```
 
-### Using `RemoveRelation`'s `MutationRef` function
+### Using `UpdateSnapshot`'s `MutationRef` function
 
 ```typescript
 import { getDataConnect, executeMutation } from 'firebase/data-connect';
-import { connectorConfig, removeRelationRef, RemoveRelationVariables } from '@dataconnect/generated';
+import { connectorConfig, updateSnapshotRef, UpdateSnapshotVariables } from '@dataconnect/generated';
 
-// The `RemoveRelation` mutation requires an argument of type `RemoveRelationVariables`:
-const removeRelationVars: RemoveRelationVariables = {
-  relationId: ..., 
+// The `UpdateSnapshot` mutation requires an argument of type `UpdateSnapshotVariables`:
+const updateSnapshotVars: UpdateSnapshotVariables = {
+  id: ..., 
+  latitude: ..., // optional
+  longitude: ..., // optional
+  timestamp: ..., // optional
 };
 
-// Call the `removeRelationRef()` function to get a reference to the mutation.
-const ref = removeRelationRef(removeRelationVars);
+// Call the `updateSnapshotRef()` function to get a reference to the mutation.
+const ref = updateSnapshotRef(updateSnapshotVars);
 // Variables can be defined inline as well.
-const ref = removeRelationRef({ relationId: ..., });
+const ref = updateSnapshotRef({ id: ..., latitude: ..., longitude: ..., timestamp: ..., });
 
 // You can also pass in a `DataConnect` instance to the `MutationRef` function.
 const dataConnect = getDataConnect(connectorConfig);
-const ref = removeRelationRef(dataConnect, removeRelationVars);
+const ref = updateSnapshotRef(dataConnect, updateSnapshotVars);
 
 // Call `executeMutation()` on the reference to execute the mutation.
 // You can use the `await` keyword to wait for the promise to resolve.
 const { data } = await executeMutation(ref);
 
-console.log(data.relation_delete);
+console.log(data.snapshot_update);
 
 // Or, you can use the `Promise` API.
 executeMutation(ref).then((response) => {
   const data = response.data;
-  console.log(data.relation_delete);
+  console.log(data.snapshot_update);
 });
 ```
 
-## AddMyselfAsRelative
-You can execute the `AddMyselfAsRelative` mutation using the following action shortcut function, or by calling `executeMutation()` after calling the following `MutationRef` function, both of which are defined in [dataconnect-generated/index.d.ts](./index.d.ts):
+## DeleteSnapshot
+You can execute the `DeleteSnapshot` mutation using the following action shortcut function, or by calling `executeMutation()` after calling the following `MutationRef` function, both of which are defined in [dataconnect-generated/index.d.ts](./index.d.ts):
 ```typescript
-addMyselfAsRelative(vars: AddMyselfAsRelativeVariables): MutationPromise<AddMyselfAsRelativeData, AddMyselfAsRelativeVariables>;
+deleteSnapshot(vars: DeleteSnapshotVariables): MutationPromise<DeleteSnapshotData, DeleteSnapshotVariables>;
 
-interface AddMyselfAsRelativeRef {
+interface DeleteSnapshotRef {
   ...
   /* Allow users to create refs without passing in DataConnect */
-  (vars: AddMyselfAsRelativeVariables): MutationRef<AddMyselfAsRelativeData, AddMyselfAsRelativeVariables>;
+  (vars: DeleteSnapshotVariables): MutationRef<DeleteSnapshotData, DeleteSnapshotVariables>;
 }
-export const addMyselfAsRelativeRef: AddMyselfAsRelativeRef;
+export const deleteSnapshotRef: DeleteSnapshotRef;
 ```
 You can also pass in a `DataConnect` instance to the action shortcut function or `MutationRef` function.
 ```typescript
-addMyselfAsRelative(dc: DataConnect, vars: AddMyselfAsRelativeVariables): MutationPromise<AddMyselfAsRelativeData, AddMyselfAsRelativeVariables>;
+deleteSnapshot(dc: DataConnect, vars: DeleteSnapshotVariables): MutationPromise<DeleteSnapshotData, DeleteSnapshotVariables>;
 
-interface AddMyselfAsRelativeRef {
+interface DeleteSnapshotRef {
   ...
-  (dc: DataConnect, vars: AddMyselfAsRelativeVariables): MutationRef<AddMyselfAsRelativeData, AddMyselfAsRelativeVariables>;
+  (dc: DataConnect, vars: DeleteSnapshotVariables): MutationRef<DeleteSnapshotData, DeleteSnapshotVariables>;
 }
-export const addMyselfAsRelativeRef: AddMyselfAsRelativeRef;
+export const deleteSnapshotRef: DeleteSnapshotRef;
 ```
 
-If you need the name of the operation without creating a ref, you can retrieve the operation name by calling the `operationName` property on the addMyselfAsRelativeRef:
+If you need the name of the operation without creating a ref, you can retrieve the operation name by calling the `operationName` property on the deleteSnapshotRef:
 ```typescript
-const name = addMyselfAsRelativeRef.operationName;
+const name = deleteSnapshotRef.operationName;
 console.log(name);
 ```
 
 ### Variables
-The `AddMyselfAsRelative` mutation requires an argument of type `AddMyselfAsRelativeVariables`, which is defined in [dataconnect-generated/index.d.ts](./index.d.ts). It has the following fields:
+The `DeleteSnapshot` mutation requires an argument of type `DeleteSnapshotVariables`, which is defined in [dataconnect-generated/index.d.ts](./index.d.ts). It has the following fields:
 
 ```typescript
-export interface AddMyselfAsRelativeVariables {
-  patientId: string;
-  relationshipType: string;
+export interface DeleteSnapshotVariables {
+  id: string;
 }
 ```
 ### Return Type
-Recall that executing the `AddMyselfAsRelative` mutation returns a `MutationPromise` that resolves to an object with a `data` property.
+Recall that executing the `DeleteSnapshot` mutation returns a `MutationPromise` that resolves to an object with a `data` property.
 
-The `data` property is an object of type `AddMyselfAsRelativeData`, which is defined in [dataconnect-generated/index.d.ts](./index.d.ts). It has the following fields:
+The `data` property is an object of type `DeleteSnapshotData`, which is defined in [dataconnect-generated/index.d.ts](./index.d.ts). It has the following fields:
 ```typescript
-export interface AddMyselfAsRelativeData {
-  relation_insert: Relation_Key;
+export interface DeleteSnapshotData {
+  snapshot_delete?: Snapshot_Key | null;
 }
 ```
-### Using `AddMyselfAsRelative`'s action shortcut function
+### Using `DeleteSnapshot`'s action shortcut function
 
 ```typescript
 import { getDataConnect } from 'firebase/data-connect';
-import { connectorConfig, addMyselfAsRelative, AddMyselfAsRelativeVariables } from '@dataconnect/generated';
+import { connectorConfig, deleteSnapshot, DeleteSnapshotVariables } from '@dataconnect/generated';
 
-// The `AddMyselfAsRelative` mutation requires an argument of type `AddMyselfAsRelativeVariables`:
-const addMyselfAsRelativeVars: AddMyselfAsRelativeVariables = {
-  patientId: ..., 
-  relationshipType: ..., 
+// The `DeleteSnapshot` mutation requires an argument of type `DeleteSnapshotVariables`:
+const deleteSnapshotVars: DeleteSnapshotVariables = {
+  id: ..., 
 };
 
-// Call the `addMyselfAsRelative()` function to execute the mutation.
+// Call the `deleteSnapshot()` function to execute the mutation.
 // You can use the `await` keyword to wait for the promise to resolve.
-const { data } = await addMyselfAsRelative(addMyselfAsRelativeVars);
+const { data } = await deleteSnapshot(deleteSnapshotVars);
 // Variables can be defined inline as well.
-const { data } = await addMyselfAsRelative({ patientId: ..., relationshipType: ..., });
+const { data } = await deleteSnapshot({ id: ..., });
 
 // You can also pass in a `DataConnect` instance to the action shortcut function.
 const dataConnect = getDataConnect(connectorConfig);
-const { data } = await addMyselfAsRelative(dataConnect, addMyselfAsRelativeVars);
+const { data } = await deleteSnapshot(dataConnect, deleteSnapshotVars);
 
-console.log(data.relation_insert);
+console.log(data.snapshot_delete);
 
 // Or, you can use the `Promise` API.
-addMyselfAsRelative(addMyselfAsRelativeVars).then((response) => {
+deleteSnapshot(deleteSnapshotVars).then((response) => {
   const data = response.data;
-  console.log(data.relation_insert);
+  console.log(data.snapshot_delete);
 });
 ```
 
-### Using `AddMyselfAsRelative`'s `MutationRef` function
+### Using `DeleteSnapshot`'s `MutationRef` function
 
 ```typescript
 import { getDataConnect, executeMutation } from 'firebase/data-connect';
-import { connectorConfig, addMyselfAsRelativeRef, AddMyselfAsRelativeVariables } from '@dataconnect/generated';
+import { connectorConfig, deleteSnapshotRef, DeleteSnapshotVariables } from '@dataconnect/generated';
 
-// The `AddMyselfAsRelative` mutation requires an argument of type `AddMyselfAsRelativeVariables`:
-const addMyselfAsRelativeVars: AddMyselfAsRelativeVariables = {
-  patientId: ..., 
-  relationshipType: ..., 
+// The `DeleteSnapshot` mutation requires an argument of type `DeleteSnapshotVariables`:
+const deleteSnapshotVars: DeleteSnapshotVariables = {
+  id: ..., 
 };
 
-// Call the `addMyselfAsRelativeRef()` function to get a reference to the mutation.
-const ref = addMyselfAsRelativeRef(addMyselfAsRelativeVars);
+// Call the `deleteSnapshotRef()` function to get a reference to the mutation.
+const ref = deleteSnapshotRef(deleteSnapshotVars);
 // Variables can be defined inline as well.
-const ref = addMyselfAsRelativeRef({ patientId: ..., relationshipType: ..., });
+const ref = deleteSnapshotRef({ id: ..., });
 
 // You can also pass in a `DataConnect` instance to the `MutationRef` function.
 const dataConnect = getDataConnect(connectorConfig);
-const ref = addMyselfAsRelativeRef(dataConnect, addMyselfAsRelativeVars);
+const ref = deleteSnapshotRef(dataConnect, deleteSnapshotVars);
 
 // Call `executeMutation()` on the reference to execute the mutation.
 // You can use the `await` keyword to wait for the promise to resolve.
 const { data } = await executeMutation(ref);
 
-console.log(data.relation_insert);
+console.log(data.snapshot_delete);
 
 // Or, you can use the `Promise` API.
 executeMutation(ref).then((response) => {
   const data = response.data;
-  console.log(data.relation_insert);
+  console.log(data.snapshot_delete);
 });
 ```
 

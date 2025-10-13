@@ -1,39 +1,14 @@
-# Schema for fall detection device - users and their emergency contacts
 
-# User table for both patients (wearing the device) and relatives (emergency contacts)
-type User @table {
-  # `@default(expr: "auth.uid")` sets it to Firebase Auth UID during insert and upsert.
-  id: String! @default(expr: "auth.uid")
-  username: String! @col(dataType: "varchar(50)")
-  email: String @col(dataType: "varchar(100)")
+type Relative @table {
+  id: String! @default(expr: "uuidV4()")
+  uid: String! @default(expr: "auth.uid")
   phone: String! @col(dataType: "varchar(15)")
-  firstName: String! @col(dataType: "varchar(50)")
-  lastName: String! @col(dataType: "varchar(50)")
-  
-  # Device information (only relevant for patients)
-  deviceId: String @col(dataType: "varchar(100)")
-  
-  createdAt: Timestamp! @default(expr: "request.time")
-  updatedAt: Timestamp! @default(expr: "request.time")
 }
 
-# Simple relation table connecting patients to their emergency contacts
-type Relation @table {
+type Snapshot @table {
   id: String! @default(expr: "uuidV4()")
-  
-  # The patient (user wearing the device)
-  patientId: String!
-  patient: User! @ref(fields: "patientId", references: "id")
-
-  # The relative/emergency contact
-  relativeId: String!
-  relative: User! @ref(fields: "relativeId", references: "id")
-  
-  # Optional: Type of relationship for context
-  relationshipType: String @col(dataType: "varchar(50)") # e.g., "daughter", "son", "spouse", "neighbor"
-  
-  # Whether this relative should receive emergency notifications
-  isEmergencyContact: Boolean! @default(value: true)
-  
-  createdAt: Timestamp! @default(expr: "request.time")
+  uid: String! @default(expr: "auth.uid")
+  latitude: Float!
+  longitude: Float!
+  timestamp: Timestamp! @default(expr: "request.time")
 }

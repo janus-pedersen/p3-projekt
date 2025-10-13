@@ -6,157 +6,113 @@ export const connectorConfig = {
   location: 'europe-north1'
 };
 
-export const upsertUserRef = (dcOrVars, vars) => {
+export const insertRelativeRef = (dcOrVars, vars) => {
   const { dc: dcInstance, vars: inputVars} = validateArgs(connectorConfig, dcOrVars, vars, true);
   dcInstance._useGeneratedSdk();
-  return mutationRef(dcInstance, 'UpsertUser', inputVars);
+  return mutationRef(dcInstance, 'InsertRelative', inputVars);
 }
-upsertUserRef.operationName = 'UpsertUser';
+insertRelativeRef.operationName = 'InsertRelative';
 
-export function upsertUser(dcOrVars, vars) {
-  return executeMutation(upsertUserRef(dcOrVars, vars));
+export function insertRelative(dcOrVars, vars) {
+  return executeMutation(insertRelativeRef(dcOrVars, vars));
 }
 
-export const updateUserDeviceRef = (dcOrVars, vars) => {
+export const updateRelativeRef = (dcOrVars, vars) => {
   const { dc: dcInstance, vars: inputVars} = validateArgs(connectorConfig, dcOrVars, vars, true);
   dcInstance._useGeneratedSdk();
-  return mutationRef(dcInstance, 'UpdateUserDevice', inputVars);
+  return mutationRef(dcInstance, 'UpdateRelative', inputVars);
 }
-updateUserDeviceRef.operationName = 'UpdateUserDevice';
+updateRelativeRef.operationName = 'UpdateRelative';
 
-export function updateUserDevice(dcOrVars, vars) {
-  return executeMutation(updateUserDeviceRef(dcOrVars, vars));
+export function updateRelative(dcOrVars, vars) {
+  return executeMutation(updateRelativeRef(dcOrVars, vars));
 }
 
-export const addRelationRef = (dcOrVars, vars) => {
+export const deleteRelativeRef = (dcOrVars, vars) => {
   const { dc: dcInstance, vars: inputVars} = validateArgs(connectorConfig, dcOrVars, vars, true);
   dcInstance._useGeneratedSdk();
-  return mutationRef(dcInstance, 'AddRelation', inputVars);
+  return mutationRef(dcInstance, 'DeleteRelative', inputVars);
 }
-addRelationRef.operationName = 'AddRelation';
+deleteRelativeRef.operationName = 'DeleteRelative';
 
-export function addRelation(dcOrVars, vars) {
-  return executeMutation(addRelationRef(dcOrVars, vars));
+export function deleteRelative(dcOrVars, vars) {
+  return executeMutation(deleteRelativeRef(dcOrVars, vars));
 }
 
-export const updateRelationRef = (dcOrVars, vars) => {
+export const insertSnapshotRef = (dcOrVars, vars) => {
   const { dc: dcInstance, vars: inputVars} = validateArgs(connectorConfig, dcOrVars, vars, true);
   dcInstance._useGeneratedSdk();
-  return mutationRef(dcInstance, 'UpdateRelation', inputVars);
+  return mutationRef(dcInstance, 'InsertSnapshot', inputVars);
 }
-updateRelationRef.operationName = 'UpdateRelation';
+insertSnapshotRef.operationName = 'InsertSnapshot';
 
-export function updateRelation(dcOrVars, vars) {
-  return executeMutation(updateRelationRef(dcOrVars, vars));
+export function insertSnapshot(dcOrVars, vars) {
+  return executeMutation(insertSnapshotRef(dcOrVars, vars));
 }
 
-export const removeRelationRef = (dcOrVars, vars) => {
+export const updateSnapshotRef = (dcOrVars, vars) => {
   const { dc: dcInstance, vars: inputVars} = validateArgs(connectorConfig, dcOrVars, vars, true);
   dcInstance._useGeneratedSdk();
-  return mutationRef(dcInstance, 'RemoveRelation', inputVars);
+  return mutationRef(dcInstance, 'UpdateSnapshot', inputVars);
 }
-removeRelationRef.operationName = 'RemoveRelation';
+updateSnapshotRef.operationName = 'UpdateSnapshot';
 
-export function removeRelation(dcOrVars, vars) {
-  return executeMutation(removeRelationRef(dcOrVars, vars));
+export function updateSnapshot(dcOrVars, vars) {
+  return executeMutation(updateSnapshotRef(dcOrVars, vars));
 }
 
-export const addMyselfAsRelativeRef = (dcOrVars, vars) => {
+export const deleteSnapshotRef = (dcOrVars, vars) => {
   const { dc: dcInstance, vars: inputVars} = validateArgs(connectorConfig, dcOrVars, vars, true);
   dcInstance._useGeneratedSdk();
-  return mutationRef(dcInstance, 'AddMyselfAsRelative', inputVars);
+  return mutationRef(dcInstance, 'DeleteSnapshot', inputVars);
 }
-addMyselfAsRelativeRef.operationName = 'AddMyselfAsRelative';
+deleteSnapshotRef.operationName = 'DeleteSnapshot';
 
-export function addMyselfAsRelative(dcOrVars, vars) {
-  return executeMutation(addMyselfAsRelativeRef(dcOrVars, vars));
+export function deleteSnapshot(dcOrVars, vars) {
+  return executeMutation(deleteSnapshotRef(dcOrVars, vars));
 }
 
-export const getMyProfileRef = (dc) => {
+export const getRelativeByUidRef = (dcOrVars, vars) => {
+  const { dc: dcInstance, vars: inputVars} = validateArgs(connectorConfig, dcOrVars, vars, true);
+  dcInstance._useGeneratedSdk();
+  return queryRef(dcInstance, 'GetRelativeByUid', inputVars);
+}
+getRelativeByUidRef.operationName = 'GetRelativeByUid';
+
+export function getRelativeByUid(dcOrVars, vars) {
+  return executeQuery(getRelativeByUidRef(dcOrVars, vars));
+}
+
+export const getAllRelativesRef = (dc) => {
   const { dc: dcInstance} = validateArgs(connectorConfig, dc, undefined);
   dcInstance._useGeneratedSdk();
-  return queryRef(dcInstance, 'GetMyProfile');
+  return queryRef(dcInstance, 'GetAllRelatives');
 }
-getMyProfileRef.operationName = 'GetMyProfile';
+getAllRelativesRef.operationName = 'GetAllRelatives';
 
-export function getMyProfile(dc) {
-  return executeQuery(getMyProfileRef(dc));
+export function getAllRelatives(dc) {
+  return executeQuery(getAllRelativesRef(dc));
 }
 
-export const getUserByIdRef = (dcOrVars, vars) => {
+export const getSnapshotByIdRef = (dcOrVars, vars) => {
   const { dc: dcInstance, vars: inputVars} = validateArgs(connectorConfig, dcOrVars, vars, true);
   dcInstance._useGeneratedSdk();
-  return queryRef(dcInstance, 'GetUserById', inputVars);
+  return queryRef(dcInstance, 'GetSnapshotById', inputVars);
 }
-getUserByIdRef.operationName = 'GetUserById';
+getSnapshotByIdRef.operationName = 'GetSnapshotById';
 
-export function getUserById(dcOrVars, vars) {
-  return executeQuery(getUserByIdRef(dcOrVars, vars));
+export function getSnapshotById(dcOrVars, vars) {
+  return executeQuery(getSnapshotByIdRef(dcOrVars, vars));
 }
 
-export const getUserByDeviceIdRef = (dcOrVars, vars) => {
+export const getSnapshotsByUidRef = (dcOrVars, vars) => {
   const { dc: dcInstance, vars: inputVars} = validateArgs(connectorConfig, dcOrVars, vars, true);
   dcInstance._useGeneratedSdk();
-  return queryRef(dcInstance, 'GetUserByDeviceId', inputVars);
+  return queryRef(dcInstance, 'GetSnapshotsByUid', inputVars);
 }
-getUserByDeviceIdRef.operationName = 'GetUserByDeviceId';
+getSnapshotsByUidRef.operationName = 'GetSnapshotsByUid';
 
-export function getUserByDeviceId(dcOrVars, vars) {
-  return executeQuery(getUserByDeviceIdRef(dcOrVars, vars));
-}
-
-export const getEmergencyContactsRef = (dcOrVars, vars) => {
-  const { dc: dcInstance, vars: inputVars} = validateArgs(connectorConfig, dcOrVars, vars, true);
-  dcInstance._useGeneratedSdk();
-  return queryRef(dcInstance, 'GetEmergencyContacts', inputVars);
-}
-getEmergencyContactsRef.operationName = 'GetEmergencyContacts';
-
-export function getEmergencyContacts(dcOrVars, vars) {
-  return executeQuery(getEmergencyContactsRef(dcOrVars, vars));
-}
-
-export const getMyPatientsRef = (dc) => {
-  const { dc: dcInstance} = validateArgs(connectorConfig, dc, undefined);
-  dcInstance._useGeneratedSdk();
-  return queryRef(dcInstance, 'GetMyPatients');
-}
-getMyPatientsRef.operationName = 'GetMyPatients';
-
-export function getMyPatients(dc) {
-  return executeQuery(getMyPatientsRef(dc));
-}
-
-export const getMyRelativesRef = (dc) => {
-  const { dc: dcInstance} = validateArgs(connectorConfig, dc, undefined);
-  dcInstance._useGeneratedSdk();
-  return queryRef(dcInstance, 'GetMyRelatives');
-}
-getMyRelativesRef.operationName = 'GetMyRelatives';
-
-export function getMyRelatives(dc) {
-  return executeQuery(getMyRelativesRef(dc));
-}
-
-export const getAllUserRelationshipsRef = (dcOrVars, vars) => {
-  const { dc: dcInstance, vars: inputVars} = validateArgs(connectorConfig, dcOrVars, vars, true);
-  dcInstance._useGeneratedSdk();
-  return queryRef(dcInstance, 'GetAllUserRelationships', inputVars);
-}
-getAllUserRelationshipsRef.operationName = 'GetAllUserRelationships';
-
-export function getAllUserRelationships(dcOrVars, vars) {
-  return executeQuery(getAllUserRelationshipsRef(dcOrVars, vars));
-}
-
-export const searchUsersRef = (dcOrVars, vars) => {
-  const { dc: dcInstance, vars: inputVars} = validateArgs(connectorConfig, dcOrVars, vars, true);
-  dcInstance._useGeneratedSdk();
-  return queryRef(dcInstance, 'SearchUsers', inputVars);
-}
-searchUsersRef.operationName = 'SearchUsers';
-
-export function searchUsers(dcOrVars, vars) {
-  return executeQuery(searchUsersRef(dcOrVars, vars));
+export function getSnapshotsByUid(dcOrVars, vars) {
+  return executeQuery(getSnapshotsByUidRef(dcOrVars, vars));
 }
 

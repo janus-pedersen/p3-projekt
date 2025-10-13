@@ -10,383 +10,235 @@ export type DateString = string;
 
 
 
-export interface AddMyselfAsRelativeData {
-  relation_insert: Relation_Key;
+export interface DeleteRelativeData {
+  relative_delete?: Relative_Key | null;
 }
 
-export interface AddMyselfAsRelativeVariables {
-  patientId: string;
-  relationshipType: string;
+export interface DeleteRelativeVariables {
+  uid: string;
 }
 
-export interface AddRelationData {
-  relation_insert: Relation_Key;
+export interface DeleteSnapshotData {
+  snapshot_delete?: Snapshot_Key | null;
 }
 
-export interface AddRelationVariables {
-  patientId: string;
-  relativeId: string;
-  relationshipType?: string | null;
-  isEmergencyContact?: boolean | null;
-}
-
-export interface GetAllUserRelationshipsData {
-  asPatient: ({
-    id: string;
-    relationshipType?: string | null;
-    isEmergencyContact: boolean;
-    relative: {
-      id: string;
-      username: string;
-      phone: string;
-      firstName: string;
-      lastName: string;
-    } & User_Key;
-  } & Relation_Key)[];
-    asRelative: ({
-      id: string;
-      relationshipType?: string | null;
-      isEmergencyContact: boolean;
-      patient: {
-        id: string;
-        username: string;
-        phone: string;
-        firstName: string;
-        lastName: string;
-        deviceId?: string | null;
-      } & User_Key;
-    } & Relation_Key)[];
-}
-
-export interface GetAllUserRelationshipsVariables {
-  userId: string;
-}
-
-export interface GetEmergencyContactsData {
-  relations: ({
-    id: string;
-    relationshipType?: string | null;
-    relative: {
-      id: string;
-      username: string;
-      phone: string;
-      email?: string | null;
-      firstName: string;
-      lastName: string;
-    } & User_Key;
-  } & Relation_Key)[];
-}
-
-export interface GetEmergencyContactsVariables {
-  patientId: string;
-}
-
-export interface GetMyPatientsData {
-  relations: ({
-    id: string;
-    relationshipType?: string | null;
-    patient: {
-      id: string;
-      username: string;
-      phone: string;
-      firstName: string;
-      lastName: string;
-      deviceId?: string | null;
-    } & User_Key;
-  } & Relation_Key)[];
-}
-
-export interface GetMyProfileData {
-  user?: {
-    id: string;
-    username: string;
-    email?: string | null;
-    phone: string;
-    firstName: string;
-    lastName: string;
-    deviceId?: string | null;
-    createdAt: TimestampString;
-    updatedAt: TimestampString;
-  } & User_Key;
-}
-
-export interface GetMyRelativesData {
-  relations: ({
-    id: string;
-    relationshipType?: string | null;
-    isEmergencyContact: boolean;
-    relative: {
-      id: string;
-      username: string;
-      phone: string;
-      email?: string | null;
-      firstName: string;
-      lastName: string;
-    } & User_Key;
-      createdAt: TimestampString;
-  } & Relation_Key)[];
-}
-
-export interface GetUserByDeviceIdData {
-  users: ({
-    id: string;
-    username: string;
-    email?: string | null;
-    phone: string;
-    firstName: string;
-    lastName: string;
-    deviceId?: string | null;
-  } & User_Key)[];
-}
-
-export interface GetUserByDeviceIdVariables {
-  deviceId: string;
-}
-
-export interface GetUserByIdData {
-  user?: {
-    id: string;
-    username: string;
-    email?: string | null;
-    phone: string;
-    firstName: string;
-    lastName: string;
-    deviceId?: string | null;
-  } & User_Key;
-}
-
-export interface GetUserByIdVariables {
-  userId: string;
-}
-
-export interface Relation_Key {
+export interface DeleteSnapshotVariables {
   id: string;
-  __typename?: 'Relation_Key';
 }
 
-export interface RemoveRelationData {
-  relation_delete?: Relation_Key | null;
-}
-
-export interface RemoveRelationVariables {
-  relationId: string;
-}
-
-export interface SearchUsersData {
-  users: ({
-    id: string;
-    username: string;
-    firstName: string;
-    lastName: string;
+export interface GetAllRelativesData {
+  relatives: ({
+    uid: string;
     phone: string;
-  } & User_Key)[];
+  })[];
 }
 
-export interface SearchUsersVariables {
-  searchTerm: string;
+export interface GetRelativeByUidData {
+  relative?: {
+    uid: string;
+    phone: string;
+  };
 }
 
-export interface UpdateRelationData {
-  relation_update?: Relation_Key | null;
+export interface GetRelativeByUidVariables {
+  uid: string;
 }
 
-export interface UpdateRelationVariables {
-  relationId: string;
-  relationshipType?: string | null;
-  isEmergencyContact?: boolean | null;
+export interface GetSnapshotByIdData {
+  snapshot?: {
+    id: string;
+    uid: string;
+    latitude: number;
+    longitude: number;
+    timestamp: TimestampString;
+  } & Snapshot_Key;
 }
 
-export interface UpdateUserDeviceData {
-  user_update?: User_Key | null;
+export interface GetSnapshotByIdVariables {
+  id: string;
 }
 
-export interface UpdateUserDeviceVariables {
-  deviceId: string;
+export interface GetSnapshotsByUidData {
+  snapshots: ({
+    id: string;
+    uid: string;
+    latitude: number;
+    longitude: number;
+    timestamp: TimestampString;
+  } & Snapshot_Key)[];
 }
 
-export interface UpsertUserData {
-  user_upsert: User_Key;
+export interface GetSnapshotsByUidVariables {
+  uid: string;
 }
 
-export interface UpsertUserVariables {
-  username: string;
-  email?: string | null;
+export interface InsertRelativeData {
+  relative_insert: Relative_Key;
+}
+
+export interface InsertRelativeVariables {
+  uid: string;
   phone: string;
-  firstName: string;
-  lastName: string;
-  deviceId?: string | null;
 }
 
-export interface User_Key {
+export interface InsertSnapshotData {
+  snapshot_insert: Snapshot_Key;
+}
+
+export interface InsertSnapshotVariables {
+  uid: string;
+  latitude: number;
+  longitude: number;
+  timestamp: TimestampString;
+}
+
+export interface Relative_Key {
   id: string;
-  __typename?: 'User_Key';
+  __typename?: 'Relative_Key';
 }
 
-interface UpsertUserRef {
+export interface Snapshot_Key {
+  id: string;
+  __typename?: 'Snapshot_Key';
+}
+
+export interface UpdateRelativeData {
+  relative_update?: Relative_Key | null;
+}
+
+export interface UpdateRelativeVariables {
+  uid: string;
+  phone: string;
+}
+
+export interface UpdateSnapshotData {
+  snapshot_update?: Snapshot_Key | null;
+}
+
+export interface UpdateSnapshotVariables {
+  id: string;
+  latitude?: number | null;
+  longitude?: number | null;
+  timestamp?: TimestampString | null;
+}
+
+interface InsertRelativeRef {
   /* Allow users to create refs without passing in DataConnect */
-  (vars: UpsertUserVariables): MutationRef<UpsertUserData, UpsertUserVariables>;
+  (vars: InsertRelativeVariables): MutationRef<InsertRelativeData, InsertRelativeVariables>;
   /* Allow users to pass in custom DataConnect instances */
-  (dc: DataConnect, vars: UpsertUserVariables): MutationRef<UpsertUserData, UpsertUserVariables>;
+  (dc: DataConnect, vars: InsertRelativeVariables): MutationRef<InsertRelativeData, InsertRelativeVariables>;
   operationName: string;
 }
-export const upsertUserRef: UpsertUserRef;
+export const insertRelativeRef: InsertRelativeRef;
 
-export function upsertUser(vars: UpsertUserVariables): MutationPromise<UpsertUserData, UpsertUserVariables>;
-export function upsertUser(dc: DataConnect, vars: UpsertUserVariables): MutationPromise<UpsertUserData, UpsertUserVariables>;
+export function insertRelative(vars: InsertRelativeVariables): MutationPromise<InsertRelativeData, InsertRelativeVariables>;
+export function insertRelative(dc: DataConnect, vars: InsertRelativeVariables): MutationPromise<InsertRelativeData, InsertRelativeVariables>;
 
-interface UpdateUserDeviceRef {
+interface UpdateRelativeRef {
   /* Allow users to create refs without passing in DataConnect */
-  (vars: UpdateUserDeviceVariables): MutationRef<UpdateUserDeviceData, UpdateUserDeviceVariables>;
+  (vars: UpdateRelativeVariables): MutationRef<UpdateRelativeData, UpdateRelativeVariables>;
   /* Allow users to pass in custom DataConnect instances */
-  (dc: DataConnect, vars: UpdateUserDeviceVariables): MutationRef<UpdateUserDeviceData, UpdateUserDeviceVariables>;
+  (dc: DataConnect, vars: UpdateRelativeVariables): MutationRef<UpdateRelativeData, UpdateRelativeVariables>;
   operationName: string;
 }
-export const updateUserDeviceRef: UpdateUserDeviceRef;
+export const updateRelativeRef: UpdateRelativeRef;
 
-export function updateUserDevice(vars: UpdateUserDeviceVariables): MutationPromise<UpdateUserDeviceData, UpdateUserDeviceVariables>;
-export function updateUserDevice(dc: DataConnect, vars: UpdateUserDeviceVariables): MutationPromise<UpdateUserDeviceData, UpdateUserDeviceVariables>;
+export function updateRelative(vars: UpdateRelativeVariables): MutationPromise<UpdateRelativeData, UpdateRelativeVariables>;
+export function updateRelative(dc: DataConnect, vars: UpdateRelativeVariables): MutationPromise<UpdateRelativeData, UpdateRelativeVariables>;
 
-interface AddRelationRef {
+interface DeleteRelativeRef {
   /* Allow users to create refs without passing in DataConnect */
-  (vars: AddRelationVariables): MutationRef<AddRelationData, AddRelationVariables>;
+  (vars: DeleteRelativeVariables): MutationRef<DeleteRelativeData, DeleteRelativeVariables>;
   /* Allow users to pass in custom DataConnect instances */
-  (dc: DataConnect, vars: AddRelationVariables): MutationRef<AddRelationData, AddRelationVariables>;
+  (dc: DataConnect, vars: DeleteRelativeVariables): MutationRef<DeleteRelativeData, DeleteRelativeVariables>;
   operationName: string;
 }
-export const addRelationRef: AddRelationRef;
+export const deleteRelativeRef: DeleteRelativeRef;
 
-export function addRelation(vars: AddRelationVariables): MutationPromise<AddRelationData, AddRelationVariables>;
-export function addRelation(dc: DataConnect, vars: AddRelationVariables): MutationPromise<AddRelationData, AddRelationVariables>;
+export function deleteRelative(vars: DeleteRelativeVariables): MutationPromise<DeleteRelativeData, DeleteRelativeVariables>;
+export function deleteRelative(dc: DataConnect, vars: DeleteRelativeVariables): MutationPromise<DeleteRelativeData, DeleteRelativeVariables>;
 
-interface UpdateRelationRef {
+interface InsertSnapshotRef {
   /* Allow users to create refs without passing in DataConnect */
-  (vars: UpdateRelationVariables): MutationRef<UpdateRelationData, UpdateRelationVariables>;
+  (vars: InsertSnapshotVariables): MutationRef<InsertSnapshotData, InsertSnapshotVariables>;
   /* Allow users to pass in custom DataConnect instances */
-  (dc: DataConnect, vars: UpdateRelationVariables): MutationRef<UpdateRelationData, UpdateRelationVariables>;
+  (dc: DataConnect, vars: InsertSnapshotVariables): MutationRef<InsertSnapshotData, InsertSnapshotVariables>;
   operationName: string;
 }
-export const updateRelationRef: UpdateRelationRef;
+export const insertSnapshotRef: InsertSnapshotRef;
 
-export function updateRelation(vars: UpdateRelationVariables): MutationPromise<UpdateRelationData, UpdateRelationVariables>;
-export function updateRelation(dc: DataConnect, vars: UpdateRelationVariables): MutationPromise<UpdateRelationData, UpdateRelationVariables>;
+export function insertSnapshot(vars: InsertSnapshotVariables): MutationPromise<InsertSnapshotData, InsertSnapshotVariables>;
+export function insertSnapshot(dc: DataConnect, vars: InsertSnapshotVariables): MutationPromise<InsertSnapshotData, InsertSnapshotVariables>;
 
-interface RemoveRelationRef {
+interface UpdateSnapshotRef {
   /* Allow users to create refs without passing in DataConnect */
-  (vars: RemoveRelationVariables): MutationRef<RemoveRelationData, RemoveRelationVariables>;
+  (vars: UpdateSnapshotVariables): MutationRef<UpdateSnapshotData, UpdateSnapshotVariables>;
   /* Allow users to pass in custom DataConnect instances */
-  (dc: DataConnect, vars: RemoveRelationVariables): MutationRef<RemoveRelationData, RemoveRelationVariables>;
+  (dc: DataConnect, vars: UpdateSnapshotVariables): MutationRef<UpdateSnapshotData, UpdateSnapshotVariables>;
   operationName: string;
 }
-export const removeRelationRef: RemoveRelationRef;
+export const updateSnapshotRef: UpdateSnapshotRef;
 
-export function removeRelation(vars: RemoveRelationVariables): MutationPromise<RemoveRelationData, RemoveRelationVariables>;
-export function removeRelation(dc: DataConnect, vars: RemoveRelationVariables): MutationPromise<RemoveRelationData, RemoveRelationVariables>;
+export function updateSnapshot(vars: UpdateSnapshotVariables): MutationPromise<UpdateSnapshotData, UpdateSnapshotVariables>;
+export function updateSnapshot(dc: DataConnect, vars: UpdateSnapshotVariables): MutationPromise<UpdateSnapshotData, UpdateSnapshotVariables>;
 
-interface AddMyselfAsRelativeRef {
+interface DeleteSnapshotRef {
   /* Allow users to create refs without passing in DataConnect */
-  (vars: AddMyselfAsRelativeVariables): MutationRef<AddMyselfAsRelativeData, AddMyselfAsRelativeVariables>;
+  (vars: DeleteSnapshotVariables): MutationRef<DeleteSnapshotData, DeleteSnapshotVariables>;
   /* Allow users to pass in custom DataConnect instances */
-  (dc: DataConnect, vars: AddMyselfAsRelativeVariables): MutationRef<AddMyselfAsRelativeData, AddMyselfAsRelativeVariables>;
+  (dc: DataConnect, vars: DeleteSnapshotVariables): MutationRef<DeleteSnapshotData, DeleteSnapshotVariables>;
   operationName: string;
 }
-export const addMyselfAsRelativeRef: AddMyselfAsRelativeRef;
+export const deleteSnapshotRef: DeleteSnapshotRef;
 
-export function addMyselfAsRelative(vars: AddMyselfAsRelativeVariables): MutationPromise<AddMyselfAsRelativeData, AddMyselfAsRelativeVariables>;
-export function addMyselfAsRelative(dc: DataConnect, vars: AddMyselfAsRelativeVariables): MutationPromise<AddMyselfAsRelativeData, AddMyselfAsRelativeVariables>;
+export function deleteSnapshot(vars: DeleteSnapshotVariables): MutationPromise<DeleteSnapshotData, DeleteSnapshotVariables>;
+export function deleteSnapshot(dc: DataConnect, vars: DeleteSnapshotVariables): MutationPromise<DeleteSnapshotData, DeleteSnapshotVariables>;
 
-interface GetMyProfileRef {
+interface GetRelativeByUidRef {
   /* Allow users to create refs without passing in DataConnect */
-  (): QueryRef<GetMyProfileData, undefined>;
+  (vars: GetRelativeByUidVariables): QueryRef<GetRelativeByUidData, GetRelativeByUidVariables>;
   /* Allow users to pass in custom DataConnect instances */
-  (dc: DataConnect): QueryRef<GetMyProfileData, undefined>;
+  (dc: DataConnect, vars: GetRelativeByUidVariables): QueryRef<GetRelativeByUidData, GetRelativeByUidVariables>;
   operationName: string;
 }
-export const getMyProfileRef: GetMyProfileRef;
+export const getRelativeByUidRef: GetRelativeByUidRef;
 
-export function getMyProfile(): QueryPromise<GetMyProfileData, undefined>;
-export function getMyProfile(dc: DataConnect): QueryPromise<GetMyProfileData, undefined>;
+export function getRelativeByUid(vars: GetRelativeByUidVariables): QueryPromise<GetRelativeByUidData, GetRelativeByUidVariables>;
+export function getRelativeByUid(dc: DataConnect, vars: GetRelativeByUidVariables): QueryPromise<GetRelativeByUidData, GetRelativeByUidVariables>;
 
-interface GetUserByIdRef {
+interface GetAllRelativesRef {
   /* Allow users to create refs without passing in DataConnect */
-  (vars: GetUserByIdVariables): QueryRef<GetUserByIdData, GetUserByIdVariables>;
+  (): QueryRef<GetAllRelativesData, undefined>;
   /* Allow users to pass in custom DataConnect instances */
-  (dc: DataConnect, vars: GetUserByIdVariables): QueryRef<GetUserByIdData, GetUserByIdVariables>;
+  (dc: DataConnect): QueryRef<GetAllRelativesData, undefined>;
   operationName: string;
 }
-export const getUserByIdRef: GetUserByIdRef;
+export const getAllRelativesRef: GetAllRelativesRef;
 
-export function getUserById(vars: GetUserByIdVariables): QueryPromise<GetUserByIdData, GetUserByIdVariables>;
-export function getUserById(dc: DataConnect, vars: GetUserByIdVariables): QueryPromise<GetUserByIdData, GetUserByIdVariables>;
+export function getAllRelatives(): QueryPromise<GetAllRelativesData, undefined>;
+export function getAllRelatives(dc: DataConnect): QueryPromise<GetAllRelativesData, undefined>;
 
-interface GetUserByDeviceIdRef {
+interface GetSnapshotByIdRef {
   /* Allow users to create refs without passing in DataConnect */
-  (vars: GetUserByDeviceIdVariables): QueryRef<GetUserByDeviceIdData, GetUserByDeviceIdVariables>;
+  (vars: GetSnapshotByIdVariables): QueryRef<GetSnapshotByIdData, GetSnapshotByIdVariables>;
   /* Allow users to pass in custom DataConnect instances */
-  (dc: DataConnect, vars: GetUserByDeviceIdVariables): QueryRef<GetUserByDeviceIdData, GetUserByDeviceIdVariables>;
+  (dc: DataConnect, vars: GetSnapshotByIdVariables): QueryRef<GetSnapshotByIdData, GetSnapshotByIdVariables>;
   operationName: string;
 }
-export const getUserByDeviceIdRef: GetUserByDeviceIdRef;
+export const getSnapshotByIdRef: GetSnapshotByIdRef;
 
-export function getUserByDeviceId(vars: GetUserByDeviceIdVariables): QueryPromise<GetUserByDeviceIdData, GetUserByDeviceIdVariables>;
-export function getUserByDeviceId(dc: DataConnect, vars: GetUserByDeviceIdVariables): QueryPromise<GetUserByDeviceIdData, GetUserByDeviceIdVariables>;
+export function getSnapshotById(vars: GetSnapshotByIdVariables): QueryPromise<GetSnapshotByIdData, GetSnapshotByIdVariables>;
+export function getSnapshotById(dc: DataConnect, vars: GetSnapshotByIdVariables): QueryPromise<GetSnapshotByIdData, GetSnapshotByIdVariables>;
 
-interface GetEmergencyContactsRef {
+interface GetSnapshotsByUidRef {
   /* Allow users to create refs without passing in DataConnect */
-  (vars: GetEmergencyContactsVariables): QueryRef<GetEmergencyContactsData, GetEmergencyContactsVariables>;
+  (vars: GetSnapshotsByUidVariables): QueryRef<GetSnapshotsByUidData, GetSnapshotsByUidVariables>;
   /* Allow users to pass in custom DataConnect instances */
-  (dc: DataConnect, vars: GetEmergencyContactsVariables): QueryRef<GetEmergencyContactsData, GetEmergencyContactsVariables>;
+  (dc: DataConnect, vars: GetSnapshotsByUidVariables): QueryRef<GetSnapshotsByUidData, GetSnapshotsByUidVariables>;
   operationName: string;
 }
-export const getEmergencyContactsRef: GetEmergencyContactsRef;
+export const getSnapshotsByUidRef: GetSnapshotsByUidRef;
 
-export function getEmergencyContacts(vars: GetEmergencyContactsVariables): QueryPromise<GetEmergencyContactsData, GetEmergencyContactsVariables>;
-export function getEmergencyContacts(dc: DataConnect, vars: GetEmergencyContactsVariables): QueryPromise<GetEmergencyContactsData, GetEmergencyContactsVariables>;
-
-interface GetMyPatientsRef {
-  /* Allow users to create refs without passing in DataConnect */
-  (): QueryRef<GetMyPatientsData, undefined>;
-  /* Allow users to pass in custom DataConnect instances */
-  (dc: DataConnect): QueryRef<GetMyPatientsData, undefined>;
-  operationName: string;
-}
-export const getMyPatientsRef: GetMyPatientsRef;
-
-export function getMyPatients(): QueryPromise<GetMyPatientsData, undefined>;
-export function getMyPatients(dc: DataConnect): QueryPromise<GetMyPatientsData, undefined>;
-
-interface GetMyRelativesRef {
-  /* Allow users to create refs without passing in DataConnect */
-  (): QueryRef<GetMyRelativesData, undefined>;
-  /* Allow users to pass in custom DataConnect instances */
-  (dc: DataConnect): QueryRef<GetMyRelativesData, undefined>;
-  operationName: string;
-}
-export const getMyRelativesRef: GetMyRelativesRef;
-
-export function getMyRelatives(): QueryPromise<GetMyRelativesData, undefined>;
-export function getMyRelatives(dc: DataConnect): QueryPromise<GetMyRelativesData, undefined>;
-
-interface GetAllUserRelationshipsRef {
-  /* Allow users to create refs without passing in DataConnect */
-  (vars: GetAllUserRelationshipsVariables): QueryRef<GetAllUserRelationshipsData, GetAllUserRelationshipsVariables>;
-  /* Allow users to pass in custom DataConnect instances */
-  (dc: DataConnect, vars: GetAllUserRelationshipsVariables): QueryRef<GetAllUserRelationshipsData, GetAllUserRelationshipsVariables>;
-  operationName: string;
-}
-export const getAllUserRelationshipsRef: GetAllUserRelationshipsRef;
-
-export function getAllUserRelationships(vars: GetAllUserRelationshipsVariables): QueryPromise<GetAllUserRelationshipsData, GetAllUserRelationshipsVariables>;
-export function getAllUserRelationships(dc: DataConnect, vars: GetAllUserRelationshipsVariables): QueryPromise<GetAllUserRelationshipsData, GetAllUserRelationshipsVariables>;
-
-interface SearchUsersRef {
-  /* Allow users to create refs without passing in DataConnect */
-  (vars: SearchUsersVariables): QueryRef<SearchUsersData, SearchUsersVariables>;
-  /* Allow users to pass in custom DataConnect instances */
-  (dc: DataConnect, vars: SearchUsersVariables): QueryRef<SearchUsersData, SearchUsersVariables>;
-  operationName: string;
-}
-export const searchUsersRef: SearchUsersRef;
-
-export function searchUsers(vars: SearchUsersVariables): QueryPromise<SearchUsersData, SearchUsersVariables>;
-export function searchUsers(dc: DataConnect, vars: SearchUsersVariables): QueryPromise<SearchUsersData, SearchUsersVariables>;
+export function getSnapshotsByUid(vars: GetSnapshotsByUidVariables): QueryPromise<GetSnapshotsByUidData, GetSnapshotsByUidVariables>;
+export function getSnapshotsByUid(dc: DataConnect, vars: GetSnapshotsByUidVariables): QueryPromise<GetSnapshotsByUidData, GetSnapshotsByUidVariables>;
 

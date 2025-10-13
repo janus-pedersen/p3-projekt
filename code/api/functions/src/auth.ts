@@ -3,7 +3,6 @@ import * as admin from "firebase-admin";
 import { defineString } from "firebase-functions/params";
 import { client } from "./twilio";
 import { logger } from "firebase-functions";
-import { UpdateRequest } from "firebase-admin/auth";
 
 // Initialize with service account for custom token creation
 if (!admin.apps.length) {
@@ -70,11 +69,3 @@ export const verify = onCall<{ phone: string; code: string }>(
     };
   }
 );
-
-export const update = onCall<UpdateRequest>(async (data, context) => {
-  if (!data.auth) return;
-
-  return admin.auth().updateUser(data.auth.uid, {
-    ...data.data,
-  });
-});

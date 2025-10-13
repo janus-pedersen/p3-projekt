@@ -1,0 +1,33 @@
+# --- CRUD for Relative ---
+
+# Create a relative
+mutation InsertRelative($uid: String!, $phone: String!) {
+  relative_insert(data: { uid: $uid, phone: $phone })
+}
+
+# Update a relative
+mutation UpdateRelative($uid: String!, $phone: String!) {
+  relative_update(key: { uid: $uid }, data: { phone: $phone })
+}
+
+# Delete a relative
+mutation DeleteRelative($uid: String!) {
+  relative_delete(key: { uid: $uid })
+}
+
+# --- CRUD for Snapshot ---
+
+# Create a snapshot
+mutation InsertSnapshot($uid: String!, $latitude: Float!, $longitude: Float!, $timestamp: Timestamp!) {
+  snapshot_insert(data: { uid: $uid, latitude: $latitude, longitude: $longitude, timestamp: $timestamp })
+}
+
+# Update a snapshot
+mutation UpdateSnapshot($id: String!, $latitude: Float, $longitude: Float, $timestamp: Timestamp) {
+  snapshot_update(key: { id: $id }, data: { latitude: $latitude, longitude: $longitude, timestamp: $timestamp })
+}
+
+# Delete a snapshot
+mutation DeleteSnapshot($id: String!) {
+  snapshot_delete(key: { id: $id })
+}
