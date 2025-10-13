@@ -15,7 +15,7 @@ export interface DeleteRelativeData {
 }
 
 export interface DeleteRelativeVariables {
-  uid: string;
+  id: string;
 }
 
 export interface DeleteSnapshotData {
@@ -28,19 +28,43 @@ export interface DeleteSnapshotVariables {
 
 export interface GetAllRelativesData {
   relatives: ({
+    id: string;
     uid: string;
     phone: string;
-  })[];
+  } & Relative_Key)[];
 }
 
-export interface GetRelativeByUidData {
+export interface GetAllSnapshotsData {
+  snapshots: ({
+    id: string;
+    uid: string;
+    latitude: number;
+    longitude: number;
+    timestamp: TimestampString;
+  } & Snapshot_Key)[];
+}
+
+export interface GetRelativeByIdData {
   relative?: {
+    id: string;
     uid: string;
     phone: string;
-  };
+  } & Relative_Key;
 }
 
-export interface GetRelativeByUidVariables {
+export interface GetRelativeByIdVariables {
+  id: string;
+}
+
+export interface GetRelativesByUidData {
+  relatives: ({
+    id: string;
+    uid: string;
+    phone: string;
+  } & Relative_Key)[];
+}
+
+export interface GetRelativesByUidVariables {
   uid: string;
 }
 
@@ -107,7 +131,7 @@ export interface UpdateRelativeData {
 }
 
 export interface UpdateRelativeVariables {
-  uid: string;
+  id: string;
   phone: string;
 }
 
@@ -194,17 +218,29 @@ export const deleteSnapshotRef: DeleteSnapshotRef;
 export function deleteSnapshot(vars: DeleteSnapshotVariables): MutationPromise<DeleteSnapshotData, DeleteSnapshotVariables>;
 export function deleteSnapshot(dc: DataConnect, vars: DeleteSnapshotVariables): MutationPromise<DeleteSnapshotData, DeleteSnapshotVariables>;
 
-interface GetRelativeByUidRef {
+interface GetRelativesByUidRef {
   /* Allow users to create refs without passing in DataConnect */
-  (vars: GetRelativeByUidVariables): QueryRef<GetRelativeByUidData, GetRelativeByUidVariables>;
+  (vars: GetRelativesByUidVariables): QueryRef<GetRelativesByUidData, GetRelativesByUidVariables>;
   /* Allow users to pass in custom DataConnect instances */
-  (dc: DataConnect, vars: GetRelativeByUidVariables): QueryRef<GetRelativeByUidData, GetRelativeByUidVariables>;
+  (dc: DataConnect, vars: GetRelativesByUidVariables): QueryRef<GetRelativesByUidData, GetRelativesByUidVariables>;
   operationName: string;
 }
-export const getRelativeByUidRef: GetRelativeByUidRef;
+export const getRelativesByUidRef: GetRelativesByUidRef;
 
-export function getRelativeByUid(vars: GetRelativeByUidVariables): QueryPromise<GetRelativeByUidData, GetRelativeByUidVariables>;
-export function getRelativeByUid(dc: DataConnect, vars: GetRelativeByUidVariables): QueryPromise<GetRelativeByUidData, GetRelativeByUidVariables>;
+export function getRelativesByUid(vars: GetRelativesByUidVariables): QueryPromise<GetRelativesByUidData, GetRelativesByUidVariables>;
+export function getRelativesByUid(dc: DataConnect, vars: GetRelativesByUidVariables): QueryPromise<GetRelativesByUidData, GetRelativesByUidVariables>;
+
+interface GetRelativeByIdRef {
+  /* Allow users to create refs without passing in DataConnect */
+  (vars: GetRelativeByIdVariables): QueryRef<GetRelativeByIdData, GetRelativeByIdVariables>;
+  /* Allow users to pass in custom DataConnect instances */
+  (dc: DataConnect, vars: GetRelativeByIdVariables): QueryRef<GetRelativeByIdData, GetRelativeByIdVariables>;
+  operationName: string;
+}
+export const getRelativeByIdRef: GetRelativeByIdRef;
+
+export function getRelativeById(vars: GetRelativeByIdVariables): QueryPromise<GetRelativeByIdData, GetRelativeByIdVariables>;
+export function getRelativeById(dc: DataConnect, vars: GetRelativeByIdVariables): QueryPromise<GetRelativeByIdData, GetRelativeByIdVariables>;
 
 interface GetAllRelativesRef {
   /* Allow users to create refs without passing in DataConnect */
@@ -218,6 +254,18 @@ export const getAllRelativesRef: GetAllRelativesRef;
 export function getAllRelatives(): QueryPromise<GetAllRelativesData, undefined>;
 export function getAllRelatives(dc: DataConnect): QueryPromise<GetAllRelativesData, undefined>;
 
+interface GetSnapshotsByUidRef {
+  /* Allow users to create refs without passing in DataConnect */
+  (vars: GetSnapshotsByUidVariables): QueryRef<GetSnapshotsByUidData, GetSnapshotsByUidVariables>;
+  /* Allow users to pass in custom DataConnect instances */
+  (dc: DataConnect, vars: GetSnapshotsByUidVariables): QueryRef<GetSnapshotsByUidData, GetSnapshotsByUidVariables>;
+  operationName: string;
+}
+export const getSnapshotsByUidRef: GetSnapshotsByUidRef;
+
+export function getSnapshotsByUid(vars: GetSnapshotsByUidVariables): QueryPromise<GetSnapshotsByUidData, GetSnapshotsByUidVariables>;
+export function getSnapshotsByUid(dc: DataConnect, vars: GetSnapshotsByUidVariables): QueryPromise<GetSnapshotsByUidData, GetSnapshotsByUidVariables>;
+
 interface GetSnapshotByIdRef {
   /* Allow users to create refs without passing in DataConnect */
   (vars: GetSnapshotByIdVariables): QueryRef<GetSnapshotByIdData, GetSnapshotByIdVariables>;
@@ -230,15 +278,15 @@ export const getSnapshotByIdRef: GetSnapshotByIdRef;
 export function getSnapshotById(vars: GetSnapshotByIdVariables): QueryPromise<GetSnapshotByIdData, GetSnapshotByIdVariables>;
 export function getSnapshotById(dc: DataConnect, vars: GetSnapshotByIdVariables): QueryPromise<GetSnapshotByIdData, GetSnapshotByIdVariables>;
 
-interface GetSnapshotsByUidRef {
+interface GetAllSnapshotsRef {
   /* Allow users to create refs without passing in DataConnect */
-  (vars: GetSnapshotsByUidVariables): QueryRef<GetSnapshotsByUidData, GetSnapshotsByUidVariables>;
+  (): QueryRef<GetAllSnapshotsData, undefined>;
   /* Allow users to pass in custom DataConnect instances */
-  (dc: DataConnect, vars: GetSnapshotsByUidVariables): QueryRef<GetSnapshotsByUidData, GetSnapshotsByUidVariables>;
+  (dc: DataConnect): QueryRef<GetAllSnapshotsData, undefined>;
   operationName: string;
 }
-export const getSnapshotsByUidRef: GetSnapshotsByUidRef;
+export const getAllSnapshotsRef: GetAllSnapshotsRef;
 
-export function getSnapshotsByUid(vars: GetSnapshotsByUidVariables): QueryPromise<GetSnapshotsByUidData, GetSnapshotsByUidVariables>;
-export function getSnapshotsByUid(dc: DataConnect, vars: GetSnapshotsByUidVariables): QueryPromise<GetSnapshotsByUidData, GetSnapshotsByUidVariables>;
+export function getAllSnapshots(): QueryPromise<GetAllSnapshotsData, undefined>;
+export function getAllSnapshots(dc: DataConnect): QueryPromise<GetAllSnapshotsData, undefined>;
 

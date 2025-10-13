@@ -1,41 +1,63 @@
 # --- CRUD for Relative ---
 
-# Get a relative by uid
-query GetRelativeByUid($uid: String!) {
-  relative(key: { uid: $uid }) {
-    uid
-    phone
-  }
+# Get all relatives for a user
+query GetRelativesByUid($uid: String!) @auth(level: USER) {
+	relatives(where: { uid: { eq: $uid } }) {
+		id
+		uid
+		phone
+	}
+}
+
+# Get a relative by id
+query GetRelativeById($id: String!) @auth(level: USER) {
+	relative(key: { id: $id }) {
+		id
+		uid
+		phone
+	}
 }
 
 # Get all relatives
-query GetAllRelatives {
-  relatives {
-    uid
-    phone
-  }
+query GetAllRelatives @auth(level: USER) {
+	relatives {
+		id
+		uid
+		phone
+	}
 }
 
 # --- CRUD for Snapshot ---
 
-# Get a snapshot by id
-query GetSnapshotById($id: String!) {
-  snapshot(key: { id: $id }) {
-    id
-    uid
-    latitude
-    longitude
-    timestamp
-  }
+# Get all snapshots for a user
+query GetSnapshotsByUid($uid: String!) @auth(level: USER) {
+	snapshots(where: { uid: { eq: $uid } }) {
+		id
+		uid
+		latitude
+		longitude
+		timestamp
+	}
 }
 
-# Get all snapshots for a user
-query GetSnapshotsByUid($uid: String!) {
-  snapshots(where: { uid: { eq: $uid } }) {
-    id
-    uid
-    latitude
-    longitude
-    timestamp
-  }
+# Get a snapshot by id
+query GetSnapshotById($id: String!) @auth(level: USER) {
+	snapshot(key: { id: $id }) {
+		id
+		uid
+		latitude
+		longitude
+		timestamp
+	}
+}
+
+# Get all snapshots
+query GetAllSnapshots @auth(level: USER) {
+	snapshots {
+		id
+		uid
+		latitude
+		longitude
+		timestamp
+	}
 }

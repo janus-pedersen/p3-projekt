@@ -3,6 +3,8 @@ import { defineString } from "firebase-functions/params";
 const TWILIO_ACCOUNT_SID = defineString("TWILIO_ACCOUNT_SID");
 const TWILIO_AUTH_TOKEN = defineString("TWILIO_AUTH_TOKEN");
 
+export const TWILIO_FROM_NUMBER = defineString("TWILIO_FROM_NUMBER");
+
 import twilio from "twilio";
 
 export const client = twilio(

@@ -8,10 +8,12 @@ This README will guide you through the process of using the generated JavaScript
 - [**Accessing the connector**](#accessing-the-connector)
   - [*Connecting to the local Emulator*](#connecting-to-the-local-emulator)
 - [**Queries**](#queries)
-  - [*GetRelativeByUid*](#getrelativebyuid)
+  - [*GetRelativesByUid*](#getrelativesbyuid)
+  - [*GetRelativeById*](#getrelativebyid)
   - [*GetAllRelatives*](#getallrelatives)
-  - [*GetSnapshotById*](#getsnapshotbyid)
   - [*GetSnapshotsByUid*](#getsnapshotsbyuid)
+  - [*GetSnapshotById*](#getsnapshotbyid)
+  - [*GetAllSnapshots*](#getallsnapshots)
 - [**Mutations**](#mutations)
   - [*InsertRelative*](#insertrelative)
   - [*UpdateRelative*](#updaterelative)
@@ -65,104 +67,218 @@ The following is true for both the action shortcut function and the `QueryRef` f
 
 Below are examples of how to use the `example` connector's generated functions to execute each query. You can also follow the examples from the [Data Connect documentation](https://firebase.google.com/docs/data-connect/web-sdk#using-queries).
 
-## GetRelativeByUid
-You can execute the `GetRelativeByUid` query using the following action shortcut function, or by calling `executeQuery()` after calling the following `QueryRef` function, both of which are defined in [dataconnect-generated/index.d.ts](./index.d.ts):
+## GetRelativesByUid
+You can execute the `GetRelativesByUid` query using the following action shortcut function, or by calling `executeQuery()` after calling the following `QueryRef` function, both of which are defined in [dataconnect-generated/index.d.ts](./index.d.ts):
 ```typescript
-getRelativeByUid(vars: GetRelativeByUidVariables): QueryPromise<GetRelativeByUidData, GetRelativeByUidVariables>;
+getRelativesByUid(vars: GetRelativesByUidVariables): QueryPromise<GetRelativesByUidData, GetRelativesByUidVariables>;
 
-interface GetRelativeByUidRef {
+interface GetRelativesByUidRef {
   ...
   /* Allow users to create refs without passing in DataConnect */
-  (vars: GetRelativeByUidVariables): QueryRef<GetRelativeByUidData, GetRelativeByUidVariables>;
+  (vars: GetRelativesByUidVariables): QueryRef<GetRelativesByUidData, GetRelativesByUidVariables>;
 }
-export const getRelativeByUidRef: GetRelativeByUidRef;
+export const getRelativesByUidRef: GetRelativesByUidRef;
 ```
 You can also pass in a `DataConnect` instance to the action shortcut function or `QueryRef` function.
 ```typescript
-getRelativeByUid(dc: DataConnect, vars: GetRelativeByUidVariables): QueryPromise<GetRelativeByUidData, GetRelativeByUidVariables>;
+getRelativesByUid(dc: DataConnect, vars: GetRelativesByUidVariables): QueryPromise<GetRelativesByUidData, GetRelativesByUidVariables>;
 
-interface GetRelativeByUidRef {
+interface GetRelativesByUidRef {
   ...
-  (dc: DataConnect, vars: GetRelativeByUidVariables): QueryRef<GetRelativeByUidData, GetRelativeByUidVariables>;
+  (dc: DataConnect, vars: GetRelativesByUidVariables): QueryRef<GetRelativesByUidData, GetRelativesByUidVariables>;
 }
-export const getRelativeByUidRef: GetRelativeByUidRef;
+export const getRelativesByUidRef: GetRelativesByUidRef;
 ```
 
-If you need the name of the operation without creating a ref, you can retrieve the operation name by calling the `operationName` property on the getRelativeByUidRef:
+If you need the name of the operation without creating a ref, you can retrieve the operation name by calling the `operationName` property on the getRelativesByUidRef:
 ```typescript
-const name = getRelativeByUidRef.operationName;
+const name = getRelativesByUidRef.operationName;
 console.log(name);
 ```
 
 ### Variables
-The `GetRelativeByUid` query requires an argument of type `GetRelativeByUidVariables`, which is defined in [dataconnect-generated/index.d.ts](./index.d.ts). It has the following fields:
+The `GetRelativesByUid` query requires an argument of type `GetRelativesByUidVariables`, which is defined in [dataconnect-generated/index.d.ts](./index.d.ts). It has the following fields:
 
 ```typescript
-export interface GetRelativeByUidVariables {
+export interface GetRelativesByUidVariables {
   uid: string;
 }
 ```
 ### Return Type
-Recall that executing the `GetRelativeByUid` query returns a `QueryPromise` that resolves to an object with a `data` property.
+Recall that executing the `GetRelativesByUid` query returns a `QueryPromise` that resolves to an object with a `data` property.
 
-The `data` property is an object of type `GetRelativeByUidData`, which is defined in [dataconnect-generated/index.d.ts](./index.d.ts). It has the following fields:
+The `data` property is an object of type `GetRelativesByUidData`, which is defined in [dataconnect-generated/index.d.ts](./index.d.ts). It has the following fields:
 ```typescript
-export interface GetRelativeByUidData {
-  relative?: {
+export interface GetRelativesByUidData {
+  relatives: ({
+    id: string;
     uid: string;
     phone: string;
-  };
+  } & Relative_Key)[];
 }
 ```
-### Using `GetRelativeByUid`'s action shortcut function
+### Using `GetRelativesByUid`'s action shortcut function
 
 ```typescript
 import { getDataConnect } from 'firebase/data-connect';
-import { connectorConfig, getRelativeByUid, GetRelativeByUidVariables } from '@dataconnect/generated';
+import { connectorConfig, getRelativesByUid, GetRelativesByUidVariables } from '@dataconnect/generated';
 
-// The `GetRelativeByUid` query requires an argument of type `GetRelativeByUidVariables`:
-const getRelativeByUidVars: GetRelativeByUidVariables = {
+// The `GetRelativesByUid` query requires an argument of type `GetRelativesByUidVariables`:
+const getRelativesByUidVars: GetRelativesByUidVariables = {
   uid: ..., 
 };
 
-// Call the `getRelativeByUid()` function to execute the query.
+// Call the `getRelativesByUid()` function to execute the query.
 // You can use the `await` keyword to wait for the promise to resolve.
-const { data } = await getRelativeByUid(getRelativeByUidVars);
+const { data } = await getRelativesByUid(getRelativesByUidVars);
 // Variables can be defined inline as well.
-const { data } = await getRelativeByUid({ uid: ..., });
+const { data } = await getRelativesByUid({ uid: ..., });
 
 // You can also pass in a `DataConnect` instance to the action shortcut function.
 const dataConnect = getDataConnect(connectorConfig);
-const { data } = await getRelativeByUid(dataConnect, getRelativeByUidVars);
+const { data } = await getRelativesByUid(dataConnect, getRelativesByUidVars);
+
+console.log(data.relatives);
+
+// Or, you can use the `Promise` API.
+getRelativesByUid(getRelativesByUidVars).then((response) => {
+  const data = response.data;
+  console.log(data.relatives);
+});
+```
+
+### Using `GetRelativesByUid`'s `QueryRef` function
+
+```typescript
+import { getDataConnect, executeQuery } from 'firebase/data-connect';
+import { connectorConfig, getRelativesByUidRef, GetRelativesByUidVariables } from '@dataconnect/generated';
+
+// The `GetRelativesByUid` query requires an argument of type `GetRelativesByUidVariables`:
+const getRelativesByUidVars: GetRelativesByUidVariables = {
+  uid: ..., 
+};
+
+// Call the `getRelativesByUidRef()` function to get a reference to the query.
+const ref = getRelativesByUidRef(getRelativesByUidVars);
+// Variables can be defined inline as well.
+const ref = getRelativesByUidRef({ uid: ..., });
+
+// You can also pass in a `DataConnect` instance to the `QueryRef` function.
+const dataConnect = getDataConnect(connectorConfig);
+const ref = getRelativesByUidRef(dataConnect, getRelativesByUidVars);
+
+// Call `executeQuery()` on the reference to execute the query.
+// You can use the `await` keyword to wait for the promise to resolve.
+const { data } = await executeQuery(ref);
+
+console.log(data.relatives);
+
+// Or, you can use the `Promise` API.
+executeQuery(ref).then((response) => {
+  const data = response.data;
+  console.log(data.relatives);
+});
+```
+
+## GetRelativeById
+You can execute the `GetRelativeById` query using the following action shortcut function, or by calling `executeQuery()` after calling the following `QueryRef` function, both of which are defined in [dataconnect-generated/index.d.ts](./index.d.ts):
+```typescript
+getRelativeById(vars: GetRelativeByIdVariables): QueryPromise<GetRelativeByIdData, GetRelativeByIdVariables>;
+
+interface GetRelativeByIdRef {
+  ...
+  /* Allow users to create refs without passing in DataConnect */
+  (vars: GetRelativeByIdVariables): QueryRef<GetRelativeByIdData, GetRelativeByIdVariables>;
+}
+export const getRelativeByIdRef: GetRelativeByIdRef;
+```
+You can also pass in a `DataConnect` instance to the action shortcut function or `QueryRef` function.
+```typescript
+getRelativeById(dc: DataConnect, vars: GetRelativeByIdVariables): QueryPromise<GetRelativeByIdData, GetRelativeByIdVariables>;
+
+interface GetRelativeByIdRef {
+  ...
+  (dc: DataConnect, vars: GetRelativeByIdVariables): QueryRef<GetRelativeByIdData, GetRelativeByIdVariables>;
+}
+export const getRelativeByIdRef: GetRelativeByIdRef;
+```
+
+If you need the name of the operation without creating a ref, you can retrieve the operation name by calling the `operationName` property on the getRelativeByIdRef:
+```typescript
+const name = getRelativeByIdRef.operationName;
+console.log(name);
+```
+
+### Variables
+The `GetRelativeById` query requires an argument of type `GetRelativeByIdVariables`, which is defined in [dataconnect-generated/index.d.ts](./index.d.ts). It has the following fields:
+
+```typescript
+export interface GetRelativeByIdVariables {
+  id: string;
+}
+```
+### Return Type
+Recall that executing the `GetRelativeById` query returns a `QueryPromise` that resolves to an object with a `data` property.
+
+The `data` property is an object of type `GetRelativeByIdData`, which is defined in [dataconnect-generated/index.d.ts](./index.d.ts). It has the following fields:
+```typescript
+export interface GetRelativeByIdData {
+  relative?: {
+    id: string;
+    uid: string;
+    phone: string;
+  } & Relative_Key;
+}
+```
+### Using `GetRelativeById`'s action shortcut function
+
+```typescript
+import { getDataConnect } from 'firebase/data-connect';
+import { connectorConfig, getRelativeById, GetRelativeByIdVariables } from '@dataconnect/generated';
+
+// The `GetRelativeById` query requires an argument of type `GetRelativeByIdVariables`:
+const getRelativeByIdVars: GetRelativeByIdVariables = {
+  id: ..., 
+};
+
+// Call the `getRelativeById()` function to execute the query.
+// You can use the `await` keyword to wait for the promise to resolve.
+const { data } = await getRelativeById(getRelativeByIdVars);
+// Variables can be defined inline as well.
+const { data } = await getRelativeById({ id: ..., });
+
+// You can also pass in a `DataConnect` instance to the action shortcut function.
+const dataConnect = getDataConnect(connectorConfig);
+const { data } = await getRelativeById(dataConnect, getRelativeByIdVars);
 
 console.log(data.relative);
 
 // Or, you can use the `Promise` API.
-getRelativeByUid(getRelativeByUidVars).then((response) => {
+getRelativeById(getRelativeByIdVars).then((response) => {
   const data = response.data;
   console.log(data.relative);
 });
 ```
 
-### Using `GetRelativeByUid`'s `QueryRef` function
+### Using `GetRelativeById`'s `QueryRef` function
 
 ```typescript
 import { getDataConnect, executeQuery } from 'firebase/data-connect';
-import { connectorConfig, getRelativeByUidRef, GetRelativeByUidVariables } from '@dataconnect/generated';
+import { connectorConfig, getRelativeByIdRef, GetRelativeByIdVariables } from '@dataconnect/generated';
 
-// The `GetRelativeByUid` query requires an argument of type `GetRelativeByUidVariables`:
-const getRelativeByUidVars: GetRelativeByUidVariables = {
-  uid: ..., 
+// The `GetRelativeById` query requires an argument of type `GetRelativeByIdVariables`:
+const getRelativeByIdVars: GetRelativeByIdVariables = {
+  id: ..., 
 };
 
-// Call the `getRelativeByUidRef()` function to get a reference to the query.
-const ref = getRelativeByUidRef(getRelativeByUidVars);
+// Call the `getRelativeByIdRef()` function to get a reference to the query.
+const ref = getRelativeByIdRef(getRelativeByIdVars);
 // Variables can be defined inline as well.
-const ref = getRelativeByUidRef({ uid: ..., });
+const ref = getRelativeByIdRef({ id: ..., });
 
 // You can also pass in a `DataConnect` instance to the `QueryRef` function.
 const dataConnect = getDataConnect(connectorConfig);
-const ref = getRelativeByUidRef(dataConnect, getRelativeByUidVars);
+const ref = getRelativeByIdRef(dataConnect, getRelativeByIdVars);
 
 // Call `executeQuery()` on the reference to execute the query.
 // You can use the `await` keyword to wait for the promise to resolve.
@@ -215,9 +331,10 @@ The `data` property is an object of type `GetAllRelativesData`, which is defined
 ```typescript
 export interface GetAllRelativesData {
   relatives: ({
+    id: string;
     uid: string;
     phone: string;
-  })[];
+  } & Relative_Key)[];
 }
 ```
 ### Using `GetAllRelatives`'s action shortcut function
@@ -268,6 +385,121 @@ console.log(data.relatives);
 executeQuery(ref).then((response) => {
   const data = response.data;
   console.log(data.relatives);
+});
+```
+
+## GetSnapshotsByUid
+You can execute the `GetSnapshotsByUid` query using the following action shortcut function, or by calling `executeQuery()` after calling the following `QueryRef` function, both of which are defined in [dataconnect-generated/index.d.ts](./index.d.ts):
+```typescript
+getSnapshotsByUid(vars: GetSnapshotsByUidVariables): QueryPromise<GetSnapshotsByUidData, GetSnapshotsByUidVariables>;
+
+interface GetSnapshotsByUidRef {
+  ...
+  /* Allow users to create refs without passing in DataConnect */
+  (vars: GetSnapshotsByUidVariables): QueryRef<GetSnapshotsByUidData, GetSnapshotsByUidVariables>;
+}
+export const getSnapshotsByUidRef: GetSnapshotsByUidRef;
+```
+You can also pass in a `DataConnect` instance to the action shortcut function or `QueryRef` function.
+```typescript
+getSnapshotsByUid(dc: DataConnect, vars: GetSnapshotsByUidVariables): QueryPromise<GetSnapshotsByUidData, GetSnapshotsByUidVariables>;
+
+interface GetSnapshotsByUidRef {
+  ...
+  (dc: DataConnect, vars: GetSnapshotsByUidVariables): QueryRef<GetSnapshotsByUidData, GetSnapshotsByUidVariables>;
+}
+export const getSnapshotsByUidRef: GetSnapshotsByUidRef;
+```
+
+If you need the name of the operation without creating a ref, you can retrieve the operation name by calling the `operationName` property on the getSnapshotsByUidRef:
+```typescript
+const name = getSnapshotsByUidRef.operationName;
+console.log(name);
+```
+
+### Variables
+The `GetSnapshotsByUid` query requires an argument of type `GetSnapshotsByUidVariables`, which is defined in [dataconnect-generated/index.d.ts](./index.d.ts). It has the following fields:
+
+```typescript
+export interface GetSnapshotsByUidVariables {
+  uid: string;
+}
+```
+### Return Type
+Recall that executing the `GetSnapshotsByUid` query returns a `QueryPromise` that resolves to an object with a `data` property.
+
+The `data` property is an object of type `GetSnapshotsByUidData`, which is defined in [dataconnect-generated/index.d.ts](./index.d.ts). It has the following fields:
+```typescript
+export interface GetSnapshotsByUidData {
+  snapshots: ({
+    id: string;
+    uid: string;
+    latitude: number;
+    longitude: number;
+    timestamp: TimestampString;
+  } & Snapshot_Key)[];
+}
+```
+### Using `GetSnapshotsByUid`'s action shortcut function
+
+```typescript
+import { getDataConnect } from 'firebase/data-connect';
+import { connectorConfig, getSnapshotsByUid, GetSnapshotsByUidVariables } from '@dataconnect/generated';
+
+// The `GetSnapshotsByUid` query requires an argument of type `GetSnapshotsByUidVariables`:
+const getSnapshotsByUidVars: GetSnapshotsByUidVariables = {
+  uid: ..., 
+};
+
+// Call the `getSnapshotsByUid()` function to execute the query.
+// You can use the `await` keyword to wait for the promise to resolve.
+const { data } = await getSnapshotsByUid(getSnapshotsByUidVars);
+// Variables can be defined inline as well.
+const { data } = await getSnapshotsByUid({ uid: ..., });
+
+// You can also pass in a `DataConnect` instance to the action shortcut function.
+const dataConnect = getDataConnect(connectorConfig);
+const { data } = await getSnapshotsByUid(dataConnect, getSnapshotsByUidVars);
+
+console.log(data.snapshots);
+
+// Or, you can use the `Promise` API.
+getSnapshotsByUid(getSnapshotsByUidVars).then((response) => {
+  const data = response.data;
+  console.log(data.snapshots);
+});
+```
+
+### Using `GetSnapshotsByUid`'s `QueryRef` function
+
+```typescript
+import { getDataConnect, executeQuery } from 'firebase/data-connect';
+import { connectorConfig, getSnapshotsByUidRef, GetSnapshotsByUidVariables } from '@dataconnect/generated';
+
+// The `GetSnapshotsByUid` query requires an argument of type `GetSnapshotsByUidVariables`:
+const getSnapshotsByUidVars: GetSnapshotsByUidVariables = {
+  uid: ..., 
+};
+
+// Call the `getSnapshotsByUidRef()` function to get a reference to the query.
+const ref = getSnapshotsByUidRef(getSnapshotsByUidVars);
+// Variables can be defined inline as well.
+const ref = getSnapshotsByUidRef({ uid: ..., });
+
+// You can also pass in a `DataConnect` instance to the `QueryRef` function.
+const dataConnect = getDataConnect(connectorConfig);
+const ref = getSnapshotsByUidRef(dataConnect, getSnapshotsByUidVars);
+
+// Call `executeQuery()` on the reference to execute the query.
+// You can use the `await` keyword to wait for the promise to resolve.
+const { data } = await executeQuery(ref);
+
+console.log(data.snapshots);
+
+// Or, you can use the `Promise` API.
+executeQuery(ref).then((response) => {
+  const data = response.data;
+  console.log(data.snapshots);
 });
 ```
 
@@ -386,49 +618,43 @@ executeQuery(ref).then((response) => {
 });
 ```
 
-## GetSnapshotsByUid
-You can execute the `GetSnapshotsByUid` query using the following action shortcut function, or by calling `executeQuery()` after calling the following `QueryRef` function, both of which are defined in [dataconnect-generated/index.d.ts](./index.d.ts):
+## GetAllSnapshots
+You can execute the `GetAllSnapshots` query using the following action shortcut function, or by calling `executeQuery()` after calling the following `QueryRef` function, both of which are defined in [dataconnect-generated/index.d.ts](./index.d.ts):
 ```typescript
-getSnapshotsByUid(vars: GetSnapshotsByUidVariables): QueryPromise<GetSnapshotsByUidData, GetSnapshotsByUidVariables>;
+getAllSnapshots(): QueryPromise<GetAllSnapshotsData, undefined>;
 
-interface GetSnapshotsByUidRef {
+interface GetAllSnapshotsRef {
   ...
   /* Allow users to create refs without passing in DataConnect */
-  (vars: GetSnapshotsByUidVariables): QueryRef<GetSnapshotsByUidData, GetSnapshotsByUidVariables>;
+  (): QueryRef<GetAllSnapshotsData, undefined>;
 }
-export const getSnapshotsByUidRef: GetSnapshotsByUidRef;
+export const getAllSnapshotsRef: GetAllSnapshotsRef;
 ```
 You can also pass in a `DataConnect` instance to the action shortcut function or `QueryRef` function.
 ```typescript
-getSnapshotsByUid(dc: DataConnect, vars: GetSnapshotsByUidVariables): QueryPromise<GetSnapshotsByUidData, GetSnapshotsByUidVariables>;
+getAllSnapshots(dc: DataConnect): QueryPromise<GetAllSnapshotsData, undefined>;
 
-interface GetSnapshotsByUidRef {
+interface GetAllSnapshotsRef {
   ...
-  (dc: DataConnect, vars: GetSnapshotsByUidVariables): QueryRef<GetSnapshotsByUidData, GetSnapshotsByUidVariables>;
+  (dc: DataConnect): QueryRef<GetAllSnapshotsData, undefined>;
 }
-export const getSnapshotsByUidRef: GetSnapshotsByUidRef;
+export const getAllSnapshotsRef: GetAllSnapshotsRef;
 ```
 
-If you need the name of the operation without creating a ref, you can retrieve the operation name by calling the `operationName` property on the getSnapshotsByUidRef:
+If you need the name of the operation without creating a ref, you can retrieve the operation name by calling the `operationName` property on the getAllSnapshotsRef:
 ```typescript
-const name = getSnapshotsByUidRef.operationName;
+const name = getAllSnapshotsRef.operationName;
 console.log(name);
 ```
 
 ### Variables
-The `GetSnapshotsByUid` query requires an argument of type `GetSnapshotsByUidVariables`, which is defined in [dataconnect-generated/index.d.ts](./index.d.ts). It has the following fields:
-
-```typescript
-export interface GetSnapshotsByUidVariables {
-  uid: string;
-}
-```
+The `GetAllSnapshots` query has no variables.
 ### Return Type
-Recall that executing the `GetSnapshotsByUid` query returns a `QueryPromise` that resolves to an object with a `data` property.
+Recall that executing the `GetAllSnapshots` query returns a `QueryPromise` that resolves to an object with a `data` property.
 
-The `data` property is an object of type `GetSnapshotsByUidData`, which is defined in [dataconnect-generated/index.d.ts](./index.d.ts). It has the following fields:
+The `data` property is an object of type `GetAllSnapshotsData`, which is defined in [dataconnect-generated/index.d.ts](./index.d.ts). It has the following fields:
 ```typescript
-export interface GetSnapshotsByUidData {
+export interface GetAllSnapshotsData {
   snapshots: ({
     id: string;
     uid: string;
@@ -438,55 +664,43 @@ export interface GetSnapshotsByUidData {
   } & Snapshot_Key)[];
 }
 ```
-### Using `GetSnapshotsByUid`'s action shortcut function
+### Using `GetAllSnapshots`'s action shortcut function
 
 ```typescript
 import { getDataConnect } from 'firebase/data-connect';
-import { connectorConfig, getSnapshotsByUid, GetSnapshotsByUidVariables } from '@dataconnect/generated';
+import { connectorConfig, getAllSnapshots } from '@dataconnect/generated';
 
-// The `GetSnapshotsByUid` query requires an argument of type `GetSnapshotsByUidVariables`:
-const getSnapshotsByUidVars: GetSnapshotsByUidVariables = {
-  uid: ..., 
-};
 
-// Call the `getSnapshotsByUid()` function to execute the query.
+// Call the `getAllSnapshots()` function to execute the query.
 // You can use the `await` keyword to wait for the promise to resolve.
-const { data } = await getSnapshotsByUid(getSnapshotsByUidVars);
-// Variables can be defined inline as well.
-const { data } = await getSnapshotsByUid({ uid: ..., });
+const { data } = await getAllSnapshots();
 
 // You can also pass in a `DataConnect` instance to the action shortcut function.
 const dataConnect = getDataConnect(connectorConfig);
-const { data } = await getSnapshotsByUid(dataConnect, getSnapshotsByUidVars);
+const { data } = await getAllSnapshots(dataConnect);
 
 console.log(data.snapshots);
 
 // Or, you can use the `Promise` API.
-getSnapshotsByUid(getSnapshotsByUidVars).then((response) => {
+getAllSnapshots().then((response) => {
   const data = response.data;
   console.log(data.snapshots);
 });
 ```
 
-### Using `GetSnapshotsByUid`'s `QueryRef` function
+### Using `GetAllSnapshots`'s `QueryRef` function
 
 ```typescript
 import { getDataConnect, executeQuery } from 'firebase/data-connect';
-import { connectorConfig, getSnapshotsByUidRef, GetSnapshotsByUidVariables } from '@dataconnect/generated';
+import { connectorConfig, getAllSnapshotsRef } from '@dataconnect/generated';
 
-// The `GetSnapshotsByUid` query requires an argument of type `GetSnapshotsByUidVariables`:
-const getSnapshotsByUidVars: GetSnapshotsByUidVariables = {
-  uid: ..., 
-};
 
-// Call the `getSnapshotsByUidRef()` function to get a reference to the query.
-const ref = getSnapshotsByUidRef(getSnapshotsByUidVars);
-// Variables can be defined inline as well.
-const ref = getSnapshotsByUidRef({ uid: ..., });
+// Call the `getAllSnapshotsRef()` function to get a reference to the query.
+const ref = getAllSnapshotsRef();
 
 // You can also pass in a `DataConnect` instance to the `QueryRef` function.
 const dataConnect = getDataConnect(connectorConfig);
-const ref = getSnapshotsByUidRef(dataConnect, getSnapshotsByUidVars);
+const ref = getAllSnapshotsRef(dataConnect);
 
 // Call `executeQuery()` on the reference to execute the query.
 // You can use the `await` keyword to wait for the promise to resolve.
@@ -662,7 +876,7 @@ The `UpdateRelative` mutation requires an argument of type `UpdateRelativeVariab
 
 ```typescript
 export interface UpdateRelativeVariables {
-  uid: string;
+  id: string;
   phone: string;
 }
 ```
@@ -683,7 +897,7 @@ import { connectorConfig, updateRelative, UpdateRelativeVariables } from '@datac
 
 // The `UpdateRelative` mutation requires an argument of type `UpdateRelativeVariables`:
 const updateRelativeVars: UpdateRelativeVariables = {
-  uid: ..., 
+  id: ..., 
   phone: ..., 
 };
 
@@ -691,7 +905,7 @@ const updateRelativeVars: UpdateRelativeVariables = {
 // You can use the `await` keyword to wait for the promise to resolve.
 const { data } = await updateRelative(updateRelativeVars);
 // Variables can be defined inline as well.
-const { data } = await updateRelative({ uid: ..., phone: ..., });
+const { data } = await updateRelative({ id: ..., phone: ..., });
 
 // You can also pass in a `DataConnect` instance to the action shortcut function.
 const dataConnect = getDataConnect(connectorConfig);
@@ -714,14 +928,14 @@ import { connectorConfig, updateRelativeRef, UpdateRelativeVariables } from '@da
 
 // The `UpdateRelative` mutation requires an argument of type `UpdateRelativeVariables`:
 const updateRelativeVars: UpdateRelativeVariables = {
-  uid: ..., 
+  id: ..., 
   phone: ..., 
 };
 
 // Call the `updateRelativeRef()` function to get a reference to the mutation.
 const ref = updateRelativeRef(updateRelativeVars);
 // Variables can be defined inline as well.
-const ref = updateRelativeRef({ uid: ..., phone: ..., });
+const ref = updateRelativeRef({ id: ..., phone: ..., });
 
 // You can also pass in a `DataConnect` instance to the `MutationRef` function.
 const dataConnect = getDataConnect(connectorConfig);
@@ -774,7 +988,7 @@ The `DeleteRelative` mutation requires an argument of type `DeleteRelativeVariab
 
 ```typescript
 export interface DeleteRelativeVariables {
-  uid: string;
+  id: string;
 }
 ```
 ### Return Type
@@ -794,14 +1008,14 @@ import { connectorConfig, deleteRelative, DeleteRelativeVariables } from '@datac
 
 // The `DeleteRelative` mutation requires an argument of type `DeleteRelativeVariables`:
 const deleteRelativeVars: DeleteRelativeVariables = {
-  uid: ..., 
+  id: ..., 
 };
 
 // Call the `deleteRelative()` function to execute the mutation.
 // You can use the `await` keyword to wait for the promise to resolve.
 const { data } = await deleteRelative(deleteRelativeVars);
 // Variables can be defined inline as well.
-const { data } = await deleteRelative({ uid: ..., });
+const { data } = await deleteRelative({ id: ..., });
 
 // You can also pass in a `DataConnect` instance to the action shortcut function.
 const dataConnect = getDataConnect(connectorConfig);
@@ -824,13 +1038,13 @@ import { connectorConfig, deleteRelativeRef, DeleteRelativeVariables } from '@da
 
 // The `DeleteRelative` mutation requires an argument of type `DeleteRelativeVariables`:
 const deleteRelativeVars: DeleteRelativeVariables = {
-  uid: ..., 
+  id: ..., 
 };
 
 // Call the `deleteRelativeRef()` function to get a reference to the mutation.
 const ref = deleteRelativeRef(deleteRelativeVars);
 // Variables can be defined inline as well.
-const ref = deleteRelativeRef({ uid: ..., });
+const ref = deleteRelativeRef({ id: ..., });
 
 // You can also pass in a `DataConnect` instance to the `MutationRef` function.
 const dataConnect = getDataConnect(connectorConfig);

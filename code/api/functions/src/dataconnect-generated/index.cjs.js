@@ -79,16 +79,28 @@ exports.deleteSnapshot = function deleteSnapshot(dcOrVars, vars) {
   return executeMutation(deleteSnapshotRef(dcOrVars, vars));
 };
 
-const getRelativeByUidRef = (dcOrVars, vars) => {
+const getRelativesByUidRef = (dcOrVars, vars) => {
   const { dc: dcInstance, vars: inputVars} = validateArgs(connectorConfig, dcOrVars, vars, true);
   dcInstance._useGeneratedSdk();
-  return queryRef(dcInstance, 'GetRelativeByUid', inputVars);
+  return queryRef(dcInstance, 'GetRelativesByUid', inputVars);
 }
-getRelativeByUidRef.operationName = 'GetRelativeByUid';
-exports.getRelativeByUidRef = getRelativeByUidRef;
+getRelativesByUidRef.operationName = 'GetRelativesByUid';
+exports.getRelativesByUidRef = getRelativesByUidRef;
 
-exports.getRelativeByUid = function getRelativeByUid(dcOrVars, vars) {
-  return executeQuery(getRelativeByUidRef(dcOrVars, vars));
+exports.getRelativesByUid = function getRelativesByUid(dcOrVars, vars) {
+  return executeQuery(getRelativesByUidRef(dcOrVars, vars));
+};
+
+const getRelativeByIdRef = (dcOrVars, vars) => {
+  const { dc: dcInstance, vars: inputVars} = validateArgs(connectorConfig, dcOrVars, vars, true);
+  dcInstance._useGeneratedSdk();
+  return queryRef(dcInstance, 'GetRelativeById', inputVars);
+}
+getRelativeByIdRef.operationName = 'GetRelativeById';
+exports.getRelativeByIdRef = getRelativeByIdRef;
+
+exports.getRelativeById = function getRelativeById(dcOrVars, vars) {
+  return executeQuery(getRelativeByIdRef(dcOrVars, vars));
 };
 
 const getAllRelativesRef = (dc) => {
@@ -103,6 +115,18 @@ exports.getAllRelatives = function getAllRelatives(dc) {
   return executeQuery(getAllRelativesRef(dc));
 };
 
+const getSnapshotsByUidRef = (dcOrVars, vars) => {
+  const { dc: dcInstance, vars: inputVars} = validateArgs(connectorConfig, dcOrVars, vars, true);
+  dcInstance._useGeneratedSdk();
+  return queryRef(dcInstance, 'GetSnapshotsByUid', inputVars);
+}
+getSnapshotsByUidRef.operationName = 'GetSnapshotsByUid';
+exports.getSnapshotsByUidRef = getSnapshotsByUidRef;
+
+exports.getSnapshotsByUid = function getSnapshotsByUid(dcOrVars, vars) {
+  return executeQuery(getSnapshotsByUidRef(dcOrVars, vars));
+};
+
 const getSnapshotByIdRef = (dcOrVars, vars) => {
   const { dc: dcInstance, vars: inputVars} = validateArgs(connectorConfig, dcOrVars, vars, true);
   dcInstance._useGeneratedSdk();
@@ -115,14 +139,14 @@ exports.getSnapshotById = function getSnapshotById(dcOrVars, vars) {
   return executeQuery(getSnapshotByIdRef(dcOrVars, vars));
 };
 
-const getSnapshotsByUidRef = (dcOrVars, vars) => {
-  const { dc: dcInstance, vars: inputVars} = validateArgs(connectorConfig, dcOrVars, vars, true);
+const getAllSnapshotsRef = (dc) => {
+  const { dc: dcInstance} = validateArgs(connectorConfig, dc, undefined);
   dcInstance._useGeneratedSdk();
-  return queryRef(dcInstance, 'GetSnapshotsByUid', inputVars);
+  return queryRef(dcInstance, 'GetAllSnapshots');
 }
-getSnapshotsByUidRef.operationName = 'GetSnapshotsByUid';
-exports.getSnapshotsByUidRef = getSnapshotsByUidRef;
+getAllSnapshotsRef.operationName = 'GetAllSnapshots';
+exports.getAllSnapshotsRef = getAllSnapshotsRef;
 
-exports.getSnapshotsByUid = function getSnapshotsByUid(dcOrVars, vars) {
-  return executeQuery(getSnapshotsByUidRef(dcOrVars, vars));
+exports.getAllSnapshots = function getAllSnapshots(dc) {
+  return executeQuery(getAllSnapshotsRef(dc));
 };
