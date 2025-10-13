@@ -1,9 +1,8 @@
-import { Avatar, type MantineSize } from "@mantine/core";
+import { Avatar } from "@mantine/core";
 import { useAuth } from "../../hooks/useAuth";
 
 export interface UserAvatarProps {
   active?: boolean;
-  size?: MantineSize;
 }
 
 export function UserAvatar(props: UserAvatarProps) {
@@ -11,8 +10,7 @@ export function UserAvatar(props: UserAvatarProps) {
 
   return (
     <Avatar
-      size={props.size}
-      name={user?.displayName ?? undefined}
+      name={user?.displayName ?? "Janus Pedersen"}
       alt="User Avatar"
       variant={"light"}
       color={props.active ? "primary" : "gray"}

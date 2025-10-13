@@ -2,8 +2,8 @@ import ReactDOM from "react-dom/client";
 import App from "./App";
 import {
   createTheme,
-  Indicator,
   MantineProvider,
+  Text,
   virtualColor,
 } from "@mantine/core";
 import "@mantine/core/styles.css";
@@ -14,13 +14,6 @@ import { RoutesProvider } from "./contexts/Routes/RoutesProvider";
 import { UserAvatar } from "./components/UserAvatar/UserAvatar";
 import { ProfilePage } from "./pages/Profile";
 
-import { initializeApp, type FirebaseOptions } from "firebase/app";
-import firebaseConfig from "../firebase.config.json";
-import { ContactsPage } from "./pages/ContactsPage";
-import { DeviceProvider } from "./contexts/Device/DeviceProvider";
-import { DevicePage } from "./pages/DevicePage";
-import { SchedulePage } from "./pages/SchedulePage";
-
 const theme = createTheme({
   colors: {
     primary: virtualColor({
@@ -30,26 +23,23 @@ const theme = createTheme({
     }),
   },
   defaultRadius: "md",
+  // Ensure transitions are enabled globally
   respectReducedMotion: false,
   focusRing: "auto",
 });
 
 const routes = {
   device: {
-    icon: (
-      <Indicator processing color="red">
-        <Watch size={20} />
-      </Indicator>
-    ),
-    component: <DevicePage />,
+    icon: <Watch size={20} />,
+    component: <Text>Device Page</Text>,
   },
   contacts: {
     icon: <Contact size={20} />,
-    component: <ContactsPage />,
+    component: <Text>Contacts Page</Text>,
   },
   schedule: {
     icon: <CalendarClock size={20} />,
-    component: <SchedulePage />,
+    component: <Text>Schedule Page</Text>,
   },
   profile: {
     icon: (active: boolean) => <UserAvatar active={active} />,
@@ -57,16 +47,12 @@ const routes = {
   },
 };
 
-initializeApp(firebaseConfig as FirebaseOptions);
-
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <MantineProvider theme={theme}>
     <AuthProvider>
-      <DeviceProvider>
-        <RoutesProvider routes={routes}>
-          <App />
-        </RoutesProvider>
-      </DeviceProvider>
+      <RoutesProvider routes={routes}>
+        <App />
+      </RoutesProvider>
     </AuthProvider>
   </MantineProvider>
 );

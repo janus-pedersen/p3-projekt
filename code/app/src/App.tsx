@@ -1,12 +1,17 @@
-import { AppShell, Stack, useMantineColorScheme } from "@mantine/core";
-import { useContext, useEffect } from "react";
+import {
+  AppShell,
+  Center,
+  Paper,
+  Stack,
+  Text,
+  Title,
+  useMantineColorScheme,
+} from "@mantine/core";
+import { useEffect } from "react";
 import { useAuth } from "./hooks/useAuth";
+import { SignIn } from "./components/SignIn/SignIn";
 import Navbar from "./components/Navbar/Navbar";
 import { Outlet } from "./components/Outlet/Outlet";
-import SignInPage from "./pages/SignIn";
-import { Keyboard } from "@capacitor/keyboard";
-import { AnimatePresence, motion } from "motion/react";
-import { RouteContext } from "./contexts/Routes/RouteContext";
 
 function App() {
   const { setColorScheme } = useMantineColorScheme();
@@ -16,22 +21,6 @@ function App() {
 
   const { user } = useAuth();
 
-  const { currentRoute } = useContext(RouteContext)!;
-
-  useEffect(() => {
-    const updatePadding = (info: { keyboardHeight: number }) => {
-      document.documentElement.style.setProperty(
-        "--keyboard-padding",
-        info.keyboardHeight + "px"
-      );
-    };
-
-    Keyboard.addListener("keyboardWillShow", updatePadding);
-    Keyboard.addListener("keyboardWillHide", () => {
-      document.documentElement.style.setProperty("--keyboard-padding", "0px");
-    });
-  }, []);
-
   return (
     <AppShell
       padding="md"
@@ -40,20 +29,19 @@ function App() {
       display={"flex"}
     >
       <AppShell.Main style={{ flexGrow: 1 }} w={"100vw"}>
-        {!user && <SignInPage />}
-
-        {user && (
-          <AnimatePresence propagate mode={"wait"}>
-            <motion.div
-              key={currentRoute}
-              style={{ width: "100%", height: "100vh" }}
-            >
-              <Stack m={"lg"} mt={0} pb={150}>
-                <Outlet />
-              </Stack>
-            </motion.div>
-          </AnimatePresence>
+        {!user && (
+          <Center h={"100%"}>
+            <Stack w={"90%"} maw={"500px"} gap={0}>
+              <Title order={3}>Welcome to Lapsus</Title>
+              <Text>Let's get you started!</Text>
+              <Paper mt={"xl"} withBorder shadow={"md"} p={"md"}>
+                <SignIn />
+              </Paper>
+            </Stack>
+          </Center>
         )}
+
+        {user && <Outlet />}
       </AppShell.Main>
       <AppShell.Footer hidden={!user}>
         <Navbar />

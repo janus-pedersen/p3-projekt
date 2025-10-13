@@ -8,8 +8,8 @@
   },
   "plugins": {
     "Keyboard": {
-      "resize": "none",
-      "style": "DEFAULT"
+      "resize": "ionic",
+      "scroll": false
     }
   }
 }
