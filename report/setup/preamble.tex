@@ -1,6 +1,10 @@
-\begingroup\expandafter\endgroup\iffalse{}\fi
+% \begingroup\expandafter\endgroup\iffalse{}\fi
 % This file is not meant to be compiled directly.
 \documentclass[11pt,oneside,a4paper]{article}
+
+\usepackage{atbegshi}% http://ctan.org/pkg/atbegshi
+\AtBeginDocument{\AtBeginShipoutNext{\AtBeginShipoutDiscard}}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Language, Encoding and Fonts
 % http://en.wikibooks.org/wiki/LaTeX/Internationalization
@@ -34,7 +38,11 @@
 % http://en.wikibooks.org/wiki/LaTeX/Colors
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % for code blocks
-
+\usepackage{wrapfig}
+\usepackage{tabularx}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{booktabs}
 \usepackage{float}
 \usepackage[newfloat]{minted}
 \setminted{tabsize=2}
@@ -64,6 +72,8 @@
 % Set up how figure and table captions are displayed
 \usepackage{caption}
 \captionsetup{%
+  justification=centering,
+  width=0.5\linewidth,
   font=footnotesize,% set font size to footnotesize
   labelfont=bf % bold label (e.g., Figure 3.2) font
 }
@@ -75,6 +85,9 @@
 
 \usepackage{longtable}
 \usepackage{caption}
+
+\usepackage{eurosym}
+
 
 % Adds support for full page background picture
 \usepackage[contents={},color=gray]{background}
@@ -114,12 +127,12 @@
 %\titleformat*{\subparagraph}{\normalfont\normalsize\bfseries}
 
 % Clear empty pages between chapters
-\let\origdoublepage\cleardoublepage
-\newcommand{\clearemptydoublepage}{%
-  \clearpage
-  {\pagestyle{empty}\origdoublepage}%
-}
-\let\cleardoublepage\clearemptydoublepage
+% \let\origdoublepage\cleardoublepage
+% \newcommand{\clearemptydoublepage}{%
+%   \clearpage
+%   {\pagestyle{empty}\origdoublepage}%
+% }
+% \let\cleardoublepage\clearemptydoublepage
 
 % Change the headers and footers
 \usepackage{fancyhdr}
@@ -142,10 +155,13 @@
 % Bibliography
 % http://en.wikibooks.org/wiki/LaTeX/Bibliography_Management
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\usepackage[backend=bibtex,
+\usepackage[
+  backend=bibtex,
   bibencoding=utf8,
-  style=ieee
-  ]{biblatex}
+  style=numeric-comp,
+  sorting=none,
+  defernumbers=true
+]{biblatex}
 \addbibresource{bib/mybib}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -174,17 +190,14 @@
 % last packages
 \usepackage{hyperref}
 \hypersetup{%
-	plainpages=false,%
-	pdfauthor={Author(s)},%
-	pdftitle={Title},%
-	pdfsubject={Subject},%
-	bookmarksnumbered=true,%
-	colorlinks=false,%
-	citecolor=black,%
-	filecolor=black,%
-	linkcolor=black,% you should probably change this to black before printing
-	urlcolor=black,%
-	pdfstartview=FitH%
+    pdfinfo={%
+    Title={\reporttitle},%
+    Author={\authors},%
+    Subject={\subject},%
+    Producer={pdfLaTeX},%
+    Creator={\authors},%
+    % Keywords={},%    
+    }%   
 }
 
 \usepackage{letltxmacro}
@@ -198,6 +211,8 @@
 \regtotcounter{page}
 
 \usepackage{copyrightbox}
+
+\usepackage{multicol}
 
 % Source Code float
 \floatstyle{plaintop}
