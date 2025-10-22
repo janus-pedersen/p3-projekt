@@ -1,15 +1,29 @@
+
+% Global variables and setup
+\newcommand{\authors}{
+    Emma Strandholdt Madsen, 
+    Maria Lilly Nielsen, 
+    Janus Langkilde Pedersen \& 
+    Peter Kaae Thorhauge
+}
+\newcommand{\reporttitle}{Fall detection using accelerometers for elderly citizens}
+\newcommand{\subject}{Embedded Systems Programming}
+
 \input{setup/preamble.tex}% package inclusion and set up of the document
-\input{setup/hyphenations.tex}% 
 \input{setup/macros.tex}% my new macros
 
 \begin{document}
+% Metadata
+\author{Janus Pedersen}
+\date{\today}
+\title{\reporttitle}
 % --- Front Page ---
 \pagestyle{empty} %disable headers and footers
 \pagenumbering{roman}
 % \pagenumbering{gobble}
 % \input{content/colophon.tex}
-\input{content/titlepages.tex}
-\input{content/frontpageImage.tex}
+\input{report/content/title-page}
+\input{report/content/front-page}
 
 \cleardoublepage
 \pdfbookmark{Contents}{label:contents}
@@ -28,8 +42,17 @@
 
 % --- Indsæt content filer her ---
 
+% \begin{multicols}{2}
 \input{content/chapters/introduction}
+\input{content/chapters/methodology}
 \input{content/chapters/state-of-the-art}
+\input{report/content/chapters/analyse}
+\input{content/chapters/design}
+\input{content/chapters/implementation}
+\input{content/chapters/testing}
+\input{content/chapters/discussion}
+\input{content/chapters/conclusion}
+% \end{multicols}
 
 % --- Ikke flere content filer efter her ---
 
