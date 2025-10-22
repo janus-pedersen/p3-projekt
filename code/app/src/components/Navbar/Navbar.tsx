@@ -1,4 +1,4 @@
-import { Group } from "@mantine/core";
+import { Group, Stack, Text } from "@mantine/core";
 import NavbarIcon from "./NavbarIcon/NavbarIcon";
 import { useContext } from "react";
 import { RouteContext } from "../../contexts/Routes/RouteContext";
@@ -13,12 +13,16 @@ export default function Navbar() {
   return (
     <Group justify={"space-around"}>
       {Object.entries(routes).map(([key, route]) => (
-        <NavbarIcon
-          key={key}
-          icon={route.icon}
-          active={currentRoute === key}
-          onClick={() => setCurrentRoute(key)}
-        />
+        <Stack gap={0} align="center" key={key}>
+          <NavbarIcon
+            icon={route.icon}
+            active={currentRoute === key}
+            onClick={() => setCurrentRoute(key)}
+          />
+          <Text size={"xs"} c={"dimmed"}>
+            {route.label}
+          </Text>
+        </Stack>
       ))}
     </Group>
   );

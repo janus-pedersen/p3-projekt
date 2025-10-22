@@ -16,4 +16,5 @@ obj
 /code/Frontend/packages
 /code/backend/Properties/ServiceDependencies/local
 *.bkp
-code/app/firebase.config.json
+/code/app/ios/App/App.xcarchive/dSYMs
+/code/app/ios/App/App.xcarchive/Products

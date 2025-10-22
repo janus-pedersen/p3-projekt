@@ -2,17 +2,23 @@ import ReactDOM from "react-dom/client";
 import App from "./App";
 import {
   createTheme,
+  Indicator,
   MantineProvider,
-  Text,
   virtualColor,
 } from "@mantine/core";
 import "@mantine/core/styles.css";
+import { Notifications } from "@mantine/notifications";
 import "./index.css";
 import AuthProvider from "./contexts/Auth/AuthProvider";
 import { Watch, Contact, CalendarClock } from "lucide-react";
 import { RoutesProvider } from "./contexts/Routes/RoutesProvider";
 import { UserAvatar } from "./components/UserAvatar/UserAvatar";
 import { ProfilePage } from "./pages/Profile";
+
+import { ContactsPage } from "./pages/ContactsPage";
+import { DeviceProvider } from "./contexts/Device/DeviceProvider";
+import { DevicePage } from "./pages/DevicePage";
+import { SchedulePage } from "./pages/SchedulePage";
 
 const theme = createTheme({
   colors: {
@@ -22,37 +28,58 @@ const theme = createTheme({
       light: "blue",
     }),
   },
+
   defaultRadius: "md",
-  // Ensure transitions are enabled globally
   respectReducedMotion: false,
   focusRing: "auto",
 });
 
 const routes = {
   device: {
-    icon: <Watch size={20} />,
-    component: <Text>Device Page</Text>,
+    label: "Device",
+    icon: (
+      <Indicator processing color="red">
+        <Watch size={24} />
+      </Indicator>
+    ),
+    component: <DevicePage />,
   },
   contacts: {
-    icon: <Contact size={20} />,
-    component: <Text>Contacts Page</Text>,
+    label: "Contacts",
+    icon: <Contact size={24} />,
+    component: <ContactsPage />,
   },
   schedule: {
-    icon: <CalendarClock size={20} />,
-    component: <Text>Schedule Page</Text>,
+    label: "Schedule",
+    icon: <CalendarClock size={24} />,
+    component: <SchedulePage />,
   },
   profile: {
-    icon: (active: boolean) => <UserAvatar active={active} />,
+    label: "Profile",
+    icon: (active: boolean) => <UserAvatar size={"md"} active={active} />,
     component: <ProfilePage />,
   },
 };
 
+import "./firebase";
+
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <MantineProvider theme={theme}>
     <AuthProvider>
-      <RoutesProvider routes={routes}>
-        <App />
-      </RoutesProvider>
+      <DeviceProvider>
+        <RoutesProvider routes={routes}>
+          <Notifications
+            position="top-center"
+            limit={5}
+            style={{
+              width: "100%",
+              left: 0,
+              transform: "none",
+            }}
+          />
+          <App />
+        </RoutesProvider>
+      </DeviceProvider>
     </AuthProvider>
   </MantineProvider>
 );

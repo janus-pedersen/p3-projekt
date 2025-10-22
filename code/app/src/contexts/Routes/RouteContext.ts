@@ -2,6 +2,7 @@ import { createContext } from "react";
 
 export interface Route {
   //   name: string;
+  label: string;
   component: React.ReactNode;
   icon: React.ReactNode | ((active: boolean) => React.ReactNode);
 }

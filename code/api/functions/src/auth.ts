@@ -11,6 +11,17 @@ if (!admin.apps.length) {
 
 const TWILIO_SERVICE_ID = defineString("TWILIO_SERVICE_ID");
 
+export const update = onCall<Partial<admin.auth.UpdateRequest>>(
+  async (data, context) => {
+    if (!data.auth) {
+      throw new Error("Unauthenticated");
+    }
+
+    const updates = data.data;
+    return await admin.auth().updateUser(data.auth.uid, updates);
+  }
+);
+
 export const verify = onCall<{ phone: string; code: string }>(
   async (data, context) => {
     const { phone, code } = data.data;
