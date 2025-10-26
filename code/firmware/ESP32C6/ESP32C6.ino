@@ -6,14 +6,18 @@ int numDelay = 1000;
 NimBLECharacteristic* pCharacteristic1;
 NimBLECharacteristic* pCharacteristic2;
 
-// Run when pCharacteristic1 gets changed
+// Run when pCharacteristic1 changes. Remember to use UINT 32 (little-endian)
 class MyCharacteristicCallbacks : public NimBLECharacteristicCallbacks {
   void onWrite(NimBLECharacteristic* pCharacteristic, NimBLEConnInfo &connInfo) override {
-    std::string newValue = pCharacteristic->getValue();
-    Serial.print("Characteristic written: ");
-    Serial.println(newValue.c_str());
+    auto valueContainer = pCharacteristic->getValue();
 
-    numDelay = atoi(newValue.c_str());
+    size_t len = valueContainer.size();
+    const uint8_t* data = valueContainer.data();
+
+    if (len >= sizeof(int)) {
+      memcpy(&numDelay, data, sizeof(int));
+    }
+
     Serial.print("Delay written: ");
     Serial.println(numDelay);
   }
