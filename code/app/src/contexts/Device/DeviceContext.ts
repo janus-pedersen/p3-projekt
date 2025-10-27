@@ -1,4 +1,4 @@
-import { createContext } from "react";
+import { createContext, useContext } from "react";
 
 export type LapsusDevice = {
   id: string;
@@ -9,6 +9,7 @@ export type LapsusDevice = {
 
 export type LapsusAdvertisement = {
   id: string;
+  name: string;
   rssi: number;
 
   connect(): Promise<LapsusDevice>;
@@ -24,3 +25,5 @@ export type DeviceContextType = {
 };
 
 export const DeviceContext = createContext<DeviceContextType | null>(null);
+
+export const useDevice = () => useContext(DeviceContext)!;

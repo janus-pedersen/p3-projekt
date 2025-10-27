@@ -18,3 +18,4 @@ obj
 *.bkp
 /code/app/ios/App/App.xcarchive/dSYMs
 /code/app/ios/App/App.xcarchive/Products
+/code/firmware/.pio

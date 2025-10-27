@@ -1,12 +1,12 @@
-import { AppShell, Stack, useMantineColorScheme } from "@mantine/core";
-import { useContext, useEffect } from "react";
+import { AppShell, useMantineColorScheme } from "@mantine/core";
+import { useEffect } from "react";
 import { useAuth } from "./hooks/useAuth";
 import Navbar from "./components/Navbar/Navbar";
 import { Outlet } from "./components/Outlet/Outlet";
 import SignInPage from "./pages/SignIn";
 import { Keyboard } from "@capacitor/keyboard";
-import { AnimatePresence, motion } from "motion/react";
-import { RouteContext } from "./contexts/Routes/RouteContext";
+import { RoutesProvider } from "./contexts/Routes/RoutesProvider";
+import { relativeRoutes, responderRoutes } from "./pages";
 
 function App() {
   const { setColorScheme } = useMantineColorScheme();
@@ -15,8 +15,6 @@ function App() {
   }, [setColorScheme]);
 
   const { user } = useAuth();
-
-  const { currentRoute } = useContext(RouteContext)!;
 
   useEffect(() => {
     const updatePadding = (info: { keyboardHeight: number }) => {
@@ -33,32 +31,41 @@ function App() {
   }, []);
 
   return (
-    <AppShell
-      padding="md"
-      className="app-shell-root"
-      pos={"fixed"}
-      display={"flex"}
+    <RoutesProvider
+      routes={{
+        wearer: relativeRoutes,
+        guardian: responderRoutes,
+      }}
     >
-      <AppShell.Main style={{ flexGrow: 1 }} w={"100vw"}>
-        {!user && <SignInPage />}
+      <AppShell padding="md" className="app-shell-root" display={"flex"}>
+        <AppShell.Main style={{ flexGrow: 1 }} w={"100vw"} pb={"150px"}>
+          {!user && <SignInPage />}
 
-        {user && (
-          <AnimatePresence propagate mode={"wait"}>
+          {/* <AnimatePresence mode="wait" initial={false}>
+          {user && (
             <motion.div
-              key={currentRoute}
+              key={currentRoute} // ensures remount on route change
+              initial={{ opacity: 0 }} // animate in
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }} // animate out
               style={{ width: "100%", height: "100vh" }}
+              onAnimationComplete={(definition) => {
+                if (definition === "exit") {
+                  setDisplayedPage(currentRoute);
+                }
+              }}
             >
-              <Stack m={"lg"} mt={0} pb={150}>
-                <Outlet />
-              </Stack>
+              <Outlet route={displayedPage} />
             </motion.div>
-          </AnimatePresence>
-        )}
-      </AppShell.Main>
-      <AppShell.Footer hidden={!user}>
-        <Navbar />
-      </AppShell.Footer>
-    </AppShell>
+          )}
+        </AnimatePresence> */}
+          <Outlet />
+        </AppShell.Main>
+        <AppShell.Footer hidden={!user}>
+          <Navbar />
+        </AppShell.Footer>
+      </AppShell>
+    </RoutesProvider>
   );
 }
 

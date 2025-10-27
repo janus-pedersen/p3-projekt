@@ -11,6 +11,7 @@ import * as auth from "firebase/auth";
 import { useEffect, useState } from "react";
 import { getContactByPhone } from "../../utils/getUserContact";
 import { Dialog } from "@capacitor/dialog";
+import { FirebaseFirestore } from "@capacitor-firebase/firestore";
 
 const BackgroundGeolocation = registerPlugin<BackgroundGeolocationPlugin>(
   "BackgroundGeolocation"
@@ -39,14 +40,16 @@ export default function AuthProvider(props: React.PropsWithChildren) {
   }, []);
 
   useEffect(() => {
+    if (!user) return;
+
     const watcher = BackgroundGeolocation.addWatcher(
       {
-        requestPermissions: user ? true : false, // Only request permissions if user is logged in
+        requestPermissions: true, // Only request permissions if user is logged in
         backgroundMessage: "Continue tracking your location?",
         backgroundTitle: "App is tracking your location",
         distanceFilter: 10,
       },
-      (location, error) => {
+      async (location, error) => {
         if (error || !location) {
           if (!error) return;
           switch (error.code) {
@@ -65,7 +68,17 @@ export default function AuthProvider(props: React.PropsWithChildren) {
           return;
         }
 
-        console.log("Location update:", location);
+        const document = await FirebaseFirestore.addDocument({
+          reference: `users/${user.uid}/snapshots`,
+          data: {
+            latitude: location.latitude,
+            longitude: location.longitude,
+            accuracy: location.accuracy,
+            timestamp: location.time,
+          },
+        });
+        console.log("Location update:", document, location);
+
         // TODO: Send location to server
       }
     );
@@ -124,7 +137,7 @@ export default function AuthProvider(props: React.PropsWithChildren) {
   };
 
   const updateUser = async (data: Partial<User>) => {
-    // if (!user) throw new Error("No user");
+    if (!user) throw new Error("No user");
 
     const newUser = await FirebaseFunctions.callByName<Partial<User>, User>({
       name: "update",
@@ -134,6 +147,10 @@ export default function AuthProvider(props: React.PropsWithChildren) {
     });
 
     if (newUser) setUser(newUser.data as User);
+
+    // await FirebaseAuthentication.updateProfile({
+
+    // })
   };
 
   const signOut = async () => {

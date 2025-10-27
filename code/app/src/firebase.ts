@@ -12,7 +12,6 @@ import config from "../firebase.config.json";
 import { FirebaseAuthentication } from "@capacitor-firebase/authentication";
 import { FirebaseFirestore } from "@capacitor-firebase/firestore";
 import { FirebaseFunctions } from "@capacitor-firebase/functions";
-import { Capacitor } from "@capacitor/core";
 const host = import.meta.env.VITE_DEV_HOST;
 
 // Setup the required firebase services

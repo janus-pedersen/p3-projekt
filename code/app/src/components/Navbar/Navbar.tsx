@@ -8,11 +8,14 @@ export interface NavbarProps {
 }
 
 export default function Navbar() {
-  const { routes, currentRoute, setCurrentRoute } = useContext(RouteContext)!;
+  const { routes, currentRoute, appMode, setCurrentRoute } =
+    useContext(RouteContext)!;
+
+  const currentRoutes = routes[appMode];
 
   return (
     <Group justify={"space-around"}>
-      {Object.entries(routes).map(([key, route]) => (
+      {Object.entries(currentRoutes).map(([key, route]) => (
         <Stack gap={0} align="center" key={key}>
           <NavbarIcon
             icon={route.icon}

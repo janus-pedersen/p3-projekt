@@ -57,7 +57,7 @@ export const useRelatives: () => RelativesData = () => {
       if (!user) throw new Error("Unauthorized!");
 
       const result = await FirebaseFirestore.addDocument({
-        reference: `user/${user.uid}/relatives`,
+        reference: `users/${user.uid}/relatives`,
         data: {
           phone,
           name,
@@ -74,7 +74,7 @@ export const useRelatives: () => RelativesData = () => {
       if (!user) throw new Error("Unauthorized!");
 
       return FirebaseFirestore.deleteDocument({
-        reference: `user/${user.uid}/relatives/${id}`,
+        reference: `users/${user.uid}/relatives/${id}`,
       });
     },
     [user]
