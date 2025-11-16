@@ -10,6 +10,12 @@
 
 SensorQMI8658 qmi;
 
+
+bool freeFall, impactDetected;
+int freeFallTime, impactTime;
+
+NimBLECharacteristic *pCharacteristicFall;
+
 void setup() {
   Serial.begin(115200);
   Serial.println("Start");
@@ -21,7 +27,7 @@ void setup() {
   
   NimBLEServer *pServer = NimBLEDevice::createServer();
   NimBLEService *pService = pServer->createService(SERVICE_UUID);
-  NimBLECharacteristic *pCharacteristicFall = pService->createCharacteristic(FALL_CHARACTERISTIC_UUID, NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::WRITE);
+  pCharacteristicFall = pService->createCharacteristic(FALL_CHARACTERISTIC_UUID, NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::WRITE);
   
   pCharacteristicFall->setValue(0);
 
@@ -145,10 +151,29 @@ void loop() {
       // Print to serial plotter
       // Serial.printf("%f %f %f\n", acc.x, acc.y, acc.z);
 
-      float magnitude = sqrt(acc.x * acc.x + acc.y * acc.y + acc.z * acc.z);
+      float mag = sqrt(acc.x*acc.x + acc.y*acc.y + acc.z*acc.z);
+      unsigned long now = millis();
 
-      if (magnitude > 2.5 || magnitude < 0.5) {
-          Serial.println("FALL DETECTED!");
+      // Free-fall detection
+      if (mag < 0.45) {
+        // Serial.println("Free-fall detection");
+        freeFall = true;
+        freeFallTime = now;
+      }
+
+      // Impact detection
+      if (freeFall && mag > 3 && (now - freeFallTime) < 300) {
+        // Serial.println("Impact detection");
+        impactDetected = true;
+        impactTime = now;
+        freeFall = false;
+      }
+
+      // Stillness detection
+      if (impactDetected && mag < 0.8 && (now - impactTime) > 500) {
+        Serial.println("FALL DETECTED!");
+        impactDetected = false;
+        pCharacteristicFall->setValue(1);
       }
     }
   }
