@@ -1,4 +1,4 @@
-import { createContext, useContext } from "react";
+import { createContext } from "react";
 
 export type AppMode = "wearer" | "guardian";
 
@@ -30,4 +30,3 @@ export type RouteContextType<
 export const RouteContext = createContext<
   RouteContextType<Record<AppMode, Record<string, Route>>> | undefined
 >(undefined);
-

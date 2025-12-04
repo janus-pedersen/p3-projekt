@@ -22,27 +22,29 @@ export const update = onCall<Partial<admin.auth.UpdateRequest>>(
   }
 );
 
-export const verify = onCall<{ phone: string; code: string }>(
+export const verify = onCall<{ phone: string; code: string; force?: boolean }>(
   async (data, context) => {
-    const { phone, code } = data.data;
+    const { phone, code, force } = data.data;
 
     if (!phone || typeof phone !== "string")
       return {
         error: "Invalid phone number",
       };
 
-    if (code) {
-      const check = await client.verify.v2
-        .services(TWILIO_SERVICE_ID.value())
-        .verificationChecks.create({
-          to: phone,
-          code,
-        });
+    if (code || force) {
+      if (!force) {
+        const check = await client.verify.v2
+          .services(TWILIO_SERVICE_ID.value())
+          .verificationChecks.create({
+            to: phone,
+            code,
+          });
 
-      if (check.status !== "approved")
-        return {
-          error: "Invalid code",
-        };
+        if (check.status !== "approved")
+          return {
+            error: "Invalid code",
+          };
+      }
 
       let user;
       try {
@@ -52,6 +54,12 @@ export const verify = onCall<{ phone: string; code: string }>(
         user = await admin.auth().createUser({
           phoneNumber: phone,
         });
+
+        await admin.firestore().collection("users").doc(user.uid).set({
+          phone: phone,
+          createdAt: admin.firestore.FieldValue.serverTimestamp(),
+        });
+
         logger.info("Created new user:", user.uid);
       }
 

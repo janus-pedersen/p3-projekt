@@ -14,24 +14,24 @@ import { MapPage } from "./relative/MapPage";
 import { DeviceIcon } from "../components/DeviceIcon/DeviceIcon";
 
 const profileRoute = {
-  label: "Profile",
+  label: "navigation.profile",
   icon: (active: boolean) => <UserAvatar size={"md"} active={active} />,
   component: <ProfilePage />,
 };
 
 const wearerRoutes = {
   device: {
-    label: "Device",
+    label: "navigation.device",
     icon: <DeviceIcon />,
     component: <DevicePage />,
   },
   contacts: {
-    label: "Contacts",
+    label: "navigation.contacts",
     icon: <Contact size={24} />,
     component: <ContactsPage />,
   },
   schedule: {
-    label: "Schedule",
+    label: "navigation.schedule",
     icon: <CalendarClock size={24} />,
     component: <SchedulePage />,
   },
@@ -40,12 +40,12 @@ const wearerRoutes = {
 
 const guardianRoutes = {
   alerts: {
-    label: "Alerts",
+    label: "navigation.alerts",
     icon: <MessageSquareWarning />,
     component: <AlertsPage />,
   },
   map: {
-    label: "Map",
+    label: "navigation.map",
     icon: <Map />,
     component: <MapPage />,
   },

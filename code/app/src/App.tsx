@@ -1,5 +1,5 @@
-import { AppShell, useMantineColorScheme } from "@mantine/core";
-import { useEffect } from "react";
+import { AppShell, Center, Loader, useMantineColorScheme } from "@mantine/core";
+import { Suspense, useEffect } from "react";
 import { useAuth } from "./hooks/useAuth";
 import Navbar from "./components/Navbar/Navbar";
 import { Outlet } from "./components/Outlet/Outlet";
@@ -40,28 +40,9 @@ function App() {
       <AppShell padding="md" className="app-shell-root" display={"flex"}>
         <AppShell.Main style={{ flexGrow: 1 }} w={"100vw"} pb={"150px"}>
           {!user && <SignInPage />}
-
-          {/* <AnimatePresence mode="wait" initial={false}>
-          {user && (
-            <motion.div
-              key={currentRoute} // ensures remount on route change
-              initial={{ opacity: 0 }} // animate in
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }} // animate out
-              style={{ width: "100%", height: "100vh" }}
-              onAnimationComplete={(definition) => {
-                if (definition === "exit") {
-                  setDisplayedPage(currentRoute);
-                }
-              }}
-            >
-              <Outlet route={displayedPage} />
-            </motion.div>
-          )}
-        </AnimatePresence> */}
-          <Outlet />
+          {user && <Outlet />}
         </AppShell.Main>
-        <AppShell.Footer hidden={!user}>
+        <AppShell.Footer bg={"primary.8"} hidden={!user}>
           <Navbar />
         </AppShell.Footer>
       </AppShell>
@@ -69,4 +50,16 @@ function App() {
   );
 }
 
-export default App;
+export default function WrappedApp() {
+  return (
+    <Suspense
+      fallback={
+        <Center h={"100vh"}>
+          <Loader />
+        </Center>
+      }
+    >
+      <App />
+    </Suspense>
+  );
+}

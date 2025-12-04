@@ -1,0 +1,35 @@
+{
+  "wearer": "Bærer",
+  "guardian": "Værge",
+  "navigation": {
+    "profile": "Profil",
+    "device": "Enhed",
+    "guardians": "Værger",
+    "contacts": "Kontakter",
+    "schedule": "Tidsplan",
+    "map": "Kort",
+    "alerts": "Advarsler"
+  },
+  "contacts": {
+    "settings": "Administrer dine nød-kontakter"
+  },
+  "device": {
+    "devices": "{{count}} enheder",
+    "settings": "Administrer dine enhedsindstillinger",
+    "no_device": "Ingen enhed tilsluttet",
+    "connect": "Tilslut"
+  },
+  "auth": {
+    "sign_in": "Log ind",
+    "sign_in_subtitle": "Log ind med dit telefonnummer for at fortsætte.",
+    "send_code": "Send kode",
+    "verify_code": "Bekræft kode",
+    "continue": "Fortsæt"
+  },
+  "misc": {
+    "settings": "Indstillinger",
+
+    "account_type": "Kontotype",
+    "switch_account_type": "Skift mellem {{wearer}} eller {{guardian}}"
+  }
+}

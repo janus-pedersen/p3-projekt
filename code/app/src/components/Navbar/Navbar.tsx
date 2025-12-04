@@ -2,6 +2,7 @@ import { Group, Stack, Text } from "@mantine/core";
 import NavbarIcon from "./NavbarIcon/NavbarIcon";
 import { useContext } from "react";
 import { RouteContext } from "../../contexts/Routes/RouteContext";
+import { useTranslation } from "react-i18next";
 
 export interface NavbarProps {
   transitionDuration?: number;
@@ -10,6 +11,8 @@ export interface NavbarProps {
 export default function Navbar() {
   const { routes, currentRoute, appMode, setCurrentRoute } =
     useContext(RouteContext)!;
+
+  const { t } = useTranslation();
 
   const currentRoutes = routes[appMode];
 
@@ -22,8 +25,8 @@ export default function Navbar() {
             active={currentRoute === key}
             onClick={() => setCurrentRoute(key)}
           />
-          <Text size={"xs"} c={"dimmed"}>
-            {route.label}
+          <Text size={"sm"} c={currentRoute === key ? "white" : "primary.3"}>
+            {t(route.label)}
           </Text>
         </Stack>
       ))}

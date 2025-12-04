@@ -38,7 +38,7 @@ void setup() {
   NimBLEServer *pServer = NimBLEDevice::createServer();
   NimBLEService *pService = pServer->createService(SERVICE_UUID);
   NimBLECharacteristic *pCharacteristic1 = pService->createCharacteristic(WRITE_CHARACTERISTIC_UUID, NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::WRITE);
-  pCharacteristic2 = pService->createCharacteristic(READ_CHARACTERISTIC_UUID, NIMBLE_PROPERTY::READ);
+  pCharacteristic2 = pService->createCharacteristic(READ_CHARACTERISTIC_UUID, NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::NOTIFY);
   
   pCharacteristic1->setValue(1000);
 
@@ -59,5 +59,6 @@ void setup() {
 void loop() {
   number++;
   pCharacteristic2->setValue(number);
+  pCharacteristic2->notify();
   delay(numDelay);
 }

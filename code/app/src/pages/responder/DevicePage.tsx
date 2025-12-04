@@ -1,10 +1,11 @@
-import { Box, Button, Group, Paper, Text } from "@mantine/core";
+import { Box, Button, Group, Paper, Stack, Text } from "@mantine/core";
 import { Header } from "../../components/Header/Header";
 import {
   useDevice,
   type LapsusAdvertisement,
 } from "../../contexts/Device/DeviceContext";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 export function DevicePage() {
   const { device, listen } = useDevice();
@@ -19,21 +20,38 @@ export function DevicePage() {
     });
 
     return () => {
-      unsubscribe();
+      unsubscribe.then((unsub) => {
+        unsub();
+      });
     };
   }, [device, listen]);
+
+  const { t } = useTranslation();
 
   return (
     <>
       {device ? (
         <>
-          <Box></Box>
+          <Box
+            pos={"absolute"}
+            top={0}
+            left={0}
+            w={"100%"}
+            h={"400"}
+            style={{
+              background:
+                "linear-gradient(0deg, var(--mantine-color-primary-5), var(--mantine-color-primary-9))",
+            }}
+          ></Box>
+          <Stack mt={"330"}>
+            <Header title={device.name} subtitle={t("device.settings")} />
+          </Stack>
         </>
       ) : (
         <>
           <Header
-            title={"Device"}
-            subtitle={"Manage your device settings here."}
+            title={t("navigation.device")}
+            subtitle={t("device.settings")}
           />
           <Paper withBorder>
             <Text p="md">No device connected</Text>
@@ -49,12 +67,12 @@ export function DevicePage() {
                   </Group>
 
                   <Button size="xs" onClick={() => advert.connect()}>
-                    Connect
+                    {t("device.connect")}
                   </Button>
                 </Group>
               ))}
             <Text p="md" size="xs" c="dimmed">
-              {adverts.length} devices
+              {t("device.devices", { count: adverts.length })}
             </Text>
           </Paper>
         </>

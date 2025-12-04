@@ -5,26 +5,44 @@ import {
   Group,
   InputWrapper,
   SegmentedControl,
+  Select,
   Stack,
   Text,
 } from "@mantine/core";
 import { UserAvatar } from "../components/UserAvatar/UserAvatar";
 import { useAuth } from "../hooks/useAuth";
-import { Edit2Icon, LogOut } from "lucide-react";
+import { ChevronDown, Edit2Icon, LogOut } from "lucide-react";
 import { Dialog } from "@capacitor/dialog";
 import { RouteContext, type AppMode } from "../contexts/Routes/RouteContext";
 import { useContext } from "react";
+import { locales } from "../i18n";
+import { useTranslation } from "react-i18next";
 
 export function ProfilePage() {
   const { user, signOut, updateUser } = useAuth();
   const { appMode, setAppMode } = useContext(RouteContext)!;
 
+  const { t, i18n } = useTranslation();
+
   return (
     <>
       <Group w={"100%"} justify={"space-between"} px={"sm"}>
-        <ActionIcon size={"xl"} variant={"transparent"}>
-          🇺🇸
-        </ActionIcon>
+        <Select
+          comboboxProps={{
+            width: "max-content",
+          }}
+          rightSection={<ChevronDown size={14} />}
+          autoComplete={"off"}
+          value={i18n.language}
+          data={Object.entries(locales).map(([key, meta]) => ({
+            value: key,
+            label: meta.emoji,
+          }))}
+          onChange={(val) => {
+            if (val) i18n.changeLanguage(val);
+          }}
+          w={75}
+        ></Select>
         <ActionIcon
           onClick={() => {
             signOut();
@@ -66,7 +84,7 @@ export function ProfilePage() {
         </Text>
       </Stack>
       <Stack w={"100%"} px={"lg"} mt={"xl"}>
-        <Divider label="Settings" />
+        <Divider label={t("misc.settings")} />
 
         {/* <InputWrapper
           label="Language"
@@ -86,8 +104,11 @@ export function ProfilePage() {
 
         <InputWrapper
           w={"100%"}
-          label="Account Type"
-          description="Switch between Relative and Responder accounts"
+          label={t("misc.account_type")}
+          description={t("misc.switch_account_type", {
+            wearer: t("wearer"),
+            guardian: t("guardian"),
+          })}
         >
           <SegmentedControl
             my={"xs"}
@@ -99,11 +120,11 @@ export function ProfilePage() {
             data={
               [
                 {
-                  label: "Wearer",
+                  label: t("wearer"),
                   value: "wearer",
                 },
                 {
-                  label: "Responder",
+                  label: t("guardian"),
                   value: "guardian",
                 },
               ] as { value: AppMode; label: string }[]

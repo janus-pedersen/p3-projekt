@@ -2,6 +2,7 @@ import { createContext, useContext } from "react";
 
 export type LapsusDevice = {
   id: string;
+  name: string;
   battery: number;
 
   disconnect(): Promise<void>;
@@ -21,9 +22,11 @@ export type DeviceContextType = {
   device?: LapsusDevice;
   state: DeviceState;
 
-  listen(update: (devices: LapsusAdvertisement[]) => void): () => void;
+  listen: (
+    update: (devices: LapsusAdvertisement[]) => void
+  ) => Promise<() => void>;
 };
 
-export const DeviceContext = createContext<DeviceContextType | null>(null);
+export const DeviceContext = createContext<DeviceContextType | undefined>(undefined);
 
 export const useDevice = () => useContext(DeviceContext)!;

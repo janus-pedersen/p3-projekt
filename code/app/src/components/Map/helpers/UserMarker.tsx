@@ -27,14 +27,8 @@ export function UserMarker(props: UserMarkerProps) {
       }}
     >
       <Stack pos={"relative"}>
-        <ThemeIcon
-          variant={"filled"}
-          color={"primary"}
-          radius={"xl"}
-          size={"xl"}
-          autoContrast
-        >
-          <User2 />
+        <ThemeIcon variant={"filled"} radius={"xl"} size={"xl"} autoContrast>
+          <User2 color="white" />
         </ThemeIcon>
         {props.name && (
           <Badge

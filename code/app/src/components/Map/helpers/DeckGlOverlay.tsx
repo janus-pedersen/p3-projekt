@@ -14,6 +14,9 @@ export function DeckGLOverlay(props: Partial<GoogleMapsOverlayProps>) {
     return () => overlay.setMap(null);
   }, [map, overlay]);
 
-  overlay.setProps(props);
+  useEffect(() => {
+    overlay.setProps(props);
+  }, [overlay, props]);
+
   return null;
 }

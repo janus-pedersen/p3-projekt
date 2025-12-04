@@ -15,7 +15,7 @@ export default function NavbarIcon(props: NavbarIconProps) {
       }}
       onClick={() => props.onClick?.()}
       size={"xl"}
-      color={props.active ? "primary" : "gray"}
+      color={props.active ? "white" : "primary.4"}
       variant={props.active ? "subtle" : "transparent"}
     >
       {typeof props.icon === "function" ? props.icon(props.active) : props.icon}

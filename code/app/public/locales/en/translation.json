@@ -1,0 +1,44 @@
+{
+  "wearer": "Wearer",
+  "guardian": "Guardian",
+  "navigation": {
+    "profile": "Profile",
+    "device": "Device",
+    "guardians": "Guardians",
+    "contacts": "Contacts",
+    "schedule": "Schedule",
+    "map": "Map",
+    "alerts": "Alerts"
+  },
+  "alerts": {
+    "subtitle": "Check current and previous alerts"
+  },
+  "contacts": {
+    "subtitle": "Mange your emergency contacts"
+  },
+  "device": {
+    "subtitle": "Mange your device settingss",
+    "devices": "{{count}} devices",
+    "no_device": "No device connected",
+    "connect": "Connect"
+  },
+  "auth": {
+    "sign_in": "Sign In",
+    "sign_in_force": "Bypass",
+    "sign_in_subtitle": "Sign in with your phone number to continue.",
+
+    "name": "Name",
+    "country": "Country",
+    "phone": "Phone",
+
+    "send_code": "Send Code",
+    "verify_code": "Verify Code",
+    "continue": "Continue"
+  },
+  "misc": {
+    "settings": "Settings",
+
+    "account_type": "Account Type",
+    "switch_account_type": "Switch between {{wearer}} or {{guardian}}"
+  }
+}

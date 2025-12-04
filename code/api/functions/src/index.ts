@@ -34,3 +34,4 @@ export const health = onCall((data, context) => {
 
 export * from "./auth";
 export * from "./alert";
+export * from "./related";

@@ -9,7 +9,6 @@ import {
 } from "@capacitor-firebase/authentication";
 import * as auth from "firebase/auth";
 import { useEffect, useState } from "react";
-import { getContactByPhone } from "../../utils/getUserContact";
 import { Dialog } from "@capacitor/dialog";
 import { FirebaseFirestore } from "@capacitor-firebase/firestore";
 
@@ -20,6 +19,7 @@ const BackgroundGeolocation = registerPlugin<BackgroundGeolocationPlugin>(
 export type VerifyPayload = {
   phone: string;
   code?: string;
+  force?: boolean;
 };
 
 export type VerifyResponse =
@@ -29,13 +29,13 @@ export type VerifyResponse =
   | string;
 
 export default function AuthProvider(props: React.PropsWithChildren) {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<User | undefined>(undefined);
 
   useEffect(() => {
     (async () => {
       const result = await FirebaseAuthentication.getCurrentUser();
 
-      setUser(result.user);
+      setUser(result.user ?? undefined);
     })();
   }, []);
 
@@ -99,6 +99,30 @@ export default function AuthProvider(props: React.PropsWithChildren) {
     });
   };
 
+  const force = async (phone: string) => {
+    const { data } = await FirebaseFunctions.callByName<
+      VerifyPayload,
+      VerifyResponse
+    >({
+      name: "verify",
+      data: {
+        phone,
+        force: true,
+      },
+    });
+
+    if (typeof data === "string") {
+      throw new Error(data);
+    }
+
+    await auth.signInWithCustomToken(auth.getAuth(), data.token);
+    const result = await FirebaseAuthentication.signInWithCustomToken({
+      token: data.token,
+    });
+
+    setUser(result.user ?? undefined);
+  };
+
   const verifyCode = async (phone: string, code: string) => {
     return FirebaseFunctions.callByName<VerifyPayload, VerifyResponse>({
       name: "verify",
@@ -117,20 +141,22 @@ export default function AuthProvider(props: React.PropsWithChildren) {
         token,
       });
 
-      setUser(result.user);
+      // const { user } = await FirebaseAuthentication.getCurrentUser();
 
-      // Get the user from the contacts on the phone, and update the display name
-      if (result.user?.phoneNumber) {
-        console.log("Looking for contact...");
-        getContactByPhone(result.user?.phoneNumber).then((contact) => {
-          if (contact) {
-            updateUser({
-              displayName: result.user?.displayName || contact.name?.display,
-              photoUrl: result.user?.photoUrl || contact.image?.base64String,
-            });
-          }
-        });
-      }
+      setUser(result.user ?? undefined);
+
+      // // Get the user from the contacts on the phone, and update the display name
+      // if (result.user?.phoneNumber) {
+      //   console.log("Looking for contact...");
+      //   getContactByPhone(result.user?.phoneNumber).then((contact) => {
+      //     if (contact) {
+      //       updateUser({
+      //         displayName: result.user?.displayName || contact.name?.display,
+      //         photoUrl: result.user?.photoUrl || contact.image?.base64String,
+      //       });
+      //     }
+      //   });
+      // }
 
       return token;
     });
@@ -147,15 +173,11 @@ export default function AuthProvider(props: React.PropsWithChildren) {
     });
 
     if (newUser) setUser(newUser.data as User);
-
-    // await FirebaseAuthentication.updateProfile({
-
-    // })
   };
 
   const signOut = async () => {
     FirebaseAuthentication.signOut();
-    setUser(null);
+    setUser(undefined);
   };
 
   return (
@@ -163,6 +185,7 @@ export default function AuthProvider(props: React.PropsWithChildren) {
       value={{
         getCode,
         verifyCode,
+        force,
         signOut,
         user,
         updateUser,

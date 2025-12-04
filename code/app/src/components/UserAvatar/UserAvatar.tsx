@@ -16,7 +16,7 @@ export function UserAvatar(props: UserAvatarProps) {
       name={user?.displayName ?? undefined}
       alt="User Avatar"
       variant={"light"}
-      color={props.active ? "primary" : "gray"}
+      color={props.active ? "white" : "primary.4"}
     />
   );
 }

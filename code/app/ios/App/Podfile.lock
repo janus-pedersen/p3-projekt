@@ -1179,6 +1179,8 @@ PODS:
     - Capacitor
   - CapacitorLocalNotifications (7.0.3):
     - Capacitor
+  - CapacitorSplashScreen (7.0.3):
+    - Capacitor
   - FirebaseAppCheckInterop (11.15.0)
   - FirebaseAuth (11.7.0):
     - FirebaseAppCheckInterop (~> 11.0)
@@ -1360,6 +1362,7 @@ DEPENDENCIES:
   - "CapacitorFirebaseFunctions (from `../../node_modules/@capacitor-firebase/functions`)"
   - "CapacitorKeyboard (from `../../node_modules/@capacitor/keyboard`)"
   - "CapacitorLocalNotifications (from `../../node_modules/@capacitor/local-notifications`)"
+  - "CapacitorSplashScreen (from `../../node_modules/@capacitor/splash-screen`)"
 
 SPEC REPOS:
   trunk:
@@ -1407,6 +1410,8 @@ EXTERNAL SOURCES:
     :path: "../../node_modules/@capacitor/keyboard"
   CapacitorLocalNotifications:
     :path: "../../node_modules/@capacitor/local-notifications"
+  CapacitorSplashScreen:
+    :path: "../../node_modules/@capacitor/splash-screen"
 
 SPEC CHECKSUMS:
   abseil: d121da9ef7e2ff4cab7666e76c5a3e0915ae08c3
@@ -1422,6 +1427,7 @@ SPEC CHECKSUMS:
   CapacitorFirebaseFunctions: f7cc5cb598a58ae3f7db0837cfcab0ee2ff47f52
   CapacitorKeyboard: 62f36104f26d53d8b3a2a43f2a69fe714f1777d5
   CapacitorLocalNotifications: 0811aef56ab2e5f7f9ae72f47d3473ab50c29038
+  CapacitorSplashScreen: e388b8e0ed0e982a9d3a40417f478e7a018a8763
   FirebaseAppCheckInterop: 06fe5a3799278ae4667e6c432edd86b1030fa3df
   FirebaseAuth: 77e25aa24f3e1c626c5babd3338551fc1669ee0e
   FirebaseAuthInterop: 7087d7a4ee4bc4de019b2d0c240974ed5d89e2fd
@@ -1441,6 +1447,6 @@ SPEC CHECKSUMS:
   nanopb: fad817b59e0457d11a5dfbde799381cd727c1275
   RecaptchaInterop: 7d1a4a01a6b2cb1610a47ef3f85f0c411434cb21
 
-PODFILE CHECKSUM: 0a3c9f1fc49c5e44e6d35ef9ed06068a93c91ccd
+PODFILE CHECKSUM: f5522d2847fe8c864198bf399309203dfc3551d6
 
 COCOAPODS: 1.16.2
