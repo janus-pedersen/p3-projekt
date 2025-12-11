@@ -12,9 +12,8 @@ import { useEffect, useState } from "react";
 import { Dialog } from "@capacitor/dialog";
 import { FirebaseFirestore } from "@capacitor-firebase/firestore";
 
-const BackgroundGeolocation = registerPlugin<BackgroundGeolocationPlugin>(
-  "BackgroundGeolocation"
-);
+export const BackgroundGeolocation =
+  registerPlugin<BackgroundGeolocationPlugin>("BackgroundGeolocation");
 
 export type VerifyPayload = {
   phone: string;

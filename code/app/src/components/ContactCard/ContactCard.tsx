@@ -42,7 +42,7 @@ export function ContactCard(props: ContactCardProps) {
   if (!parsed) return null;
 
   return (
-    <Paper shadow="xs" p={"sm"}>
+    <Paper p={"sm"} bg={"transparent"}>
       <Group>
         <Avatar
           color="primary"

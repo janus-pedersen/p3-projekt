@@ -6,38 +6,10 @@ if (!admin.apps.length) {
   admin.initializeApp();
 }
 
-export const related = onCall<{}>(async (data) => {
-  const user = data.auth;
-  if (!user) {
-    throw new Error("Unauthenticated");
-  }
-
-  const phone = await admin
-    .auth()
-    .getUser(user.uid)
-    .then((u) => u.phoneNumber);
-
-  if (!phone) {
-    throw new Error("User has no phone number");
-  }
-
-  console.log("Project:", admin.app().options.projectId);
-  const cols = await admin.firestore().listCollections();
-  console.log(
-    "Top-level collections:",
-    cols.map((c) => c.id)
-  );
-
-  console.log("Looking for relatives with phone:", phone);
-
+export const getRelated = async (uid: string, phone: string) => {
   const users = await admin.firestore().collectionGroup("users").get();
-  console.log("Total users: ", users.size);
-  console.log(
-    "All 'users' collectionGroup doc IDs:",
-    users.docs.map((d) => d.ref.path)
-  );
 
-  const related = (
+  return (
     await Promise.all(
       users.docs.map(async (doc) => {
         console.log("Checking user:", doc.id);
@@ -65,6 +37,22 @@ export const related = onCall<{}>(async (data) => {
       })
     )
   ).filter(Boolean);
+};
 
-  return { user: user.uid, phone, related };
+export const related = onCall<{}>(async (data) => {
+  const user = data.auth;
+  if (!user) {
+    throw new Error("Unauthenticated");
+  }
+
+  const phone = await admin
+    .auth()
+    .getUser(user.uid)
+    .then((u) => u.phoneNumber);
+
+  if (!phone) {
+    throw new Error("User has no phone number");
+  }
+
+  return { user: user.uid, phone, related: await getRelated(user.uid, phone) };
 });

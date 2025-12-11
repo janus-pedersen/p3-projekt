@@ -31,6 +31,7 @@ export function ProfilePage() {
           comboboxProps={{
             width: "max-content",
           }}
+          searchable={false}
           rightSection={<ChevronDown size={14} />}
           autoComplete={"off"}
           value={i18n.language}

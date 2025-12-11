@@ -6,6 +6,8 @@ import { useColorScheme } from "@mantine/hooks";
 import { UserTrail } from "./helpers/UserTrail";
 import { useMantineTheme } from "@mantine/core";
 import { UserMarker } from "./helpers/UserMarker";
+import { type Layer } from "@deck.gl/core";
+import { MapRepaintFix } from "./helpers/MapRepaintFix";
 
 export interface MapProps {
   people?: {
@@ -17,16 +19,19 @@ export interface MapProps {
     }[];
     name: string;
   }[];
+  layers?: Layer[];
+
   style?: React.CSSProperties;
+  unstyled?: boolean;
   id?: string;
 }
 
-export function Map(props: MapProps) {
+export function Map(props: React.PropsWithChildren<MapProps>) {
   //   const { colorScheme: mantineScheme } = useMantineColorScheme();
   const colorScheme = useColorScheme();
   const theme = useMantineTheme();
 
-  const layers = useMemo(() => {
+  const peopleLayers = useMemo(() => {
     if (!props.people) return [];
 
     return props.people.map((person) => {
@@ -35,12 +40,15 @@ export function Map(props: MapProps) {
   }, [props.people, theme]);
 
   return (
-    <APIProvider apiKey={import.meta.env.VITE_GOOGLE_MAPS_JS_API_KEY}>
+    <APIProvider
+      apiKey={import.meta.env.VITE_GOOGLE_MAPS_JS_API_KEY}
+      libraries={["marker"]}
+    >
       <GoogleMap
-        className={classes.map}
+        className={props.unstyled ? undefined : classes.map}
         mapId={props.id}
         defaultCenter={{ lat: 55.6761, lng: 12.5683 }}
-        defaultZoom={10}
+        // defaultZoom={10}
         minZoom={3}
         gestureHandling="greedy"
         // renderingType={"VECTOR"}
@@ -48,7 +56,10 @@ export function Map(props: MapProps) {
         disableDefaultUI
         style={props.style}
       >
-        <DeckGLOverlay layers={layers} />
+        <MapRepaintFix />
+        <DeckGLOverlay layers={peopleLayers} />
+
+        {props.children}
 
         {props.people?.map((person) => {
           // do not mutate history when determining latest

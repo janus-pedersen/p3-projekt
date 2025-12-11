@@ -10,26 +10,52 @@
     "map": "Kort",
     "alerts": "Advarsler"
   },
+  "alerts": {
+    "send_test_alert": "Send testalarm",
+    "subtitle": "Se nuværende og tidligere alarmer"
+  },
   "contacts": {
-    "settings": "Administrer dine nød-kontakter"
+    "subtitle": "Administrer dine nødkontakter"
   },
   "device": {
+    "subtitle": "Administrer dine enhedsindstillinger",
     "devices": "{{count}} enheder",
-    "settings": "Administrer dine enhedsindstillinger",
-    "no_device": "Ingen enhed tilsluttet",
-    "connect": "Tilslut"
+    "no_device": "Ingen enhed forbundet",
+    "connect": "Forbind"
   },
   "auth": {
     "sign_in": "Log ind",
+    "sign_in_force": "Omgå",
     "sign_in_subtitle": "Log ind med dit telefonnummer for at fortsætte.",
+
+    "name": "Navn",
+    "country": "Land",
+    "phone": "Telefon",
+
     "send_code": "Send kode",
     "verify_code": "Bekræft kode",
     "continue": "Fortsæt"
   },
   "misc": {
+    "open_map": "Åbn i kort",
+    "call": "Ring",
+
     "settings": "Indstillinger",
 
     "account_type": "Kontotype",
     "switch_account_type": "Skift mellem {{wearer}} eller {{guardian}}"
+  },
+  "alert": {
+    "message": "En {{type}} er blevet registreret! Kontakt din pårørende for at sikre, at de er i sikkerhed. Brug knappen nedenfor for at navigere til deres senest kendte position.",
+
+    "pending": "Afventer",
+    "active": "Aktiv",
+    "resolved": "Løst",
+    "denied": "Afvist",
+
+    "fall": "Fald",
+    "impact": "Stød",
+    "manual": "Manuel alarm",
+    "inactivity": "Inaktivitet"
   }
 }

@@ -11,6 +11,7 @@
     "alerts": "Alerts"
   },
   "alerts": {
+    "send_test_alert": "Send test alert",
     "subtitle": "Check current and previous alerts"
   },
   "contacts": {
@@ -36,9 +37,25 @@
     "continue": "Continue"
   },
   "misc": {
+    "open_map": "Open in maps",
+    "call": "Call",
+
     "settings": "Settings",
 
     "account_type": "Account Type",
     "switch_account_type": "Switch between {{wearer}} or {{guardian}}"
+  },
+  "alert": {
+    "message": "A {{type}} has been detected! Contact your relative to make sure that they are safe. Use the button below to navigate to their last known location",
+
+    "pending": "Pending",
+    "active": "Active",
+    "resolved": "Resolved",
+    "denied": "Denied",
+
+    "fall": "Fall",
+    "impact": "Impact",
+    "manual": "Manual Alert",
+    "inactivity": "Inactivity"
   }
 }

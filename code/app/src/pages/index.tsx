@@ -1,9 +1,4 @@
-import {
-  Contact,
-  CalendarClock,
-  MessageSquareWarning,
-  Map,
-} from "lucide-react";
+import { Contact, CalendarClock, Map } from "lucide-react";
 import { UserAvatar } from "../components/UserAvatar/UserAvatar";
 import { ProfilePage } from "./Profile";
 import { AlertsPage } from "./relative/AlertsPage";
@@ -12,6 +7,7 @@ import { DevicePage } from "./responder/DevicePage";
 import { SchedulePage } from "./responder/SchedulePage";
 import { MapPage } from "./relative/MapPage";
 import { DeviceIcon } from "../components/DeviceIcon/DeviceIcon";
+import { AlertIcon } from "../components/AlertIcon/AlertIcon";
 
 const profileRoute = {
   label: "navigation.profile",
@@ -41,7 +37,7 @@ const wearerRoutes = {
 const guardianRoutes = {
   alerts: {
     label: "navigation.alerts",
-    icon: <MessageSquareWarning />,
+    icon: <AlertIcon />,
     component: <AlertsPage />,
   },
   map: {
