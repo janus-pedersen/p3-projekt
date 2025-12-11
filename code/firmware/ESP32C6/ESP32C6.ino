@@ -8,6 +8,21 @@
 #define I2C_SDA 8  // Display Wire SDA Pin
 #define I2C_SCL 7  // Display Wire SCL Pin
 
+#define LED_BL 6 // Display backlight
+
+// Battery enable pin
+#define BAT_EN 15
+#define BAT_V_PIN 0
+
+// Power supply voltage of ESP32-S3 (unit: volts)
+#define VREF 3.3
+// Resistance value of the first resistor (unit: ohms)
+#define R1 200000.0
+// Resistance value of the second resistor (unit: ohms)
+#define R2 100000.0
+
+unsigned long lastsBat = millis();
+
 SensorQMI8658 qmi;
 
 
@@ -15,10 +30,19 @@ bool freeFall, impactDetected;
 int freeFallTime, impactTime;
 
 NimBLECharacteristic *pCharacteristicFall;
+NimBLECharacteristic *pBattCharacteristic;
 
 void setup() {
   Serial.begin(115200);
   Serial.println("Start");
+
+  // Latch the battery pin to high, to keep the battery enabled
+  pinMode(BAT_EN, OUTPUT);
+  digitalWrite(BAT_EN, HIGH);
+
+  // Keep the display off to save power
+  pinMode(LED_BL, OUTPUT);
+  digitalWrite(LED_BL, LOW);
 
   // uint8_t id8 = ESP.getEfuseMac() & 0xFF;
   // Create a semi-unique name with the device's chip id (truncated)
@@ -27,14 +51,19 @@ void setup() {
   
   NimBLEServer *pServer = NimBLEDevice::createServer();
   NimBLEService *pService = pServer->createService(SERVICE_UUID);
-  pCharacteristicFall = pService->createCharacteristic(FALL_CHARACTERISTIC_UUID, NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::WRITE);
-  
+  pCharacteristicFall = pService->createCharacteristic(FALL_CHARACTERISTIC_UUID, NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::WRITE | NIMBLE_PROPERTY::NOTIFY);
   pCharacteristicFall->setValue(0);
-
   pService->start();
+
+  NimBLEService *pBattService = pServer->createService("180F"); // Battery service
+  pBattCharacteristic = pBattService->createCharacteristic("2A19", NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::NOTIFY);
+  pBattCharacteristic->setValue((uint8_t)getBatteryP());
+  pBattService->start();
+
 
   NimBLEAdvertising *pAdvertising = NimBLEDevice::getAdvertising();
   pAdvertising->addServiceUUID(SERVICE_UUID);
+  pAdvertising->addServiceUUID("180F");
   pAdvertising->setName(name);
   pAdvertising->start();
 
@@ -48,6 +77,7 @@ void setup() {
       delay(1000);
     }
   }
+  
   /* Get chip id*/
   Serial.print("Device ID:");
   Serial.println(qmi.getChipID(), HEX);
@@ -177,4 +207,44 @@ void loop() {
       }
     }
   }
+
+
+  if((millis() - lastsBat) > 30000) {
+    // Report battery charge every 30 seconds
+
+
+    float f = getBatteryP();                  // 0–100 float
+    uint8_t lvl = (uint8_t)f;       // BLE Battery Level expects a u8
+
+    pBattCharacteristic->setValue(lvl);
+
+    lastsBat = millis();
+  }
+}
+
+float getBatteryP() {
+  float minV = 2.0; // The minimum expected voltage of the battery
+  float maxV = 3.3; // The maximum expected voltage
+
+  float v = getBatteryV();
+
+  return (v - minV) / (maxV - minV) * 100;
+}
+
+float getBatteryV() {
+   // Read ADC value
+  int adcValue = analogRead(BAT_V_PIN);
+
+  // Convert to voltage
+  float voltage = (float)adcValue * (VREF / 4095.0);
+
+  // Apply the voltage divider formula to calculate the actual voltage
+  float actualVoltage = voltage * ((R1 + R2) / R2);
+
+  // Print the actual voltage
+  Serial.print("Actual Voltage: ");
+  Serial.print(actualVoltage);
+  Serial.println(" V");
+
+  return actualVoltage;
 }
