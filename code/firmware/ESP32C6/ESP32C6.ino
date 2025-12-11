@@ -4,9 +4,13 @@
 
 #define SERVICE_UUID "5f9c2a60-8f9b-4e5b-bae0-bb2e7b9d2c4f"
 #define FALL_CHARACTERISTIC_UUID "0d1a6b9e-7c3f-4cb7-8a29-72d0b3df02ab"
+#define IMPACT_CHARACTERISTIC_UUID "ebf911a7-e385-49ef-a0f5-0133b3845bcf"
+#define BUTTON_CHARACTERISTIC_UUID "3a4b7c12-9fde-4b91-8c3a-1e2f4d6a8b9c"
 
 #define I2C_SDA 8  // Display Wire SDA Pin
 #define I2C_SCL 7  // Display Wire SCL Pin
+
+#define BTN_PIN 9 //SOMTHIGN HERE
 
 #define LED_BL 6 // Display backlight
 
@@ -25,12 +29,11 @@ unsigned long lastsBat = millis();
 
 SensorQMI8658 qmi;
 
-
+volatile bool buttonPressed = false;
 bool freeFall, impactDetected;
 int freeFallTime, impactTime;
 
-NimBLECharacteristic *pCharacteristicFall;
-NimBLECharacteristic *pBattCharacteristic;
+NimBLECharacteristic *pCharacteristicFall, *pCharacteristicImpact, *pCharacteristicButton, *pBattCharacteristic;
 
 void setup() {
   Serial.begin(115200);
@@ -44,6 +47,10 @@ void setup() {
   pinMode(LED_BL, OUTPUT);
   digitalWrite(LED_BL, LOW);
 
+  pinMode(BTN_PIN, INPUT_PULLUP);
+  attachInterrupt(digitalPinToInterrupt(BTN_PIN), handleButton, FALLING);
+
+
   // uint8_t id8 = ESP.getEfuseMac() & 0xFF;
   // Create a semi-unique name with the device's chip id (truncated)
   std::string name = "Lapsus " + std::to_string(ESP.getEfuseMac() & 0xFF);
@@ -52,7 +59,11 @@ void setup() {
   NimBLEServer *pServer = NimBLEDevice::createServer();
   NimBLEService *pService = pServer->createService(SERVICE_UUID);
   pCharacteristicFall = pService->createCharacteristic(FALL_CHARACTERISTIC_UUID, NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::WRITE | NIMBLE_PROPERTY::NOTIFY);
+  pCharacteristicButton = pService->createCharacteristic(IMPACT_CHARACTERISTIC_UUID, NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::WRITE | NIMBLE_PROPERTY::NOTIFY);
+  pCharacteristicImpact = pService->createCharacteristic(BUTTON_CHARACTERISTIC_UUID, NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::WRITE | NIMBLE_PROPERTY::NOTIFY);
   pCharacteristicFall->setValue(0);
+  pCharacteristicButton->setValue(0);
+  pCharacteristicImpact->setValue(0);
   pService->start();
 
   NimBLEService *pBattService = pServer->createService("180F"); // Battery service
@@ -201,17 +212,31 @@ void loop() {
 
       // Stillness detection
       if (impactDetected && mag < 0.8 && (now - impactTime) > 500) {
-        Serial.println("FALL DETECTED!");
+        // Serial.println("FALL DETECTED!");
         impactDetected = false;
         pCharacteristicFall->setValue(1);
+        pCharacteristicFall->notify();
+      }
+
+
+      // Hard impact detection
+      if (mag < 10) {
+          pCharacteristicImpact->setValue(1);
+          pCharacteristicImpact->notify();
+      }
+
+      // Emergency button pressed
+      if (buttonPressed) {
+        buttonPressed = false;
+
+        pCharacteristicButton->setValue(1);
+        pCharacteristicButton->notify();
       }
     }
   }
 
-
   if((millis() - lastsBat) > 30000) {
     // Report battery charge every 30 seconds
-
 
     float f = getBatteryP();                  // 0–100 float
     uint8_t lvl = (uint8_t)f;       // BLE Battery Level expects a u8
@@ -220,6 +245,11 @@ void loop() {
 
     lastsBat = millis();
   }
+}
+
+// ISR: must be very fast!
+void handleButton() {
+  buttonPressed = true;
 }
 
 float getBatteryP() {
