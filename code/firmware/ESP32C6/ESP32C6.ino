@@ -40,6 +40,7 @@ NimBLECharacteristic *pCharacteristicFall, *pCharacteristicImpact, *pCharacteris
 
 void setup() {
   Serial.begin(115200);
+  //Serial.end(); // Disable debugging for for powersaving
   Serial.println("Start");
 
   // Latch the battery pin to high, to keep the battery enabled
@@ -58,11 +59,14 @@ void setup() {
   std::string name = "Lapsus " + std::to_string(ESP.getEfuseMac() & 0xFF);
   NimBLEDevice::init(name);
 
+  // -7 or -3 dBm is usually plenty for phone-on-body distances
+  NimBLEDevice::setPower(-7);
+
   NimBLEServer *pServer = NimBLEDevice::createServer();
   NimBLEService *pService = pServer->createService(SERVICE_UUID);
   pCharacteristicFall = pService->createCharacteristic(FALL_CHARACTERISTIC_UUID, NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::WRITE | NIMBLE_PROPERTY::NOTIFY);
-  pCharacteristicButton = pService->createCharacteristic(IMPACT_CHARACTERISTIC_UUID, NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::WRITE | NIMBLE_PROPERTY::NOTIFY);
-  pCharacteristicImpact = pService->createCharacteristic(BUTTON_CHARACTERISTIC_UUID, NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::WRITE | NIMBLE_PROPERTY::NOTIFY);
+  pCharacteristicButton = pService->createCharacteristic(BUTTON_CHARACTERISTIC_UUID, NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::WRITE | NIMBLE_PROPERTY::NOTIFY);
+  pCharacteristicImpact = pService->createCharacteristic(IMPACT_CHARACTERISTIC_UUID, NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::WRITE | NIMBLE_PROPERTY::NOTIFY);
   pCharacteristicFall->setValue(0);
   pCharacteristicButton->setValue(0);
   pCharacteristicImpact->setValue(0);
@@ -78,6 +82,17 @@ void setup() {
   pAdvertising->addServiceUUID(SERVICE_UUID);
   pAdvertising->addServiceUUID("180F");
   pAdvertising->setName(name);
+
+  // Advertise less often: 500 ms
+  pAdvertising->setMinInterval(800);  // 800 * 0.625 ms ≈ 500 ms
+  pAdvertising->setMaxInterval(800);
+
+  // Suggest relaxed connection params to client (if it respects them)
+  pAdvertising->setPreferredParams(
+    80,   // min = 100 ms (80 * 1.25 ms)
+    160   // max = 200 ms
+  );
+
   pAdvertising->start();
 
   Serial.println("BLE server started and advertising");
@@ -129,7 +144,7 @@ void setup() {
          * ACC_ODR_LOWPOWER_11Hz
          * ACC_ODR_LOWPOWER_3H
         * */
-    SensorQMI8658::ACC_ODR_1000Hz,
+    SensorQMI8658::ACC_ODR_LOWPOWER_128Hz,
     /*
         *  LPF_MODE_0     //2.66% of ODR
         *  LPF_MODE_1     //3.63% of ODR
@@ -137,7 +152,7 @@ void setup() {
         *  LPF_MODE_3     //13.37% of ODR
         *  LPF_OFF        // OFF Low-Pass Fitter
         * */
-    SensorQMI8658::LPF_MODE_0);
+    SensorQMI8658::LPF_MODE_2);
 
   qmi.configGyroscope(
     /*
@@ -247,9 +262,13 @@ void loop() {
     uint8_t lvl = (uint8_t)f;  // BLE Battery Level expects a u8
 
     pBattCharacteristic->setValue(lvl);
+    pBattCharacteristic->notify();
 
     lastsBat = millis();
   }
+
+  // yield to the OS so it can idle / light-sleep parts
+  delay(1);
 }
 
 // This function will be called once, when the button1 is pressed for a long time.
