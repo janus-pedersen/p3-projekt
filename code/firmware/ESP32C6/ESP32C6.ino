@@ -1,6 +1,7 @@
 #include <NimBLEDevice.h>
 #include <Wire.h>
 #include "SensorQMI8658.hpp"
+#include "OneButton.h"
 
 #define SERVICE_UUID "5f9c2a60-8f9b-4e5b-bae0-bb2e7b9d2c4f"
 #define FALL_CHARACTERISTIC_UUID "0d1a6b9e-7c3f-4cb7-8a29-72d0b3df02ab"
@@ -10,9 +11,9 @@
 #define I2C_SDA 8  // Display Wire SDA Pin
 #define I2C_SCL 7  // Display Wire SCL Pin
 
-#define BTN_PIN 9 //SOMTHIGN HERE
+#define BTN_PIN 9  //SOMTHIGN HERE
 
-#define LED_BL 6 // Display backlight
+#define LED_BL 6  // Display backlight
 
 // Battery enable pin
 #define BAT_EN 15
@@ -33,6 +34,8 @@ volatile bool buttonPressed = false;
 bool freeFall, impactDetected;
 int freeFallTime, impactTime;
 
+OneButton EmergencyButton(BTN_PIN, true);
+
 NimBLECharacteristic *pCharacteristicFall, *pCharacteristicImpact, *pCharacteristicButton, *pBattCharacteristic;
 
 void setup() {
@@ -47,15 +50,14 @@ void setup() {
   pinMode(LED_BL, OUTPUT);
   digitalWrite(LED_BL, LOW);
 
-  pinMode(BTN_PIN, INPUT_PULLUP);
-  attachInterrupt(digitalPinToInterrupt(BTN_PIN), handleButton, FALLING);
+  EmergencyButton.attachLongPressStart(longPressStart);
 
 
   // uint8_t id8 = ESP.getEfuseMac() & 0xFF;
   // Create a semi-unique name with the device's chip id (truncated)
   std::string name = "Lapsus " + std::to_string(ESP.getEfuseMac() & 0xFF);
   NimBLEDevice::init(name);
-  
+
   NimBLEServer *pServer = NimBLEDevice::createServer();
   NimBLEService *pService = pServer->createService(SERVICE_UUID);
   pCharacteristicFall = pService->createCharacteristic(FALL_CHARACTERISTIC_UUID, NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::WRITE | NIMBLE_PROPERTY::NOTIFY);
@@ -66,7 +68,7 @@ void setup() {
   pCharacteristicImpact->setValue(0);
   pService->start();
 
-  NimBLEService *pBattService = pServer->createService("180F"); // Battery service
+  NimBLEService *pBattService = pServer->createService("180F");  // Battery service
   pBattCharacteristic = pBattService->createCharacteristic("2A19", NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::NOTIFY);
   pBattCharacteristic->setValue((uint8_t)getBatteryP());
   pBattService->start();
@@ -88,7 +90,7 @@ void setup() {
       delay(1000);
     }
   }
-  
+
   /* Get chip id*/
   Serial.print("Device ID:");
   Serial.println(qmi.getChipID(), HEX);
@@ -137,7 +139,7 @@ void setup() {
         * */
     SensorQMI8658::LPF_MODE_0);
 
-    qmi.configGyroscope(
+  qmi.configGyroscope(
     /*
         * GYR_RANGE_16DPS
         * GYR_RANGE_32DPS
@@ -192,7 +194,7 @@ void loop() {
       // Print to serial plotter
       // Serial.printf("%f %f %f\n", acc.x, acc.y, acc.z);
 
-      float mag = sqrt(acc.x*acc.x + acc.y*acc.y + acc.z*acc.z);
+      float mag = sqrt(acc.x * acc.x + acc.y * acc.y + acc.z * acc.z);
       unsigned long now = millis();
 
       // Free-fall detection
@@ -212,7 +214,7 @@ void loop() {
 
       // Stillness detection
       if (impactDetected && mag < 0.8 && (now - impactTime) > 500) {
-        // Serial.println("FALL DETECTED!");
+        Serial.println("FALL DETECTED!");
         impactDetected = false;
         pCharacteristicFall->setValue(1);
         pCharacteristicFall->notify();
@@ -220,26 +222,29 @@ void loop() {
 
 
       // Hard impact detection
-      if (mag < 10) {
-          pCharacteristicImpact->setValue(1);
-          pCharacteristicImpact->notify();
+      if (mag > 10) {
+        Serial.println("HARD IMPACT DETECTED!");
+        pCharacteristicImpact->setValue(1);
+        pCharacteristicImpact->notify();
       }
 
       // Emergency button pressed
       if (buttonPressed) {
+        Serial.println("EMERGENCY BUTTON PRESSED!");
         buttonPressed = false;
-
         pCharacteristicButton->setValue(1);
         pCharacteristicButton->notify();
       }
     }
   }
+  
+  EmergencyButton.tick();
 
-  if((millis() - lastsBat) > 30000) {
+  if ((millis() - lastsBat) > 30000) {
     // Report battery charge every 30 seconds
 
-    float f = getBatteryP();                  // 0–100 float
-    uint8_t lvl = (uint8_t)f;       // BLE Battery Level expects a u8
+    float f = getBatteryP();   // 0–100 float
+    uint8_t lvl = (uint8_t)f;  // BLE Battery Level expects a u8
 
     pBattCharacteristic->setValue(lvl);
 
@@ -247,14 +252,14 @@ void loop() {
   }
 }
 
-// ISR: must be very fast!
-void handleButton() {
+// This function will be called once, when the button1 is pressed for a long time.
+void longPressStart() {
   buttonPressed = true;
 }
 
 float getBatteryP() {
-  float minV = 2.0; // The minimum expected voltage of the battery
-  float maxV = 3.3; // The maximum expected voltage
+  float minV = 2.0;  // The minimum expected voltage of the battery
+  float maxV = 3.3;  // The maximum expected voltage
 
   float v = getBatteryV();
 
@@ -262,7 +267,7 @@ float getBatteryP() {
 }
 
 float getBatteryV() {
-   // Read ADC value
+  // Read ADC value
   int adcValue = analogRead(BAT_V_PIN);
 
   // Convert to voltage
@@ -272,9 +277,9 @@ float getBatteryV() {
   float actualVoltage = voltage * ((R1 + R2) / R2);
 
   // Print the actual voltage
-  Serial.print("Actual Voltage: ");
-  Serial.print(actualVoltage);
-  Serial.println(" V");
+  //Serial.print("Actual Voltage: ");
+  //Serial.print(actualVoltage);
+  //Serial.println(" V");
 
   return actualVoltage;
 }
