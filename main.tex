@@ -1,3 +1,4 @@
+\documentclass[11pt,oneside,a4paper]{article}
 
 % Global variables and setup
 \newcommand{\authors}{
@@ -9,12 +10,22 @@
 \newcommand{\reporttitle}{Fall detection using accelerometers for elderly citizens}
 \newcommand{\subject}{Embedded Systems Programming}
 
-\input{setup/preamble.tex}% package inclusion and set up of the document
-\input{setup/macros.tex}% my new macros
+% --- preamble first ---
+\input{report/setup/preamble}  % must load hyperref here
+
+% --- glossaries setup ---
+\usepackage[acronym]{glossaries-extra}
+\makenoidxglossaries
+
+% --- glossary entries ---
+\input{report/setup/glossaries}  % contains \newacronym / \newglossaryentry
+
+\input{report/setup/macros}
 
 \begin{document}
+
 % Metadata
-\author{Janus Pedersen}
+\author{\authors}
 \date{\today}
 \title{\reporttitle}
 % --- Front Page ---
@@ -35,29 +46,32 @@
 \fancyhf{} % clears all header/footer fields
 \fancyhead[R]{\thepage} % or L if you want it on the left
 \listoffigures
-% \listoftables % We dont have any tables
+\listoftables
 
 \newpage
 \pagenumbering{arabic}
 
 % --- Indsæt content filer her ---
 
-% \begin{multicols}{2}
-\input{content/chapters/introduction}
-\input{content/chapters/methodology}
-\input{content/chapters/state-of-the-art}
+\input{report/content/chapters/introduction}
+\input{report/content/chapters/background}
+\input{report/content/chapters/methodology}
+\input{report/content/chapters/state-of-the-art}
 \input{report/content/chapters/analyse}
-\input{content/chapters/design}
-\input{content/chapters/implementation}
-\input{content/chapters/testing}
-\input{content/chapters/discussion}
-\input{content/chapters/conclusion}
-% \end{multicols}
+\input{report/content/chapters/design}
+\input{report/content/chapters/implementation}
+\input{report/content/chapters/testing}
+\input{report/content/chapters/discussion}
+\input{report/content/chapters/conclusion}
 
 % --- Ikke flere content filer efter her ---
 
 \cleardoublepage
 \label{main:end} % <-- Sidetal stopper her
+
+% --- Glossary, acronyms etc.
+\printnoidxglossaries
+\cleardoublepage
 
 \addcontentsline{toc}{section}{Bibliography}
 \printbibliography
@@ -66,6 +80,5 @@
 \appendix
 \renewcommand{\thesubsection}{\Alph{subsection}}
 
-\input{content/chapters/appendix}
-5
+\input{report/content/chapters/appendix}
 \end{document}

@@ -1,8 +1,36 @@
 \subsection{App design \& solution}
 
-We chose to develop an app with the capacitor framework (citation needed). It allows a single codebase to be compiled into both an iOS and Android app, saving development time and complexity. It works by presenting a website as a native app, and creating api's for the native layers of each of the possible operating systems features, such as cameras, location, contacts etc.
-
-That way, the web app is not limited to the typical restrictions of websites, but still has access to the same features as regular native apps.
+We chose to develop an app with the capacitor framework \cite{ionic_capacitor_nodate}. It allows a single codebase to be compiled into both an iOS and Android app, saving development time and complexity. It exposes the native api's of the underlying hardware to the app, hat way, the web app is not limited to the typical restrictions of websites, but still has access to the same features as regular native apps. To render the user interface, we went with the React framework (not react native) as it requires minimal scaffolding, and some of the group members already had previous experience with it.
 
 \subsubsection{User interface \& user experience}
-For a faster and easier time developing, we chose to use a framework for the ui as well. For this we chose the mantine framework (citation needed)  due to its sleek design and many helper utilities.
+For a faster and easier time developing, we chose to use a framework for the \gls{ui} as well. 
+
+It's always important that the user experience stays as streamlined as possible, but especially for the elderly target audience, extra care is needed\cite{gomez-hernandez_design_2023}. Since motor limitations and vision impairments become more common as you get older\cite{noauthor_people_nodate}, more thought is required into how buttons are spaces, text is written and what gestures are required. 
+
+Since the majority of the multilingual population lies in the age range of 15-25 years\cite{noauthor_eurobarometer_nodate}, the user interface should be localized to the users local language. That way, it become more accessible to the larger elderly population group that might not be multilingual.
+
+\subsubsection{Infrastructure \& Cloud}
+It would not be responsible to rely entirely on the end-users device to store, manage and transfer all the information required to make the system work. Thus we looked into cloud solutions that would take this responsibly. It should be able to accommodate the following:
+
+\begin{itemize}
+    \item Provide a structured way of storing information about the user and their relatives
+    \item Allow secure access to third party api's (eg. sms services, geodecoding etc.)
+    \item Provide a solution for authenticating users and their requests
+    \item ...
+\end{itemize}
+
+We started by comparing the characteristics and features of the most popular cloud solutions we were able to find. Since our requirements aren't particularly exotic, a vast majority of cloud providers had what we needed. Therefor we looked more into ease of use, and support for the frameworks that we had chosen to use, and decided to go with firebase\cite{noauthor_firebase_nodate} due to their library support, and ease of setup.
+
+We could then use their builtin authentication to manage users, cookies and database permissions. As well as their Firestore Document database, for storing things such as their emergency contacts, location history and previous alerts.
+
+\subsubsection{App Features}
+To simplify the app for the individual user, it would be nice to split the app into two distinct "views", one for the guardian, and one for the wearer. That way, only the relevant information is shown and the users wont get confused about what is meant for them and what is not.
+
+The wearer view is the primary view for the app, as this is where the required functionality lies. It should facilitate the connection to the wristband, setting up your emergency contacts as well as updating your schedule and other settings.
+
+On the other hand, the guardian view is only there to supplement the text message alerts. A nice feature would be to see your relatives on a map, and maybe to see a history of a previous alerts, but neither of those are necessary for the functionality of the solution. The text message should contain enough information to assess and respond to the situation.
+
+% Instead of using their more popular \textit{firestore} \gls{no-sql} service, we decided upon their \gls{gql} \textit{data-connect} service, to get a more structured and normalized database. 
+
+% \subsubsection{Third Party Services}
+% There are ways to get an app to send a text message via the device it's installed upon, but none that we decided were reliable, or accessible enough to fully rely on. Instead, we opted for a third-party service known to send the messages to the users relatives.
