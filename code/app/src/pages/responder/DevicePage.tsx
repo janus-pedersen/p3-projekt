@@ -6,6 +6,7 @@ import {
 } from "../../contexts/Device/DeviceContext";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { BatteryIndicator } from "../../components/BatteryIndicator/BatteryIndicator";
 
 export function DevicePage() {
   const { device, listen } = useDevice();
@@ -42,9 +43,21 @@ export function DevicePage() {
               background:
                 "linear-gradient(0deg, var(--mantine-color-primary-5), var(--mantine-color-primary-9))",
             }}
-          ></Box>
+          >
+            <Group
+              pos={"absolute"}
+              top={"var(--safe-top)"}
+              right={24}
+              c={"white"}
+              gap={"xs"}
+            >
+              <BatteryIndicator level={45} />
+              <Text size={"sm"}>45%</Text>
+            </Group>
+          </Box>
           <Stack mt={"330"}>
-            <Header title={device.name} subtitle={t("device.settings")} />
+            {/* <Header title={device.name} subtitle={t("device.settings")} /> */}
+            <Header title={"Hallo dig"} subtitle={t("device.settings")} />
           </Stack>
         </>
       ) : (

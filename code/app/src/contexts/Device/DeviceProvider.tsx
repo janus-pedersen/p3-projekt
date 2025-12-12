@@ -6,12 +6,20 @@ import {
   type LapsusAdvertisement,
 } from "./DeviceContext";
 import { BleClient } from "@capacitor-community/bluetooth-le";
+import { FirebaseFunctions } from "@capacitor-firebase/functions";
+import { Geolocation } from "@capacitor/geolocation";
+import { LocalNotifications } from "@capacitor/local-notifications";
 
 const SERVICES = {
+  BATTERY_SERVICE: {
+    uuid: "0000180f-0000-1000-8000-00805f9b34fb",
+    LEVEL: "00002a19-0000-1000-8000-00805f9b34fb",
+  },
   FALL_DETECTION: {
     uuid: "5f9c2a60-8f9b-4e5b-bae0-bb2e7b9d2c4f",
-    WRITE: "0d1a6b9e-7c3f-4cb7-8a29-72d0b3df02ab",
-    READ: "b1d4a2a3-c68d-4a1f-9328-7f1b3db23a1c",
+    FALL: "0d1a6b9e-7c3f-4cb7-8a29-72d0b3df02ab",
+    IMPACT: "ebf911a7-e385-49ef-a0f5-0133b3845bcf",
+    MANUAL: "3a4b7c12-9fde-4b91-8c3a-1e2f4d6a8b9c",
   },
 };
 
@@ -54,11 +62,24 @@ export function DeviceProvider(props: React.PropsWithChildren) {
         (devices) => devices[0]
       );
 
-      // Build device object and store in state
+      // Build device object and store in stat
       const lapsusDevice: LapsusDevice = {
         id: id,
         name: deviceInfo?.name || "Unknown",
-        battery: 100,
+        battery: async () => {
+          try {
+            const result = await BleClient.read(
+              id,
+              SERVICES.BATTERY_SERVICE.uuid,
+              SERVICES.BATTERY_SERVICE.LEVEL
+            );
+            const batteryLevel = result ? result.getUint8(0) : 0;
+            return batteryLevel;
+          } catch (e) {
+            console.warn("Failed to read battery level:", e);
+            return -1;
+          }
+        },
         disconnect: async () => {
           try {
             await BleClient.disconnect(id);
@@ -74,15 +95,63 @@ export function DeviceProvider(props: React.PropsWithChildren) {
 
       // Start notifications, but don't let failures prevent returning the device; log for debugging
       try {
-        await BleClient.startNotifications(
-          id,
-          SERVICES.FALL_DETECTION.uuid,
-          SERVICES.FALL_DETECTION.READ,
-          async (value) => {
-            // Handle incoming data
-            console.log("Notification received:", value);
-          }
-        );
+        const characteristics = [
+          SERVICES.FALL_DETECTION.FALL,
+          SERVICES.FALL_DETECTION.IMPACT,
+          SERVICES.FALL_DETECTION.MANUAL,
+        ];
+
+        for (const char of characteristics) {
+          const type = Object.keys(SERVICES.FALL_DETECTION).find(
+            (key) =>
+              SERVICES.FALL_DETECTION[
+                key as keyof typeof SERVICES.FALL_DETECTION
+              ] === char
+          ) as keyof typeof SERVICES.FALL_DETECTION;
+
+          await BleClient.startNotifications(
+            id,
+            SERVICES.FALL_DETECTION.uuid,
+            char,
+            async (value) => {
+              // Handle incoming data
+
+              await LocalNotifications.schedule({
+                notifications: [
+                  {
+                    title: `${
+                      type.charAt(0).toUpperCase() + type.slice(1)
+                    } detected!`,
+                    body: `Your wristband has detected a ${type} event, an alert has been sent to your relatives.`,
+                    id: new Date().getTime(),
+                  },
+                ],
+              });
+
+              const position = await Geolocation.getCurrentPosition({
+                timeout: 10000,
+                enableHighAccuracy: true,
+              });
+
+              FirebaseFunctions.callByName({
+                name: "alert",
+                data: {
+                  lat: position.coords.latitude,
+                  lon: position.coords.longitude,
+                  type,
+                },
+              })
+                .then(() => {
+                  console.log("Test alert sent successfully");
+                })
+                .catch((error) => {
+                  console.error("Error sending test alert:", error);
+                });
+
+              console.log("Notification received:", value);
+            }
+          );
+        }
       } catch (e) {
         console.warn("startNotifications failed:", e);
       }

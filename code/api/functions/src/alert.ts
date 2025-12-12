@@ -10,8 +10,9 @@ if (!admin.apps.length) {
 export const alert = onCall<{
   lat: number;
   lon: number;
+  type: "fall" | "impact" | "manual";
 }>(async (data, context) => {
-  const { lat, lon } = data.data;
+  const { lat, lon, type } = data.data;
 
   if (!data.auth) {
     throw new Error("Unauthenticated");
@@ -38,7 +39,7 @@ export const alert = onCall<{
     .doc(uid)
     .collection("alerts");
   const alertDocRef = await alertsCol.add({
-    type: "fall", // default type; adjust if you support multiple types
+    type, // default type; adjust if you support multiple types
     stage: "pending", // pending until notifications are attempted
     uid,
     createdAt: admin.firestore.FieldValue.serverTimestamp(),
@@ -64,13 +65,15 @@ export const alert = onCall<{
 
       try {
         let msg;
+
+        const body = `A ${type} alert has been triggered by ${
+          name ?? "Your relative"
+        }. See more information in the app. Location: https://www.google.com/maps/search/?api=1&query=${lat},${lon}`;
         if (relative?.phone) {
           msg = await client.messages.create({
             to: relative.phone,
             from: TWILIO_FROM_NUMBER.value(),
-            body: `${
-              name ?? "Your relative"
-            } has fallen! See more information in the app. Location: https://www.google.com/maps/search/?api=1&query=${lat},${lon}`,
+            body,
           });
           console.log("Alerted relative:", relative.phone);
         }
