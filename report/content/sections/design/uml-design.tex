@@ -1,6 +1,8 @@
 \subsection{UML diagrams}
 
 \subsubsection{Context diagram}
+The context diagram gives an overview over the applikation as a system. Here it is seen that there are four external entities: wristband, user, firebase and relatives. 
+The first dataflow 'detect fall' goes from 'wristband' to the application. Then from the user 
 
 \begin{figure}[H]
     \centering
@@ -23,6 +25,7 @@
 \subsubsection{Use case diagram}
 
 
+
 \subsubsection{Data flow diagram}
 \begin{figure} [H]
     \centering
@@ -32,6 +35,7 @@
 \end{figure}
 
 \subsubsection{Sequence diagram}
+The sequence diagram below describes the sequence when a fall is detected. The fall is detected by the wristband, which then notifies the mobile app. The mobile app creates the alert, and a new entry is created in the database in the backend. After this, the backend alerts the relative, where they can then respond to the alert. The ‘optional’ shows how a fall can be cancelled by the user, in which case the mobile app cancels the alert, and the backend updates the corresponding database entry. After this, the backend notifies the relative, who can then contact the user regarding the cancelled alert.  
 \begin{figure}[H]
     \centering
     \includegraphics[width=1\linewidth]{Sequence-Diagram-Sequence-Diagram.pdf}
@@ -40,6 +44,7 @@
 \end{figure}
 
 \subsubsection{Deployment diagram}
+In the following deployment diagram, 
 \begin{figure} [H]
     \centering
     \includegraphics[width=1\linewidth]{Deployment-Diagram-Deployment-Diagram.pdf}
