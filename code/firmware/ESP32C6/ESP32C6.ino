@@ -30,6 +30,7 @@ unsigned long lastsBat = millis();
 
 SensorQMI8658 qmi;
 
+unsigned long lastHardImpactTime = 0;
 volatile bool buttonPressed = false;
 bool freeFall, impactDetected;
 int freeFallTime, impactTime;
@@ -60,7 +61,7 @@ void setup() {
   NimBLEDevice::init(name);
 
   // -7 or -3 dBm is usually plenty for phone-on-body distances
-  NimBLEDevice::setPower(-7);
+  // NimBLEDevice::setPower(-2);
 
   NimBLEServer *pServer = NimBLEDevice::createServer();
   NimBLEService *pService = pServer->createService(SERVICE_UUID);
@@ -237,10 +238,12 @@ void loop() {
 
 
       // Hard impact detection
-      if (mag > 10) {
+      if (mag > 7 && (now - lastHardImpactTime) > 1000) {
         Serial.println("HARD IMPACT DETECTED!");
         pCharacteristicImpact->setValue(1);
         pCharacteristicImpact->notify();
+        
+        lastHardImpactTime = now;
       }
 
       // Emergency button pressed
