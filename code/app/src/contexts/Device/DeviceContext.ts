@@ -3,8 +3,8 @@ import { createContext, useContext } from "react";
 export type LapsusDevice = {
   id: string;
   name: string;
-  battery: number;
 
+  battery(): Promise<number>;
   disconnect(): Promise<void>;
 };
 
@@ -27,6 +27,8 @@ export type DeviceContextType = {
   ) => Promise<() => void>;
 };
 
-export const DeviceContext = createContext<DeviceContextType | undefined>(undefined);
+export const DeviceContext = createContext<DeviceContextType | undefined>(
+  undefined
+);
 
 export const useDevice = () => useContext(DeviceContext)!;

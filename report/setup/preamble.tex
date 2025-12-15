@@ -1,6 +1,5 @@
 % \begingroup\expandafter\endgroup\iffalse{}\fi
 % This file is not meant to be compiled directly.
-\documentclass[11pt,oneside,a4paper]{article}
 
 \usepackage{atbegshi}% http://ctan.org/pkg/atbegshi
 \AtBeginDocument{\AtBeginShipoutNext{\AtBeginShipoutDiscard}}
@@ -21,6 +20,7 @@
 % encoding of your files by selecting "save as"
 % an select the desired input encoding. 
 \usepackage[utf8]{inputenc}
+
 % Make latex understand and use the typographic
 % rules of the language used in the document.
 \usepackage[danish,english]{babel}
@@ -162,7 +162,7 @@
   sorting=none,
   defernumbers=true
 ]{biblatex}
-\addbibresource{bib/mybib}
+\addbibresource{report/bib/mybib}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Misc
@@ -199,12 +199,14 @@
     % Keywords={},%    
     }%   
 }
+\usepackage{pdfpages}
 
 \usepackage{letltxmacro}
 \LetLtxMacro{\oldautoref}{\autoref}
 \renewcommand{\autoref}[1]{\textbf{\oldautoref{#1}}}
 
 \usepackage{blindtext}
+
 
 \usepackage{lastpage}
 \usepackage{totcount}
