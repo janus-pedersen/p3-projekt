@@ -11,7 +11,7 @@
     "alerts": "Alerts"
   },
   "alerts": {
-    "send_test_alert": "Send test alert",
+    "noAlerts": "No alerts found",
     "subtitle": "Check current and previous alerts"
   },
   "contacts": {

@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   DeviceContext,
   type LapsusDevice,
@@ -30,10 +30,12 @@ export function DeviceProvider(props: React.PropsWithChildren) {
     return "DISCONNECTED";
   }, [device]);
 
+  useEffect(() => {
+    BleClient.initialize();
+  }, []);
+
   const createDevice = useCallback(
     async (id: string): Promise<LapsusDevice> => {
-      await BleClient.initialize();
-
       // Stop scanning before connecting — scanning can interfere with connect on some platforms
       try {
         await BleClient.stopLEScan();
@@ -48,6 +50,17 @@ export function DeviceProvider(props: React.PropsWithChildren) {
           BleClient.connect(id, () => {
             // disconnect listener: clear stored device
             setDevice(undefined);
+            console.error("Device disconnected:", id);
+
+            LocalNotifications.schedule({
+              notifications: [
+                {
+                  title: "Device disconnected",
+                  body: "Your wristband has disconnected.",
+                  id: new Date().getTime(),
+                },
+              ],
+            });
           }),
           new Promise((_, reject) =>
             setTimeout(() => reject(new Error("Connect timeout")), 15000)
@@ -74,6 +87,7 @@ export function DeviceProvider(props: React.PropsWithChildren) {
               SERVICES.BATTERY_SERVICE.LEVEL
             );
             const batteryLevel = result ? result.getUint8(0) : 0;
+
             return batteryLevel;
           } catch (e) {
             console.warn("Failed to read battery level:", e);
@@ -165,7 +179,6 @@ export function DeviceProvider(props: React.PropsWithChildren) {
     const ttl = 5000;
     let adverts = [] as (LapsusAdvertisement & { timestamp: number })[];
 
-    await BleClient.initialize();
     BleClient.requestLEScan(
       {
         allowDuplicates: true,

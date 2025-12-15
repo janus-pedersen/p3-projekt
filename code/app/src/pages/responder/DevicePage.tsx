@@ -13,6 +13,29 @@ export function DevicePage() {
 
   const [adverts, setAdverts] = useState<LapsusAdvertisement[]>([]);
 
+  const [batteryLevel, setBatteryLevel] = useState<number | null>(null);
+  useEffect(() => {
+    if (!device) return;
+
+    const updateBattery = () => {
+      device
+        .battery()
+        .then((level) => {
+          if (isNaN(level)) return;
+          setBatteryLevel(level);
+        })
+        .catch((err) => {
+          console.error("Failed to get battery level:", err);
+          setBatteryLevel(null);
+        });
+    };
+
+    const interval = setInterval(updateBattery, 60000); // Update every minute
+    updateBattery(); // Initial fetch
+
+    return () => clearInterval(interval);
+  }, [device]);
+
   useEffect(() => {
     if (device) return;
 
@@ -51,20 +74,23 @@ export function DevicePage() {
               c={"white"}
               gap={"xs"}
             >
-              <BatteryIndicator level={45} />
-              <Text size={"sm"}>45%</Text>
+              {batteryLevel && (
+                <>
+                  <BatteryIndicator level={batteryLevel} />
+                  <Text size={"sm"}>{batteryLevel}%</Text>
+                </>
+              )}
             </Group>
           </Box>
           <Stack mt={"330"}>
-            {/* <Header title={device.name} subtitle={t("device.settings")} /> */}
-            <Header title={"Hallo dig"} subtitle={t("device.settings")} />
+            <Header title={device.name} subtitle={t("device.subtitle")} />
           </Stack>
         </>
       ) : (
         <>
           <Header
             title={t("navigation.device")}
-            subtitle={t("device.settings")}
+            subtitle={t("device.subtitle")}
           />
           <Paper withBorder>
             <Text p="md">No device connected</Text>

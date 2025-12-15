@@ -69,7 +69,7 @@ export function ContactsPage() {
     <Stack>
       <Header
         title={t("navigation.contacts")}
-        subtitle={t("contacts.settings")}
+        subtitle={t("contacts.subtitle")}
         action={
           <ActionIcon
             onClick={() => {
