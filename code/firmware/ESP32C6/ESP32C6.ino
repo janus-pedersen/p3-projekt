@@ -1,293 +1,204 @@
+
+/**
+ * Lapsus wristband firmware
+ */
+
+#include <Arduino.h>
 #include <NimBLEDevice.h>
-#include <Wire.h>
-#include "SensorQMI8658.hpp"
 #include "OneButton.h"
 
-#define SERVICE_UUID "5f9c2a60-8f9b-4e5b-bae0-bb2e7b9d2c4f"
+#define ALERT_SERVICE_UUID "5f9c2a60-8f9b-4e5b-bae0-bb2e7b9d2c4f"
 #define FALL_CHARACTERISTIC_UUID "0d1a6b9e-7c3f-4cb7-8a29-72d0b3df02ab"
 #define IMPACT_CHARACTERISTIC_UUID "ebf911a7-e385-49ef-a0f5-0133b3845bcf"
 #define BUTTON_CHARACTERISTIC_UUID "3a4b7c12-9fde-4b91-8c3a-1e2f4d6a8b9c"
+#define BATT_CHARACTERISTIC_UUID "180F"
 
-#define I2C_SDA 8  // Display Wire SDA Pin
-#define I2C_SCL 7  // Display Wire SCL Pin
+static NimBLEServer* pServer;
+static NimBLEService *pServiceAlert, *pServiceBatt;
+static NimBLECharacteristic *pCharacteristicFall, *pCharacteristicImpact, *pCharacteristicButton, *pCharacteristicBatt;
 
-#define BTN_PIN 9  //SOMTHIGN HERE
+bool alertBtnPressed = false;
 
-#define LED_BL 6  // Display backlight
 
-// Battery enable pin
+/** Battery enable pin */
 #define BAT_EN 15
 #define BAT_V_PIN 0
+#define BAT_INTERVAL 30000  // Every 30 minutes
+unsigned long last_bat = millis();
 
-// Power supply voltage of ESP32-S3 (unit: volts)
+/** Battery level estimation stuff */
 #define VREF 3.3
-// Resistance value of the first resistor (unit: ohms)
 #define R1 200000.0
-// Resistance value of the second resistor (unit: ohms)
 #define R2 100000.0
+#define V_MIN 2.0
 
-unsigned long lastsBat = millis();
-
-SensorQMI8658 qmi;
-
-unsigned long lastHardImpactTime = 0;
-volatile bool buttonPressed = false;
-bool freeFall, impactDetected;
-int freeFallTime, impactTime;
-
+/** Emergency button */
+#define BTN_PIN 9  // The "BOOT" button, because it's the middle one
 OneButton EmergencyButton(BTN_PIN, true);
 
-NimBLECharacteristic *pCharacteristicFall, *pCharacteristicImpact, *pCharacteristicButton, *pBattCharacteristic;
+// /**  None of these are required as they will be handled by the library with defaults. **
+//  **                       Remove as you see fit for your needs                        */
+class ServerCallbacks : public NimBLEServerCallbacks {
+  void onConnect(NimBLEServer* pServer, NimBLEConnInfo& connInfo) override {
+    Serial.printf("Client address: %s\n", connInfo.getAddress().toString().c_str());
+  }
 
-void setup() {
+  void onDisconnect(NimBLEServer* pServer, NimBLEConnInfo& connInfo, int reason) override {
+    Serial.printf("Client disconnected - start advertising\n");
+    NimBLEDevice::startAdvertising();
+  }
+} serverCallbacks;
+
+// /** Handler class for characteristic actions */
+// class CharacteristicCallbacks : public NimBLECharacteristicCallbacks {
+//     void onRead(NimBLECharacteristic* pCharacteristic, NimBLEConnInfo& connInfo) override {
+//         Serial.printf("%s : onRead(), value: %s\n",
+//                       pCharacteristic->getUUID().toString().c_str(),
+//                       pCharacteristic->getValue().c_str());
+//     }
+
+//     void onWrite(NimBLECharacteristic* pCharacteristic, NimBLEConnInfo& connInfo) override {
+//         Serial.printf("%s : onWrite(), value: %s\n",
+//                       pCharacteristic->getUUID().toString().c_str(),
+//                       pCharacteristic->getValue().c_str());
+//     }
+
+//     /**
+//      *  The value returned in code is the NimBLE host return code.
+//      */
+//     void onStatus(NimBLECharacteristic* pCharacteristic, int code) override {
+//         Serial.printf("Notification/Indication return code: %d, %s\n", code, NimBLEUtils::returnCodeToString(code));
+//     }
+
+//     /** Peer subscribed to notifications/indications */
+//     void onSubscribe(NimBLECharacteristic* pCharacteristic, NimBLEConnInfo& connInfo, uint16_t subValue) override {
+//         std::string str  = "Client ID: ";
+//         str             += connInfo.getConnHandle();
+//         str             += " Address: ";
+//         str             += connInfo.getAddress().toString();
+//         if (subValue == 0) {
+//             str += " Unsubscribed to ";
+//         } else if (subValue == 1) {
+//             str += " Subscribed to notifications for ";
+//         } else if (subValue == 2) {
+//             str += " Subscribed to indications for ";
+//         } else if (subValue == 3) {
+//             str += " Subscribed to notifications and indications for ";
+//         }
+//         str += std::string(pCharacteristic->getUUID());
+
+//         Serial.printf("%s\n", str.c_str());
+//     }
+// } chrCallbacks;
+
+// /** Handler class for descriptor actions */
+// class DescriptorCallbacks : public NimBLEDescriptorCallbacks {
+//     void onWrite(NimBLEDescriptor* pDescriptor, NimBLEConnInfo& connInfo) override {
+//         std::string dscVal = pDescriptor->getValue();
+//         Serial.printf("Descriptor written value: %s\n", dscVal.c_str());
+//     }
+
+//     void onRead(NimBLEDescriptor* pDescriptor, NimBLEConnInfo& connInfo) override {
+//         Serial.printf("%s Descriptor read\n", pDescriptor->getUUID().toString().c_str());
+//     }
+// } dscCallbacks;
+
+void setup(void) {
   Serial.begin(115200);
-  //Serial.end(); // Disable debugging for for powersaving
-  Serial.println("Start");
+  Serial.printf("Starting NimBLE Server\n");
 
-  // Latch the battery pin to high, to keep the battery enabled
+  /** Emergency button listener */
+  EmergencyButton.attachLongPressStart(emergencyPress);
+
+  /** Latch the battery enable pin to always stay powered on */
   pinMode(BAT_EN, OUTPUT);
   digitalWrite(BAT_EN, HIGH);
 
-  // Keep the display off to save power
-  pinMode(LED_BL, OUTPUT);
-  digitalWrite(LED_BL, LOW);
-
-  EmergencyButton.attachLongPressStart(longPressStart);
-
-
-  // uint8_t id8 = ESP.getEfuseMac() & 0xFF;
-  // Create a semi-unique name with the device's chip id (truncated)
-  std::string name = "Lapsus " + std::to_string(ESP.getEfuseMac() & 0xFF);
+  /** Initialize NimBLE and set the device name */
+  uint64_t mac = ESP.getEfuseMac();
+  char name[20];
+  snprintf(name, sizeof(name), "Lapsus-%04X", (uint16_t)mac);
   NimBLEDevice::init(name);
 
-  // -7 or -3 dBm is usually plenty for phone-on-body distances
-  // NimBLEDevice::setPower(-2);
+  pServer = NimBLEDevice::createServer();
+  pServer->setCallbacks(&serverCallbacks);
 
-  NimBLEServer *pServer = NimBLEDevice::createServer();
-  NimBLEService *pService = pServer->createService(SERVICE_UUID);
-  pCharacteristicFall = pService->createCharacteristic(FALL_CHARACTERISTIC_UUID, NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::WRITE | NIMBLE_PROPERTY::NOTIFY);
-  pCharacteristicButton = pService->createCharacteristic(BUTTON_CHARACTERISTIC_UUID, NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::WRITE | NIMBLE_PROPERTY::NOTIFY);
-  pCharacteristicImpact = pService->createCharacteristic(IMPACT_CHARACTERISTIC_UUID, NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::WRITE | NIMBLE_PROPERTY::NOTIFY);
-  pCharacteristicFall->setValue(0);
-  pCharacteristicButton->setValue(0);
-  pCharacteristicImpact->setValue(0);
-  pService->start();
+  /** Create the battery service and characteristics (using the default / correct uuids) */
+  pServiceBatt = pServer->createService("180F");
+  pCharacteristicBatt = pServiceBatt->createCharacteristic("2A19", NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::NOTIFY);
 
-  NimBLEService *pBattService = pServer->createService("180F");  // Battery service
-  pBattCharacteristic = pBattService->createCharacteristic("2A19", NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::NOTIFY);
-  pBattCharacteristic->setValue((uint8_t)getBatteryP());
-  pBattService->start();
+  // pCharacteristicBatt->setCallbacks(&chrCallbacks);
+  pCharacteristicBatt->setValue((uint8_t)getBatteryP());
 
+  pServiceBatt->start();
 
-  NimBLEAdvertising *pAdvertising = NimBLEDevice::getAdvertising();
-  pAdvertising->addServiceUUID(SERVICE_UUID);
-  pAdvertising->addServiceUUID("180F");
-  pAdvertising->setName(name);
+  /** Create the alert service responsible for alerting the phone for different approach */
+  pServiceAlert = pServer->createService(ALERT_SERVICE_UUID);
+  pCharacteristicFall = pServiceAlert->createCharacteristic(FALL_CHARACTERISTIC_UUID, NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::WRITE | NIMBLE_PROPERTY::NOTIFY);
+  pCharacteristicFall->setValue((uint8_t)0);
 
-  // Advertise less often: 500 ms
-  pAdvertising->setMinInterval(800);  // 800 * 0.625 ms ≈ 500 ms
-  pAdvertising->setMaxInterval(800);
+  pCharacteristicImpact = pServiceAlert->createCharacteristic(IMPACT_CHARACTERISTIC_UUID, NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::WRITE | NIMBLE_PROPERTY::NOTIFY);
+  pCharacteristicImpact->setValue((uint8_t)0);
 
-  // Suggest relaxed connection params to client (if it respects them)
-  pAdvertising->setPreferredParams(
-    80,   // min = 100 ms (80 * 1.25 ms)
-    160   // max = 200 ms
-  );
+  pCharacteristicButton = pServiceAlert->createCharacteristic(BUTTON_CHARACTERISTIC_UUID, NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::WRITE | NIMBLE_PROPERTY::NOTIFY);
+  pCharacteristicButton->setValue((uint8_t)0);
 
+  pServiceAlert->start();
+
+  delay(100);
+
+  /** Create an advertising instance and add the services to the advertised data */
+  NimBLEAdvertising* pAdvertising = pServer->getAdvertising();
+  pAdvertising->addServiceUUID(ALERT_SERVICE_UUID);
   pAdvertising->start();
 
-  Serial.println("BLE server started and advertising");
-
-  bool ret = false;
-  ret = qmi.begin(Wire, QMI8658_L_SLAVE_ADDRESS, I2C_SDA, I2C_SCL);
-  if (!ret) {
-    Serial.println("Failed to find QMI8658 - check your wiring!");
-    while (1) {
-      delay(1000);
-    }
-  }
-
-  /* Get chip id*/
-  Serial.print("Device ID:");
-  Serial.println(qmi.getChipID(), HEX);
-
-
-  if (qmi.selfTestAccel()) {
-    Serial.println("Accelerometer self-test successful");
-  } else {
-    Serial.println("Accelerometer self-test failed!");
-  }
-
-  if (qmi.selfTestGyro()) {
-    Serial.println("Gyroscope self-test successful");
-  } else {
-    Serial.println("Gyroscope self-test failed!");
-  }
-
-
-  qmi.configAccelerometer(
-    /*
-         * ACC_RANGE_2G
-         * ACC_RANGE_4G
-         * ACC_RANGE_8G
-         * ACC_RANGE_16G
-         * */
-    SensorQMI8658::ACC_RANGE_4G,
-    /*
-         * ACC_ODR_1000H
-         * ACC_ODR_500Hz
-         * ACC_ODR_250Hz
-         * ACC_ODR_125Hz
-         * ACC_ODR_62_5Hz
-         * ACC_ODR_31_25Hz
-         * ACC_ODR_LOWPOWER_128Hz
-         * ACC_ODR_LOWPOWER_21Hz
-         * ACC_ODR_LOWPOWER_11Hz
-         * ACC_ODR_LOWPOWER_3H
-        * */
-    SensorQMI8658::ACC_ODR_LOWPOWER_128Hz,
-    /*
-        *  LPF_MODE_0     //2.66% of ODR
-        *  LPF_MODE_1     //3.63% of ODR
-        *  LPF_MODE_2     //5.39% of ODR
-        *  LPF_MODE_3     //13.37% of ODR
-        *  LPF_OFF        // OFF Low-Pass Fitter
-        * */
-    SensorQMI8658::LPF_MODE_2);
-
-  qmi.configGyroscope(
-    /*
-        * GYR_RANGE_16DPS
-        * GYR_RANGE_32DPS
-        * GYR_RANGE_64DPS
-        * GYR_RANGE_128DPS
-        * GYR_RANGE_256DPS
-        * GYR_RANGE_512DPS
-        * GYR_RANGE_1024DPS
-        * */
-    SensorQMI8658::GYR_RANGE_64DPS,
-    /*
-         * GYR_ODR_7174_4Hz
-         * GYR_ODR_3587_2Hz
-         * GYR_ODR_1793_6Hz
-         * GYR_ODR_896_8Hz
-         * GYR_ODR_448_4Hz
-         * GYR_ODR_224_2Hz
-         * GYR_ODR_112_1Hz
-         * GYR_ODR_56_05Hz
-         * GYR_ODR_28_025H
-         * */
-    SensorQMI8658::GYR_ODR_896_8Hz,
-    /*
-        *  LPF_MODE_0     //2.66% of ODR
-        *  LPF_MODE_1     //3.63% of ODR
-        *  LPF_MODE_2     //5.39% of ODR
-        *  LPF_MODE_3     //13.37% of ODR
-        *  LPF_OFF        // OFF Low-Pass Fitter
-        * */
-    SensorQMI8658::LPF_MODE_3);
-
-  /*
-  * If both the accelerometer and gyroscope sensors are turned on at the same time,
-  * the output frequency will be based on the gyroscope output frequency.
-  * The example configuration is 896.8HZ output frequency,
-  * so the acceleration output frequency is also limited to 896.8HZ
-  * */
-  //qmi.enableGyroscope();
-  qmi.enableAccelerometer();
-
-  // Print register configuration information
-  qmi.dumpCtrlRegister();
-
-  Serial.println("Read data now...");
+  Serial.printf("Advertising Started\n");
 }
 
 void loop() {
-  IMUdata acc;
-  //IMUdata gyr;
-  if (qmi.getDataReady()) {
-    if (qmi.getAccelerometer(acc.x, acc.y, acc.z)) {
-      // Print to serial plotter
-      // Serial.printf("%f %f %f\n", acc.x, acc.y, acc.z);
-
-      float mag = sqrt(acc.x * acc.x + acc.y * acc.y + acc.z * acc.z);
-      unsigned long now = millis();
-
-      // Free-fall detection
-      if (mag < 0.45) {
-        // Serial.println("Free-fall detection");
-        freeFall = true;
-        freeFallTime = now;
-      }
-
-      // Impact detection
-      if (freeFall && mag > 3 && (now - freeFallTime) < 300) {
-        // Serial.println("Impact detection");
-        impactDetected = true;
-        impactTime = now;
-        freeFall = false;
-      }
-
-      // Stillness detection
-      if (impactDetected && mag < 0.8 && (now - impactTime) > 500) {
-        Serial.println("FALL DETECTED!");
-        impactDetected = false;
-        pCharacteristicFall->setValue(1);
-        pCharacteristicFall->notify();
-      }
-
-
-      // Hard impact detection
-      if (mag > 7 && (now - lastHardImpactTime) > 1000) {
-        Serial.println("HARD IMPACT DETECTED!");
-        pCharacteristicImpact->setValue(1);
-        pCharacteristicImpact->notify();
-        
-        lastHardImpactTime = now;
-      }
-
-      // Emergency button pressed
-      if (buttonPressed) {
-        Serial.println("EMERGENCY BUTTON PRESSED!");
-        buttonPressed = false;
-        pCharacteristicButton->setValue(1);
-        pCharacteristicButton->notify();
-      }
-    }
-  }
-  
   EmergencyButton.tick();
 
-  if ((millis() - lastsBat) > 30000) {
-    // Report battery charge every 30 seconds
+  /** Loop here and send notifications to connected peers */
+  // delay(2000);
 
-    float f = getBatteryP();   // 0–100 float
-    uint8_t lvl = (uint8_t)f;  // BLE Battery Level expects a u8
+  // if (pServer->getConnectedCount()) {
+  //     pCharacteristicButton->notify();
+  // }
 
-    pBattCharacteristic->setValue(lvl);
-    pBattCharacteristic->notify();
-
-    lastsBat = millis();
+  if (last_bat + BAT_INTERVAL > millis()) {
+    last_bat = millis();
+    pCharacteristicBatt->setValue((uint8_t)getBatteryP());
+    pCharacteristicBatt->notify();
   }
 
-  // yield to the OS so it can idle / light-sleep parts
-  delay(1);
+
+  if (alertBtnPressed) {
+    alertBtnPressed = false;
+    pCharacteristicButton->setValue((uint8_t)1);
+    pCharacteristicButton->notify();
+  }
 }
 
-// This function will be called once, when the button1 is pressed for a long time.
-void longPressStart() {
-  buttonPressed = true;
+/** Called when the emergency button is pressed */
+void emergencyPress() {
+  Serial.println("Emergency button pressed!");
+  alertBtnPressed = true;
 }
 
+/** Gets the battery level as a percentage */
 float getBatteryP() {
-  float minV = 2.0;  // The minimum expected voltage of the battery
-  float maxV = 3.3;  // The maximum expected voltage
-
   float v = getBatteryV();
+  float p = (v - V_MIN) / (VREF - V_MIN) * 100;
 
-  return (v - minV) / (maxV - minV) * 100;
+  Serial.print(v);
+  Serial.print(" = ");
+  Serial.print(p);
+  Serial.println("%");
+
+  return p;
 }
 
+/** Get the estimated battery voltage */
 float getBatteryV() {
   // Read ADC value
   int adcValue = analogRead(BAT_V_PIN);
@@ -298,10 +209,10 @@ float getBatteryV() {
   // Apply the voltage divider formula to calculate the actual voltage
   float actualVoltage = voltage * ((R1 + R2) / R2);
 
-  // Print the actual voltage
-  //Serial.print("Actual Voltage: ");
-  //Serial.print(actualVoltage);
-  //Serial.println(" V");
+  //   Print the actual voltage
+  Serial.print("Actual Voltage: ");
+  Serial.print(actualVoltage);
+  Serial.println(" V");
 
   return actualVoltage;
 }
