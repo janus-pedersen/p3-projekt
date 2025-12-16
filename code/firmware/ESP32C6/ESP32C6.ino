@@ -29,13 +29,13 @@ SensorQMI8658 qmi;
 unsigned long lastHardImpactTime = 0;
 volatile bool alertBtnPressed = false;
 bool freeFall, impactDetected;
-int freeFallTime, impactTime;
+uint32_t freeFallTime, impactTime;
 
 
 /** Battery enable pin */
 #define BAT_EN 15
 #define BAT_V_PIN 0
-#define BAT_INTERVAL 60000  // Every 60 sec
+#define BAT_INTERVAL 10000  // Every 60 sec
 unsigned long last_bat = millis();
 
 /** Battery level estimation stuff */
@@ -113,6 +113,7 @@ void setup(void) {
   /** Create an advertising instance and add the services to the advertised data */
   NimBLEAdvertising* pAdvertising = pServer->getAdvertising();
   pAdvertising->addServiceUUID(ALERT_SERVICE_UUID);
+  pAdvertising->addServiceUUID(BATT_CHARACTERISTIC_UUID);
   pAdvertising->start();
 
   Serial.printf("Advertising Started\n");
@@ -225,18 +226,18 @@ void loop() {
       // Print to serial plotter
       // Serial.printf("%f %f %f\n", acc.x, acc.y, acc.z);
 
-      float mag = sqrt(acc.x * acc.x + acc.y * acc.y + acc.z * acc.z);
+      float mag2 = acc.x * acc.x + acc.y * acc.y + acc.z * acc.z;
       unsigned long now = millis();
 
       // Free-fall detection
-      if (mag < 0.45) {
+      if (!freeFall && mag2 < 0.45*0.45) {
         // Serial.println("Free-fall detection");
         freeFall = true;
         freeFallTime = now;
       }
 
       // Impact detection
-      if (freeFall && mag > 3 && (now - freeFallTime) < 300) {
+      if (freeFall && mag2 > 3*3 && (now - freeFallTime) < 300) {
         // Serial.println("Impact detection");
         impactDetected = true;
         impactTime = now;
@@ -244,7 +245,7 @@ void loop() {
       }
 
       // Stillness detection
-      if (impactDetected && mag < 0.8 && (now - impactTime) > 500) {
+      if (impactDetected && mag2 < 0.8*0.8 && (now - impactTime) > 500) {
         Serial.println("FALL DETECTED!");
         impactDetected = false;
         pCharacteristicFall->setValue((uint8_t)1);
@@ -252,7 +253,7 @@ void loop() {
       }
 
       // Hard impact detection
-      if (mag > 7 && (now - lastHardImpactTime) > 1000) {
+      if (mag2 > 7*7 && (now - lastHardImpactTime) > 1000) {
         Serial.println("HARD IMPACT DETECTED!");
         pCharacteristicImpact->setValue((uint8_t)1);
         pCharacteristicImpact->notify();
