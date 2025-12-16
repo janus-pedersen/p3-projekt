@@ -289,7 +289,7 @@ float getBatteryP() {
   float v = getBatteryV();
   float p = (v - V_MIN) / (VREF - V_MIN) * 100;
 
-  //Serial.print(v);
+  //Serial.println(v);
   //Serial.print(" = ");
   //Serial.print(p);
   //Serial.println("%");
@@ -299,19 +299,23 @@ float getBatteryP() {
 
 /** Get the estimated battery voltage */
 float getBatteryV() {
-  // Read ADC value
-  int adcValue = analogRead(BAT_V_PIN);
+  // Choose one (C6): start with 6 dB to avoid clipping
+  analogSetPinAttenuation(BAT_V_PIN, ADC_6db);
 
-  // Convert to voltage
-  float voltage = (float)adcValue * (VREF / 4095.0);
+  const float DIV = (R1 + R2) / R2;   // 3.0
 
-  // Apply the voltage divider formula to calculate the actual voltage
-  float actualVoltage = voltage * ((R1 + R2) / R2);
+  // Loop 32 times to get average voltage
+  const int N = 32;
+  uint32_t mv_sum = 0;
+  for (int i = 0; i < N; i++) {
+    mv_sum += analogReadMilliVolts(BAT_V_PIN);  // calibrated mV
+    delay(2);
+  }
 
-  //   Print the actual voltage
-  //Serial.print("Actual Voltage: ");
-  //Serial.print(actualVoltage);
-  //Serial.println(" V");
-
-  return actualVoltage;
+  float v_pin = (mv_sum / (float)N) / 1000.0f;
+  Serial.println(v_pin);
+  float v_bat = v_pin * DIV;
+  Serial.println(v_bat);
+  
+  return v_bat;
 }
