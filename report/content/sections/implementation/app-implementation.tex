@@ -1,15 +1,53 @@
 \subsection{App Implementation}
 As mentioned, we chose to use the React framework to implement the user interface. That allowed us to split our code up into reusable \textit{'components'} as well as react to state changes, like update the list of contacts whenever a new contact was added, automatically.
 
-** SHOW EXAMPLE COMPONENT **
-\insertcodeblock{code/app/src/components/BatteryIndicator/BatteryIndicator.tsx}{0}{10}
+% ** SHOW EXAMPLE COMPONENT **
+\insertcodeblock{code/app/src/components/BatteryIndicator/BatteryIndicator.tsx}{8}{22}
 
-To get started, we implemented a basic framework for navigating between pages in the app. It needed to support two different views discussed in the design section. Instead if importing some larger framework to do this simple task, we chose to implement a simplified version ourselves. It uses two dictionaries, one for each view, and then each key value pair corresponds to a different page in that view. Then we just keep track of the view and page that the user is on, and update the variables used to index the dictionaries when we want to navigate between pages.
+Here we can see a simple example of how our battery indicator component works. It's responsible for picking the right icon that best represents the current battery level of the device.
+
+The \verb|BatteryIndicatorProps| describes the inputs that the component takes, in this case being the battery level and the size of the icon. This component can be seen in action, in the top right corner of the device page (see \autoref{fig:device_page}) in the app.
+
+\begin{figure}[H]
+  \centering
+  \begin{subfigure}{0.48\textwidth}
+    \includegraphics[width=\linewidth]{report/images/screenshots/Device_Page.jpg}
+    \caption{Device Page}
+    \label{fig:device_page}
+  \end{subfigure}\hfill
+  \begin{subfigure}{0.48\textwidth}
+    \includegraphics[width=\linewidth]{report/images/screenshots/Contacts_Page.jpg}
+    \caption{Contacts Page}
+    \label{fig:contacts_page}
+  \end{subfigure}
+  \caption{Wearer Pages}
+  \label{fig:wearer_pages}
+\end{figure}
 
 
-\subsubsection{Database Connection}
+For the root of the app, we implemented a basic framework for navigating between pages. It needed to support two different views discussed in the design section (can be seen in \autoref{fig:wearer_pages} \& \autoref{fig:guardian_pages}). Instead if importing some larger framework to do this simple task, we chose to implement a simplified version ourselves. It uses two dictionaries, one for each view, and then each key value pair corresponds to a different page in that view. Then we just keep track of the view and page that the user is on, and update the variables used to index the dictionaries when we want to navigate between pages.
 
-The database is setup in a way where a collection can have a number of documents, and a document can have a set of collections and so on. A single document can then be referenced with a \textit{'reference'} (see \autoref{fig:database-reference}). A reference is just a type of file path, describing what collection, what document and so on. 
+\begin{figure}[H]
+  \centering
+  \begin{subfigure}{0.48\textwidth}
+    \includegraphics[width=\linewidth]{report/images/screenshots/Map_Page.jpg}
+    \caption{Map Page}
+    \label{fig:map_page}
+  \end{subfigure}\hfill
+  \begin{subfigure}{0.48\textwidth}
+    \includegraphics[width=\linewidth]{report/images/screenshots/Profile_Page.jpg}
+    \caption{Profile Page}
+    \label{fig:profile_page}
+  \end{subfigure}
+  \caption{Guardian Pages}
+  \label{fig:guardian_pages}
+\end{figure}
+
+
+
+\subsubsection{Database Connection} \label{sec:database-connection}
+
+The \textit{Firestore} database is setup in a way where a collection can have a number of documents, and a document can have a set of collections and so on. A single document can then be referenced with a \textit{'reference'} (see \autoref{fig:database-reference}). A reference is just a type of file path, describing what collection, what document and so on. 
 
 \begin{figure}[H]
     \centering
@@ -18,7 +56,7 @@ The database is setup in a way where a collection can have a number of documents
     \label{fig:database-reference}
 \end{figure}
 
-Behind the scenes, the documents, collections and their references between could be visualized like the following (see \autoref{fig:database-diagram})
+The documents, collections and their references between could be visualized like the following (see \autoref{fig:database-diagram})
 
 \begin{figure}[H]
     \centering
@@ -33,6 +71,11 @@ Getting and storing data in the database was quite easy due to the large communi
 
 
 \subsubsection{Bluetooth Connection}
+
+To connect to a Lapsus Wristband, the user must find the device in the device page, and press connect. This will then create a connection between the two that will stay alive, even when the application is pushed to the background. The app will receive updates whenever the wristband \textit{notifies} the device, this is where it handles the different types of alerts and forwards it to the backend.
+
+It also keeps listening to make sure that the device stays connected, 
+
 - Scanning for new devices to pair
 - Store paired devices for fast reconnect
 - Alert user when disconnected
@@ -44,6 +87,11 @@ To allow allow the relatives to see a history of where they have been, we need t
 
 Both Android and iOS have luckily thought of this, and provides a way to listen for gps updates natively. It wakes up a small part of the app to handle the update, giving us just enough time to upload it to our database to display to the relatives.
 
-** Insert screenshot of the guardian map page here ** 
+\clearpage
+\insertcodeblock{code/app/src/contexts/Auth/AuthProvider.tsx}{44}{81}
 
-- Pushes the gps coordinates, accuracy and timestamp to a document in the database
+
+This here, is the code that is responsible for listening to, and uploading your location history. As you can see, it creates a document in the database, under the users \verb|snapshots| collection, as described in \autoref{sec:database-connection}.
+
+** Insert screenshot of the guardian map page here ** 
+    
