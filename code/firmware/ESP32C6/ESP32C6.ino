@@ -34,15 +34,16 @@ uint32_t freeFallTime, impactTime;
 
 /** Battery enable pin */
 #define BAT_EN 15
-#define BAT_V_PIN 0
+#define BAT_ADC_PIN 0
 #define BAT_INTERVAL 10000  // Every 60 sec
 unsigned long last_bat = millis();
 
 /** Battery level estimation stuff */
-#define VREF 3.3
+#define VREF 3.2
 #define R1 200000.0
 #define R2 100000.0
 #define V_MIN 2.0
+#define V_MAX 3.8
 
 /** Emergency button */
 #define BTN_PIN 9  // The "BOOT" button, because it's the middle one
@@ -72,10 +73,12 @@ void setup(void) {
   /** Latch the battery enable pin to always stay powered on */
   pinMode(BAT_EN, OUTPUT);
   digitalWrite(BAT_EN, HIGH);
+  delay(5);
 
   // Keep the display off to save power
   pinMode(LED_BL, OUTPUT);
   digitalWrite(LED_BL, LOW);
+  delay(5);
 
   /** Initialize NimBLE and set the device name */
   uint64_t mac = ESP.getEfuseMac();
@@ -265,7 +268,7 @@ void loop() {
 
   EmergencyButton.tick();
 
-  if (last_bat + BAT_INTERVAL < millis()) {
+  if(last_bat + BAT_INTERVAL < millis()) {
     last_bat = millis();
     pCharacteristicBatt->setValue((uint8_t)getBatteryP());
     pCharacteristicBatt->notify();
@@ -287,35 +290,46 @@ void emergencyPress() {
 /** Gets the battery level as a percentage */
 float getBatteryP() {
   float v = getBatteryV();
-  float p = (v - V_MIN) / (VREF - V_MIN) * 100;
+  float p = (v - V_MIN) / (V_MAX - V_MIN) * 100;
 
-  //Serial.println(v);
-  //Serial.print(" = ");
-  //Serial.print(p);
-  //Serial.println("%");
+  Serial.print(v);
+  Serial.print("v = ");
+  Serial.print(p);
+  Serial.println("%");
+
+  if(p > 100) p = 100; // Clamp it for good measure
 
   return p;
 }
 
 /** Get the estimated battery voltage */
 float getBatteryV() {
-  // Choose one (C6): start with 6 dB to avoid clipping
-  analogSetPinAttenuation(BAT_V_PIN, ADC_6db);
+  // // Choose one (C6): start with 6 dB to avoid clipping
+  // analogSetPinAttenuation(BAT_V_PIN, ADC_6db);
 
-  const float DIV = (R1 + R2) / R2;   // 3.0
+  // const float DIV = (R1 + R2) / R2;   // 3.0
 
-  // Loop 32 times to get average voltage
-  const int N = 32;
-  uint32_t mv_sum = 0;
-  for (int i = 0; i < N; i++) {
-    mv_sum += analogReadMilliVolts(BAT_V_PIN);  // calibrated mV
-    delay(2);
+  // // Loop 32 times to get average voltage
+  // const int N = 32;
+  // uint32_t mv_sum = 0;
+  // for (int i = 0; i < N; i++) {
+  //   mv_sum += analogReadMilliVolts(BAT_V_PIN);  // calibrated mV
+  //   delay(2);
+  // }
+
+  // float v_pin = (mv_sum / (float)N) / 1000.0f;
+  // Serial.println(v_pin);
+  // float v_bat = v_pin * DIV;
+  // Serial.println(v_bat);
+  
+  // return v_bat;
+
+  uint32_t sum = 0;
+  for(int i = 0; i < 32; i++) {
+    sum += analogReadMilliVolts(BAT_ADC_PIN);
   }
 
-  float v_pin = (mv_sum / (float)N) / 1000.0f;
-  Serial.println(v_pin);
-  float v_bat = v_pin * DIV;
-  Serial.println(v_bat);
-  
-  return v_bat;
+  float mv = sum / 32;
+
+  return 3 * mv / 1000.0;
 }
