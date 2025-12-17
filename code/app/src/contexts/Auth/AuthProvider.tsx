@@ -77,8 +77,6 @@ export default function AuthProvider(props: React.PropsWithChildren) {
           },
         });
         console.log("Location update:", document, location);
-
-        // TODO: Send location to server
       }
     );
 
