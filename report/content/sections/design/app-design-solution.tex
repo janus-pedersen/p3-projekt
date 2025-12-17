@@ -1,38 +1,44 @@
 \subsection{Application design}
+The mobile application is a central component of the Lapsus system, acting as the interface between the wristband, the backend infrastructure, and the system’s users. The application is designed to handle alerts, manage user and relative information, and provide a simple overview of system status.
 
-We chose to develop an app with the capacitor framework \cite{ionic_capacitor_nodate}. It allows a single codebase to be compiled into both an iOS and Android app, saving development time and complexity. It exposes the native api's of the underlying hardware to the app, hat way, the web app is not limited to the typical restrictions of websites, but still has access to the same features as regular native apps. To render the user interface, we went with the React framework (not react native) as it requires minimal scaffolding, and some of the group members already had previous experience with it.
+The application was developed using the Capacitor framework \cite{ionic_capacitor_nodate}, which enables a single codebase to be compiled into both iOS and Android applications, reducing development time and overall complexity. Capacitor provides access to native device APIs, allowing the application to interact with underlying hardware without being constrained by typical web platform limitations, while still offering functionality comparable to fully native apps.
+
+For user interface rendering, the React framework (not React Native) was chosen due to its minimal setup requirements and suitability for web-based applications.
 
 \subsubsection{User interface \& user experience}
-For a faster and easier time developing, we chose to use a framework for the \gls{ui} as well. 
+To accelerate development and simplify implementation, a dedicated framework was also used for the \gls{ui}.
 
-It's always important that the user experience stays as streamlined as possible, but especially for the elderly target audience, extra care is needed\cite{gomez-hernandez_design_2023}. Since motor limitations and vision impairments become more common as you get older\cite{noauthor_people_nodate}, more thought is required into how buttons are spaces, text is written and what gestures are required. 
+Maintaining a streamlined user experience is essential, and this becomes particularly important when designing for an elderly target audience \cite{gomez-hernandez_design_2023}. As motor limitations and vision impairments become more common with age \cite{noauthor_people_nodate}, additional consideration is required in areas such as button spacing, text readability, and the gestures required to interact with the application.
 
-Since the majority of the multilingual population lies in the age range of 15-25 years\cite{noauthor_eurobarometer_nodate}, the user interface should be localized to the users local language. That way, it become more accessible to the larger elderly population group that might not be multilingual.
+Because a large portion of the multilingual population is within the 15–25 age range \cite{noauthor_eurobarometer_nodate}, the user interface is localized to the user’s native language. This improves accessibility for older users, who are less likely to be multilingual.
+
+By prioritizing large touch targets, simple navigation, and a limited number of screens, the application is designed to reduce cognitive load for elderly users.
 
 \subsubsection{Infrastructure \& Cloud}
-It would not be responsible to rely entirely on the end-users device to store, manage and transfer all the information required to make the system work. Thus we looked into cloud solutions that would take this responsibly. It should be able to accommodate the following:
+It would not be responsible to rely entirely on the end-users device to store, manage and transfer all the information required to make the system work. Therefor a cloud solutions would take this responsibly. It should be able to accommodate the following:
 
 \begin{itemize}
     \item Provide a structured way of storing information about the user and their relatives
     \item Allow secure access to third party api's (eg. sms services, geodecoding etc.)
     \item Provide a solution for authenticating users and their requests
-    \item ...
+    \item Handle spreading the alerts to the correct relatives
+    \item Support scaling to handle multiple users sending multiple alerts at the same time
+    \item Allow for future services and integrations
 \end{itemize}
 
-We started by comparing the characteristics and features of the most popular cloud solutions we were able to find. Since our requirements aren't particularly exotic, a vast majority of cloud providers had what we needed. Therefor we looked more into ease of use, and support for the frameworks that we had chosen to use, and decided to go with firebase\cite{noauthor_firebase_nodate} due to their library support, and ease of setup.
+The process began by comparing the characteristics and features of several widely used cloud solutions. As the system requirements were not particularly specialized, most cloud providers were capable of meeting them. The evaluation therefore focused on ease of use and the level of support for the selected frameworks. Based on these criteria, Firebase was chosen \cite{noauthor_firebase_nodate} due to its strong library support and straightforward setup.
 
-We could then use their builtin authentication to manage users, cookies and database permissions. As well as their Firestore Document database, for storing things such as their emergency contacts, location history and previous alerts.
+Firebase’s built-in authentication is used to manage users, session handling, and database access permissions. In addition, the Firestore document database is utilized to store data such as emergency contacts, location history, and previous alerts.
 
 \subsubsection{App Features}
-To simplify the app for the individual user, it would be nice to split the app into two distinct "views", one for the guardian, and one for the wearer. That way, only the relevant information is shown and the users wont get confused about what is meant for them and what is not.
+To simplify the app for the individual user, it would be nice to split the app into two distinct "views", one for the guardian, and one for the wearer. Separating wearer and guardian views further ensures that users are only presented with information relevant to their role, reducing confusion and improving overall usability.
 
-The wearer view is the primary view for the app, as this is where the required functionality lies. It should facilitate the connection to the wristband, setting up your emergency contacts as well as updating your schedule and other settings.
+The wearer view is the primary view for the app, as this is where the required functionality lies. It should facilitate the connection to the wristband, setting up your emergency contacts and editing your own profile.
 
 On the other hand, the guardian view is only there to supplement the text message alerts. A nice feature would be to see your relatives on a map, and maybe to see a history of a previous alerts, but neither of those are necessary for the functionality of the solution. The text message should contain enough information to assess and respond to the situation.
 
-% Instead of using their more popular \textit{firestore} \gls{no-sql} service, we decided upon their \gls{gql} \textit{data-connect} service, to get a more structured and normalized database. 
+This separation of functionality ensures that the wearer can focus on safety and ease of use, while the guardian has access to contextual information needed to respond effectively to alerts. By limiting guardian features to supplementary information rather than critical system operation, the system avoids over-reliance on the application in emergency situations.
 
-% \subsubsection{Third Party Services}
-% There are ways to get an app to send a text message via the device it's installed upon, but none that we decided were reliable, or accessible enough to fully rely on. Instead, we opted for a third-party service known to send the messages to the users relatives.
+SMS was chosen as the primary notification method for alerting relatives due to its reliability and wide availability. Unlike app-based push notifications, SMS messages do not require the recipient to have a specific application installed, nor do they depend on active internet connectivity. 
 
-hvorfor vi har valgt at sende beskeder over sms
+As many relatives may not use smartphones consistently or may disable notifications, SMS ensures that critical alerts are delivered with minimal delay. This design choice aligns with the system’s focus on robustness and accessibility, particularly in emergency situations where reliability is important.

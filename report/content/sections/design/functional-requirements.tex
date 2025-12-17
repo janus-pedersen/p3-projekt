@@ -1,23 +1,28 @@
 \subsection{Design of the solution}
-This section presents the design of the fall detection system, Lapsus. The section is based on knowledge gathered through the analysis presented in the State of the Art section, as well as an interview conducted with a representative from the system’s primary target group. The combination of theoretical insights and empirical user data has formed the foundation for defining both the functional and non-functional requirements on which the further development of the system is based.
+This section presents the design of the fall detection system, Lapsus. The section is based on knowledge gathered through the analysis presented in the State of Art section, as well as an interview conducted with a representative from the system’s primary target group. The combination of theoretical insights and empirical user data has formed the foundation for defining both the functional and non-functional requirements on which the further development of the system is based.
 
 To ensure that the system’s functionality meets user needs, a set of user stories has been developed for the two identified user roles: user and relative. These user stories served as the basis for the creation of a use case diagram, which visualizes the key interactions between users and the system.
 
 The use case diagram, together with the defined requirements, was subsequently used to develop a context diagram. The context diagram provides a high-level overview of the system’s functionalities and illustrates the interaction between the system’s internal components and its external actors. As such, the diagram serves as a consolidated and structured representation of the system’s position and role within the overall context.
 
 \subsubsection{Requirements}
+Based on the State of Art section, the interview conducted with a user from the target group, and the identified technical constraints, two requirement tables have been created, consisting of functional and non-functional requirements. The tables specify the origin of each requirement, indicating whether it derives from literature, user input, or technical considerations, as well as how the associated functionality is prioritized within the development process.
+
+The prioritization of requirements is carried out using the MoSCoW model, which enables a systematic classification of requirements into Must, Should, Could, and Won’t. This approach supports a structured and realistic development process by ensuring that emphasis is placed on the most critical functionalities.
+
+The resulting functional and non-functional requirements are presented in \autoref{tab:funktionelle_krav_tabel} and \autoref{tab:ikke_funktionelle_krav_tabel}. Together, these requirements form the basis for the subsequent system design, ensuring traceability from problem statement and analysis to concrete design and implementation decisions.
 
 
 \renewcommand{\arraystretch}{1.3}
 
 \begin{longtable}{|c|p{8cm}|p{4cm}|}
 \hline
-\textbf{Nr.} & \textbf{Requirement} & \textbf{Comment} \\
+\textbf{Nr.} & \textbf{Functional requirement} & \textbf{Comment} \\
 \hline
 \endfirsthead
 
 \hline
-\textbf{Nr.} & \textbf{Requirement} & \textbf{Comment} \\
+\textbf{Nr.} & \textbf{Functional requirement} & \textbf{Comment} \\
 \hline
 \endhead
 
@@ -69,18 +74,21 @@ The use case diagram, together with the defined requirements, was subsequently u
 \label{tab:funktionelle_krav_tabel}
 \end{longtable}
 
+The State of Art analysis provided a foundation for identifying baseline functionality expected of modern fall detection systems, such as automatic fall detection, GPS-based location sharing, and emergency notifications to relatives. Existing commercial solutions, particularly Sensorem, highlighted the importance of combining fall detection with inactivity monitoring and manual emergency activation.
+
+Technical considerations, such as battery capacity, wireless communication range, and sensor limitations, further constrained the design space. These constraints resulted in explicit non-functional requirements regarding battery life, communication distance, and system response time.
 
 
 \renewcommand{\arraystretch}{1.3}
 
 \begin{longtable}{|c|p{8cm}|p{4cm}|}
 \hline
-\textbf{Nr.} & \textbf{Requirement} & \textbf{Comment} \\
+\textbf{Nr.} & \textbf{Non-functional requirement} & \textbf{Comment} \\
 \hline
 \endfirsthead
 
 \hline
-\textbf{Nr.} & \textbf{Requirement} & \textbf{Comment} \\
+\textbf{Nr.} & \textbf{Non-functional requirement} & \textbf{Comment} \\
 \hline
 \endhead
 
@@ -116,18 +124,28 @@ The use case diagram, together with the defined requirements, was subsequently u
 29 & The application must be compatible with both Android and iOS operating systems & Should have \\
 \hline
 \caption{Table of non-functional system requirements}
-\label{tab:funktionelle_krav_tabel}
+\label{tab:ikke_funktionelle_krav_tabel}
 \end{longtable}
 
+The non-functional requirements define the quality attributes and constraints under which the Lapsus system must operate. While the functional requirements describe the system’s capabilities, the non-functional requirements specify how reliably, efficiently, and accessibly these capabilities must be delivered.
+
+The requirements presented in \autoref{tab:ikke_funktionelle_krav_tabel} address key aspects such as usability, performance, reliability, and technical limitations. Several of the requirements are derived from best practice within safety-critical and wearable systems, including constraints on system uptime, response time, and detection performance. These requirements ensure that the system can be trusted in emergency situations, where delayed or unreliable behavior may have serious consequences.
+
+Usability-related requirements play a central role due to the system’s elderly target group. Requirements concerning ease of use, language localization, and charging time are included to reduce barriers to adoption and ensure that the system can be operated without prior technical knowledge.
+
+Technical constraints such as battery lifetime, communication range, GPS accuracy, and platform compatibility reflect the limitations of embedded hardware and mobile devices. By explicitly defining these constraints as requirements, design decisions can be evaluated against measurable criteria throughout the development process.
+
+Together, the non-functional requirements provide a clear framework for evaluating the quality and feasibility of the Lapsus system and form the basis for design and implementation choices described in the subsequent sections.
+
 \subsubsection{Context diagram}
-The context diagram gives an overview of the application as a system. Here it is seen that there are four external entities: wristband, user, Firebase and relatives. 
+The context diagram in \autoref{fig:contextdiagram} gives an overview of the application as a system. Here it is seen that there are four external entities: wristband, user, Firebase and relatives. 
 The first dataflow 'detect fall' goes from 'wristband' to the application. Then, from the user, the data 'add relatives' and 'cancel alert' flows to the application. From the application, the dataflows 'fall detection alert' and 'location data' are sent to the relatives. Lastly, the application sends the 'add users and relatives', 'location data' and 'login request' data to Firebase, where Firebase can send the 'list of relatives', 'location history' and 'login token (JWT)' data to the application. 
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.75\linewidth]{report//images/Context.drawio.png}
     \caption{Context diagram for the system}
-    \label{fig:placeholder}
+    \label{fig:contextdiagram}
 \end{figure}
 
 \subsubsection{User stories}
@@ -146,8 +164,8 @@ Below is seen the user stories, which were constructed based on the functional r
 The following use case diagram highlights the use cases in the system boundary. Here, it is seen that the user can log in through the backend. The user can also add relatives to the database. Furthermore, the user can connect to the wristband through Bluetooth between the wristband and a phone. The user can also cancel the alarm and press the emergency button, which goes through the database and backend. In the system boundary, the relatives can log in and view the GPS location of the user in real time, both of which use the backend. 
 \begin{figure} [H]
     \centering
-    \includegraphics[width=0.75\linewidth]{Skærmbillede 2025-12-15 143205.png}
-    \caption{Use case diagram over the system boundary}
+    \includegraphics[width=1\linewidth]{Use case diagram P3.drawio.png}
+    \caption{Use case diagram}
     \label{fig:placeholder}
 \end{figure}
 

@@ -1,10 +1,9 @@
 \subsection{App Implementation}
-As mentioned, we chose to use the React framework to implement the user interface. That allowed us to split our code up into reusable \textit{'components'} as well as react to state changes, like update the list of contacts whenever a new contact was added, automatically.
+As previously mentioned, the React framework is used to implement the user interface. This enables the application to be structured around reusable \textit{components} and to react automatically to state changes, such as updating the contact list whenever a new contact is added.
 
-% ** SHOW EXAMPLE COMPONENT **
-\insertcodeblock{code/app/src/components/BatteryIndicator/BatteryIndicator.tsx}{8}{22}
+\insertcodeblock{app/src/components/BatteryIndicator/BatteryIndicator.tsx}{8}{22}{Example \gls{ui} component}
 
-Here we can see a simple example of how our battery indicator component works. It's responsible for picking the right icon that best represents the current battery level of the device.
+Seen here is an example of a React component. This specific one is responsible for displaying the battery percentage as an appropriate icon.
 
 The \verb|BatteryIndicatorProps| describes the inputs that the component takes, in this case being the battery level and the size of the icon. This component can be seen in action, in the top right corner of the device page (see \autoref{fig:device_page}) in the app.
 
@@ -25,7 +24,9 @@ The \verb|BatteryIndicatorProps| describes the inputs that the component takes, 
 \end{figure}
 
 
-For the root of the app, we implemented a basic framework for navigating between pages. It needed to support two different views discussed in the design section (can be seen in \autoref{fig:wearer_pages} \& \autoref{fig:guardian_pages}). Instead if importing some larger framework to do this simple task, we chose to implement a simplified version ourselves. It uses two dictionaries, one for each view, and then each key value pair corresponds to a different page in that view. Then we just keep track of the view and page that the user is on, and update the variables used to index the dictionaries when we want to navigate between pages.
+For the foundation of the application, a simple navigation framework was implemented to handle transitions between pages. It supports the two distinct views described in the design section (see \autoref{fig:wearer_pages} and \autoref{fig:guardian_pages}). Instead of importing a larger navigation framework for this limited use case, a lightweight custom solution was implemented.
+
+The system is based on two dictionaries, one for each view, where each key–value pair represents a page within that view. Navigation is handled by tracking the current view and page, and updating the variables used to index the dictionaries whenever a page transition occurs.
 
 \begin{figure}[H]
   \centering
@@ -65,33 +66,31 @@ The documents, collections and their references between could be visualized like
     \label{fig:database-diagram}
 \end{figure}
 
-Here we can see a simplified example of how our database is setup. Where each user has two collections, one for their relatives, and one for their location history.
+Here is a simplified example of how our database is setup. Where each user has two collections, one for their relatives, and one for their location history.
 
-Getting and storing data in the database was quite easy due to the large community support around the Firebase ecosystem. There were existing \textit{'plugins'} for capacitor that would take advantage of the native system that the app was running on to improve the performance and usability of the plugin. One of theese plugins was meant for the Firebase Firestore database, and allows for subscribing to changes in the database, as well as regular getting, setting and deleting of documents.
+Getting and storing data in the database was quite easy due to the large community support around the Firebase ecosystem. There were existing \textit{'plugins'} for capacitor that would take advantage of the native system that the app was running on to improve the performance and usability of the plugin. One of these plugins was meant for the Firebase Firestore database, and allows for subscribing to changes in the database, as well as regular getting, setting and deleting of documents.
 
+\subsubsection{Contacts}
+The user needs to have the ability to add their friends and family as their emergency contacts. To make this as easy as possible, the app makes use of the contact list stored on the users device. From here the user can choose to import a contact, and it will auto fill their information. There is of course also a way to add them manually, but even here, if it finds a contact with the same number in your contacts, it will auto fill the name and image with that found in the contacts list.
 
-\subsubsection{Bluetooth Connection}
+\subsubsection{Connecting to wristband}
 
 To connect to a Lapsus Wristband, the user must find the device in the device page, and press connect. This will then create a connection between the two that will stay alive, even when the application is pushed to the background. The app will receive updates whenever the wristband \textit{notifies} the device, this is where it handles the different types of alerts and forwards it to the backend.
 
-It also keeps listening to make sure that the device stays connected, 
+It also keeps listening to make sure that the device stays connected, and if ever it becomes unresponsive, the user will be alerted with a notification.
 
-- Scanning for new devices to pair
-- Store paired devices for fast reconnect
-- Alert user when disconnected
+When a wristband is connected, the device page switches from a "connect your device" page, to more of a "configure your device" (see \autoref{fig:device_page}). Although currently, the only information available at the moment is the battery percentage.
 
-** Insert screenshot of the bluetooth connection page here
 
 \subsubsection{\gls{gps} updates}
-To allow allow the relatives to see a history of where they have been, we need to capture the location of the device, even when the user has the app in the background. This presented some challenges, as most native systems won't allow permanent location tracking due to battery consumption and privacy concerns. The real solution would be to move the \gls{gps} module to the wristband, as that would increase the precision of the location if eg. the user was in their garden and the app reported the location to be indoors, as that was where they left their phone. Due to the prototype nature of our current solution, it was the easiest to just use the \gls{gps} from the device, as that still provides a general idea of where the user is located.
+To allow allow the relatives to see a history of where they have been, the app needs to capture the location of the device, even when the user has the app in the background. This presented some challenges, as most native systems won't allow permanent location tracking due to battery consumption and privacy concerns. The real solution would be to move the \gls{gps} module to the wristband, as that would increase the precision of the location if eg. the user was in their garden and the app reported the location to be indoors, as that was where they left their phone. Due to the prototype nature of our current solution, it was the easiest to just use the \gls{gps} from the device, as that still provides a general idea of where the user is located.
 
-Both Android and iOS have luckily thought of this, and provides a way to listen for gps updates natively. It wakes up a small part of the app to handle the update, giving us just enough time to upload it to our database to display to the relatives.
+Both Android and iOS have luckily thought of this, and provides a way to listen for \gls{gps} updates natively. It wakes up a small part of the app to handle the update, giving us just enough time to upload it to our database to display to the relatives.
 
 \clearpage
-\insertcodeblock{code/app/src/contexts/Auth/AuthProvider.tsx}{44}{81}
+\insertcodeblock{app/src/contexts/Auth/AuthProvider.tsx}{44}{81}{Background \gls{gps} listener}
 
 
-This here, is the code that is responsible for listening to, and uploading your location history. As you can see, it creates a document in the database, under the users \verb|snapshots| collection, as described in \autoref{sec:database-connection}.
+This here, is the code that is responsible for listening to, and uploading your location history. As you can see, it creates a document in the database, under the users \verb|snapshots| collection, as described in \autoref{sec:database-connection}. This document then contains the latitude, longitude and a metric for the accuracy of the gps measurement.
 
-** Insert screenshot of the guardian map page here ** 
     

@@ -81,10 +81,10 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Define the command to insert a source code file
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\newcommand{\insertcode}[1]{
+\newcommand{\insertcode}[2][typescript]{
   \begin{sourceblock}
-    \captionof{source}{#1}
-    \label{code:#1}
+    \captionof{source}{#2}
+    \label{code:#2}
     \inputminted[
       frame=lines,
       framesep=2mm,
@@ -93,28 +93,28 @@
       linenos,
       breaklines,
       breakanywhere=true
-    ]{csharp}{../code/#1}
+    ]{#1}{#2}
   \end{sourceblock}
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Define the command to insert a code block from a file
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\newcommand{\insertcodeblock}[3]{
+\newcommand{\insertcodeblock}[5][typescript]{
   \begin{codeblock}
-    \captionof{code}{\hyperref[code:#1]{#1} (#2-#3)}
-    \label{code-block:#1(#2-#3)}
+    \captionof{code}{#5  (\textit{#2} (#3-#4))}
+    \label{code-block:#2(#3--#4)}
     \inputminted[
       frame=lines,
       framesep=2mm,
       baselinestretch=0.9,
       fontsize=\footnotesize,
-      firstline=#2,
-      lastline=#3,
+      firstline=#3,
+      lastline=#4,
       linenos,
       breaklines,
        breakanywhere=true
-    ]{typescript}{#1}
+    ]{#1}{code/#2}
   \end{codeblock}
 }
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
