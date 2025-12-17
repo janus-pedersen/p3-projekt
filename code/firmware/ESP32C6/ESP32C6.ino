@@ -304,26 +304,6 @@ float getBatteryP() {
 
 /** Get the estimated battery voltage */
 float getBatteryV() {
-  // // Choose one (C6): start with 6 dB to avoid clipping
-  // analogSetPinAttenuation(BAT_V_PIN, ADC_6db);
-
-  // const float DIV = (R1 + R2) / R2;   // 3.0
-
-  // // Loop 32 times to get average voltage
-  // const int N = 32;
-  // uint32_t mv_sum = 0;
-  // for (int i = 0; i < N; i++) {
-  //   mv_sum += analogReadMilliVolts(BAT_V_PIN);  // calibrated mV
-  //   delay(2);
-  // }
-
-  // float v_pin = (mv_sum / (float)N) / 1000.0f;
-  // Serial.println(v_pin);
-  // float v_bat = v_pin * DIV;
-  // Serial.println(v_bat);
-  
-  // return v_bat;
-
   uint32_t sum = 0;
   for(int i = 0; i < 32; i++) {
     sum += analogReadMilliVolts(BAT_ADC_PIN);
