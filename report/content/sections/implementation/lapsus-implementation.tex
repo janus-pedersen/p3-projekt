@@ -1,25 +1,25 @@
 \subsection{Wristband}
-Something about what we used from state of art and design
+Lav intro til hele afsnittet
+
+The purpose of the wristband firmware is to continuously monitor the wearer for potential falls, expose the relevant signals over Bluetooth Low Energy (\textit{BLE}), and allow the wearer to manually trigger an alarm using the emergency button. All wristband firmware is implemented in \verb|code/firmware/ESP32C6/ESP32C6.ino|.
+
 \subsubsection{Board and sensors}
-Something about the board we use and what sensors it have and why we chose that. We use the ESP32-C6-DEV bord and the accration sensor.
-\href{https://spotpear.com/wiki/ESP32-C6-1.69-inch-LCD-Display-TouchScreen-AI-Programmable-DeepSeek-Watch.html?fbclid=IwY2xjawOvT-RleHRuA2FlbQIxMABicmlkETBWYTNoYUtWRjFZb1d1ZDFnc3J0YwZhcHBfaWQQMjIyMDM5MTc4ODIwMDg5MgABHvsQNYI2VtrW0z-6K5pNSeg0xGfMvezwk-rvJ3rNfbMJKo6WQLuj3xn6l78n_aem_gnITaII8QDJ3nUL7MQWjuA#Demo}{https://spotpear.com/}
-\subsubsection{I2C}
-The sensors use I2C accration sensor and gyo sensor
+For the prototype, we used a compact ESP32C6 watch development board with an onboard \gls{imu}. The board includes a QMI8658 accelerometer and gyroscope, which can be accessed over I\textsuperscript{2}C. The watch form factor was chosen to match the intended usage (worn on the wrist) while still providing an ESP32 platform with integrated \gls{ble} support. Documentation for the board can be found at \href{https://spotpear.com/wiki/ESP32-C6-1.69-inch-LCD-Display-TouchScreen-AI-Programmable-DeepSeek-Watch.html#Demo}{spotpear.com}.
+
+To reduce power consumption, the display backlight is disabled in software by pulling the backlight pin low (see \verb|LED_BL| in the firmware).
+
+The QMI8658 \gls{imu} is initialized using the Arduino \verb|Wire| library and communicates over I\textsuperscript{2}C (pins \verb|I2C_SDA| and \verb|I2C_SCL|). During startup, the firmware performs self-tests of both the accelerometer and gyroscope. For fall detection, we only enable the accelerometer and configure it for low-power sampling (4g range at 128~Hz) to balance responsiveness and battery life.
+
 \subsubsection{Fall detection algorithm}
-Something about why are we using threshold detection
-\begin{itemize}
-    \item Long battery life  
-    \item Simple and reliable  
-    \item Low board power consumption
-\end{itemize}
+The fall detection is implemented as a lightweight state machine based on the three-phase model described in \cite{hsieh_novel_2017}. Compared to more complex machine learning approaches, a threshold-based algorithm is well suited for a battery-powered prototype because it is computationally cheap, deterministic and easy to tune.
 
 \subsubsection{The fall}
-The paper \cite{hsieh_novel_2017} describe a fall as a sequence of three distinct phases seen in the figure: \ref{fig:sensor_fall_graph}.
+The paper \cite{hsieh_novel_2017} describes a fall as a sequence of three distinct phases, illustrated in \autoref{fig:sensor_fall_graph}.
 
 \begin{figure}
     \centering
     \includegraphics[width=0.75\linewidth]{report/images/sensor_fall_graph.png}
-    \caption{Illustration showing a standing forward fall and the tree phases of a fall from \cite{hsieh_novel_2017}.}
+    \caption{Illustration showing a standing forward fall and the three phases of a fall from \cite{hsieh_novel_2017}.}
     \label{fig:sensor_fall_graph}
 \end{figure}
 
@@ -33,19 +33,28 @@ The impact phase is characterized by a sudden and sharp spike in acceleration as
 After the impact, the body enters a rest phase where movement decreases significantly. The accelerometer readings stabilize, often showing minimal variation. Monitoring this phase helps distinguish real falls from false positives, as genuine falls usually include a period of low movement following the impact.
 
 \subsubsection{Emergency button}
-Hold down the button on the side of the device to send an emergensy signal uses \href{https://github.com/mathertel/OneButton}{https://github.com/mathertel/OneButton}
-
+To support manual alarms, the firmware exposes an emergency button. We use the \textit{OneButton} library \href{https://github.com/mathertel/OneButton}{github.com/mathertel/OneButton} to detect a long press, which reduces accidental triggers compared to reacting on a short click. When a long press is detected, the wristband sends a \gls{ble}BL notification to the phone (see \autoref{code-block:firmware/ESP32C6/ESP32C6.ino(221--279)}).
 \subsubsection{Hard impact}
-Detects impacts above $7$G. 
+In addition to the full fall sequence, the firmware also detects hard impacts above $7g$. This can be used to indicate events that do not fit the full fall profile, but still warrant attention. To avoid spamming notifications during repeated vibrations, hard impacts are rate-limited to one notification per second.
 
-Maby for car crash \href{https://www.researchgate.net/publication/7246415_An_Analysis_of_Maximum_Vehicle_G_Forces_and_Brain_Injury_in_Motorsports_Crashes}{https://www.researchgate.net}
+\insertcodeblock[cpp]{firmware/ESP32C6/ESP32C6.ino}{221}{279}{Fall detection, hard impact detection and alert notifications}
 
-\subsection{Bluetooth}
-How the Bluetooth are setup using NimBLE.
-https://github.com/h2zero/NimBLE-Arduino/tree/master
+\subsubsection{Communication}
+Communication between the wristband and the phone is implemented using the NimBLE-Arduino library \href{https://github.com/h2zero/NimBLE-Arduino}{github.com/h2zero/NimBLE-Arduino}. The ESP32-C6 acts as a \gls{ble} \textit{GATT server} and exposes two services: the standard Battery Service and a custom alert service for fall-related events.
 
-\subsubsection{User service}
-Something about the fall characteristic, impact characteristic and emergency button characteristic.
+To make pairing easier, the device name is generated from the device MAC address (\verb|Lapsus-XXXX|). On disconnect, the wristband immediately starts advertising again so the phone can reconnect without a reboot.
+
+\insertcodeblock{firmware/ESP32C6/ESP32C6.ino}{80}{118}{BLE server setup and advertising}[cpp]
+
+\subsubsection{Alert service}
+The custom alert service (\verb|5f9c2a60-8f9b-4e5b-bae0-bb2e7b9d2c4f|) contains three characteristics used by the phone to subscribe to events:
+\begin{itemize}
+    \item \textbf{Fall detected} (\verb|0d1a6b9e-7c3f-4cb7-8a29-72d0b3df02ab|)
+    \item \textbf{Hard impact detected} (\verb|ebf911a7-e385-49ef-a0f5-0133b3845bcf|)
+    \item \textbf{Emergency button pressed} (\verb|3a4b7c12-9fde-4b91-8c3a-1e2f4d6a8b9c|)
+\end{itemize}
+
+Each characteristic is configured with \verb|READ| and \verb|NOTIFY| so the phone can both read the current value and receive push updates. For the prototype, events are signaled by setting the characteristic to \verb|1| and sending a notification.
 
 \subsubsection{Battery service}
-Something about the battery characteristic and how battery are calculated.
+Battery status is exposed using the standard Battery Service (\gls{uuid} \verb|180F|) and the Battery Level characteristic (\gls{uuid} \verb|2A19|). The battery voltage is measured using the \gls{adc} and a resistor divider ($R_1 = 200~\mathrm{k}\Omega$, $R_2 = 100~\mathrm{k}\Omega$). To reduce noise, the firmware averages 32 \gls{adc} readings and converts the measured pin voltage back to an estimated battery voltage using the divider ratio. The result is mapped linearly to a percentage and notified to the phone every 10 seconds.
