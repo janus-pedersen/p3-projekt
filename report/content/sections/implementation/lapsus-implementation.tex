@@ -1,8 +1,10 @@
-\subsection{Lapsus}
-Something about what we used from state of art
+\subsection{Wristband}
+Something about what we used from state of art and design
 \subsubsection{Board and sensors}
 Something about the board we use and what sensors it have and why we chose that. We use the ESP32-C6-DEV bord and the accration sensor.
-\subsubsection{I2C og SPI}
+\href{https://spotpear.com/wiki/ESP32-C6-1.69-inch-LCD-Display-TouchScreen-AI-Programmable-DeepSeek-Watch.html?fbclid=IwY2xjawOvT-RleHRuA2FlbQIxMABicmlkETBWYTNoYUtWRjFZb1d1ZDFnc3J0YwZhcHBfaWQQMjIyMDM5MTc4ODIwMDg5MgABHvsQNYI2VtrW0z-6K5pNSeg0xGfMvezwk-rvJ3rNfbMJKo6WQLuj3xn6l78n_aem_gnITaII8QDJ3nUL7MQWjuA#Demo}{https://spotpear.com/}
+\subsubsection{I2C}
+The sensors use I2C accration sensor and gyo sensor
 \subsubsection{Fall detection algorithm}
 Something about why are we using threshold detection
 \begin{itemize}
@@ -31,13 +33,16 @@ The impact phase is characterized by a sudden and sharp spike in acceleration as
 After the impact, the body enters a rest phase where movement decreases significantly. The accelerometer readings stabilize, often showing minimal variation. Monitoring this phase helps distinguish real falls from false positives, as genuine falls usually include a period of low movement following the impact.
 
 \subsubsection{Emergency button}
-Something about how the button work 
+Hold down the button on the side of the device to send an emergensy signal uses \href{https://github.com/mathertel/OneButton}{https://github.com/mathertel/OneButton}
 
 \subsubsection{Hard impact}
-Something about how it detects hard impacts
+Detects impacts above $7$G. 
+
+Maby for car crash \href{https://www.researchgate.net/publication/7246415_An_Analysis_of_Maximum_Vehicle_G_Forces_and_Brain_Injury_in_Motorsports_Crashes}{https://www.researchgate.net}
 
 \subsection{Bluetooth}
 How the Bluetooth are setup using NimBLE.
+https://github.com/h2zero/NimBLE-Arduino/tree/master
 
 \subsubsection{User service}
 Something about the fall characteristic, impact characteristic and emergency button characteristic.
