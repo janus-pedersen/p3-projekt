@@ -1,8 +1,10 @@
-\subsection{Unit Tests}
-Throughout development, unit tests were an important part of validating the functionality of our system. We regrettably implemented the unit tests quite late, and were therefor not able to take full advantage of the bonuses that comes from having them. 
+\subsection{Automated testing}
+Throughout development, automated tests were an important part of validating the functionality of our system. The majority of the tests were regrettably implemented relatively late, and therefor not able to take full advantage of the bonuses that comes from having them. 
+
+\subsubsection{Unit tests}
+The
 
 The prioritized tests are the ones that are responsible for critical things in the app. One such example is the \verb|RoutesProvider|. That's the component responsible for showing the correct components depending on the view mode, and the selected page. To test this component, a series of automated page and view switches was setup, followed by evaluating what's displayed on the screen and comparing that to the expected result.
-
 
 \subsubsection{Integration tests}
 Another form of automated testing that was implemented, is so called \textit{integration tests}. This is where the entire app, from start to finish is tested. This means that we open up a virtual app, look for certain things on the screen, virtually press the buttons and evaluate what changes to make sure that all the different system that have been implemented work together.
@@ -17,30 +19,33 @@ The following cases were tested with integration tests.
 These tests don't cover all the aspects of the app, but they serve as a good sanity check to make sure that nothing too major is broken.
 
 \subsubsection{Test results}
-Since the tests were implemented quite late, it was only really for the last few days of development that any good came from them. Every time we changed the code, the tests were ran to verify that it was at least somewhat still functional. One such result could look something like the following (see fig).
+Since the tests were implemented quite late, it was only really for the last few days of development that any good came from them. Every time we changed the code, the tests were ran to verify that it was at least somewhat still functional. One such result could look something like the following (see \autoref{code-block:example-test-result}).
 
 
-\begin{minted}
-✗ npm run test
+\clearpage
+\begin{codeblock}
+    \caption{Example test results}
+    \label{code-block:example-test-result}
+    \begin{minted}{bash}
+    $ npm run test
+    > app@0.0.0 test
+    > vitest
+    
+     DEV  v3.2.4 /Users/xxxx/Documents/GitHub/p3-projekt/code/app
+     > src/utils/relativeTime.test.ts (2 tests) 36ms
+     > src/contexts/Routes/RoutesProvider.test.tsx (1 test) 108ms
+     > src/components/Outlet/Outlet.test.tsx (2 tests) 15ms
+     > src/components/ModalsProvider/ModalsProvider.test.tsx (1 test) 28ms
+     > src/components/BatteryIndicator/BatteryIndicator.test.tsx (2 tests) 19ms
+     > src/test/importAll.test.ts (1 test) 1605ms
+     > module smoke tests > imports all non-test src modules  1605ms
+     > src/utils/getUserContact.test.ts (2 tests) 4ms
+     > src/test/integration/App.integration.test.tsx (3 tests) 269ms
+    
+     Test Files  8 passed (8)
+          Tests  14 passed (14)
+       Start at  15:35:39
+       Duration  2.95s
+    \end{minted}
+\end{codeblock}
 
-> app@0.0.0 test
-> vitest
-
-
- DEV  v3.2.4 /Users/janus/Documents/GitHub/p3-projekt/code/app
-
- ✓ src/utils/relativeTime.test.ts (2 tests) 36ms
- ✓ src/contexts/Routes/RoutesProvider.test.tsx (1 test) 108ms
- ✓ src/components/Outlet/Outlet.test.tsx (2 tests) 15ms
- ✓ src/components/ModalsProvider/ModalsProvider.test.tsx (1 test) 28ms
- ✓ src/components/BatteryIndicator/BatteryIndicator.test.tsx (2 tests) 19ms
- ✓ src/test/importAll.test.ts (1 test) 1605ms
-   ✓ module smoke tests > imports all non-test src modules  1605ms
- ✓ src/utils/getUserContact.test.ts (2 tests) 4ms
- ✓ src/test/integration/App.integration.test.tsx (3 tests) 269ms
-
- Test Files  8 passed (8)
-      Tests  14 passed (14)
-   Start at  15:35:39
-   Duration  2.95s (transform 623ms, setup 1.03s, collect 2.25s, tests 2.08s, environment 2.64s, prepare 399ms)
-\end{minted}
