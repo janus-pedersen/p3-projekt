@@ -3,6 +3,8 @@ The system functionalities describe how Lapsus operates as a complete solution, 
 
 
 \subsubsection{Data flow diagram}
+The data flow diagram provides an overview of the system's processes.  At the top of the diagram, it is seen that the external entity 'User' sends the phone number and the corresponding code to the process 'Login'. To which the process 'Login' sends login information to the data store 'Users', which responds with the user profile. Process 2: 'Add/Remove relatives' gets the 'relative information' from the 'User'. The process then sends this data to the data store 'Relatives'. Process 3: 'Connect wristband'. Process 4: 'Cancel alert' receives the data 'press cancel on alert' from 'User' to which it establishes a BLE connection with the external entity 'Wristband'. 
+Process 5: 'Store GPS location' sends the data 'GPS coordinates' from 'User', sends the 'store location snapshot' to the data store 'Locations', which then sends the 'Receive stored data' to Process 8: 'View real-time GPS', where the display map is sent to the external entity 'Relative'. Process 6: 'Emergency alert' receives 'notify backend' from process number 9. After that, process 6 creates an alert, which is sent to the data store 'alerts' and process 7: send sms alert. Process 7 then sends an sms to the external entity called 'relative'. Process 8: View real-time GPS retrieves stored data from the data store 'location', then it displays the map to the external entity named 'relative'. Lastly, process 9 receives data regarding the accelerometer/gyroscope, and it then notifies the backend, specifically process 6. 
 \begin{figure} [H]
     \centering
     \includegraphics[width=1\linewidth]{report/images/Dataflow-Diagram-med-line-jumps.pdf}
@@ -20,11 +22,11 @@ The sequence diagram below describes the sequence when a fall is detected. The f
 \end{figure}
 
 \subsubsection{Deployment diagram}
-In the following deployment diagram, 
+In the previous section, the workings of the wristband and application were highlighted. In the following deployment diagram, it is shown how all of these individual elements work together. The device 'wristband' runs the firmware and connects via Bluetooth Low Energy to the device 'user's smartphone' where the four components 'UI/Webview', 'Capacity API', Firebase SDK' and 'BLE API' run either in an Android or iOS environment. The user's smartphone connects to the cloud company Firebase/Google Cloud Platform through TCP/HTTPS (Firebase SDK). In the node 'Firebase/GCP', there is an artefact, the 'Firebase Functions' and a database, the 'Firebase Firestone'. The previously mentioned node connects via TCP and HTTPS to another cloud company called Twilio, in which the component 'Twilio API' is used. Lastly, this node connects with the relative's smartphone by the use of SMS/text messages.
 \begin{figure} [H]
     \centering
     \includegraphics[width=1\linewidth]{report/images/Deployment-Diagram-Deployment-Diagram.pdf}
-    \caption{Enter Caption}
+    \caption{Deployment diagram over the Lapsus system}
     \label{fig:placeholder}
 \end{figure}
 
