@@ -1,4 +1,4 @@
-import { FirebaseFirestore } from "@capacitor-firebase/firestore";
+import { FirebaseFirestore } from "../../services/capacitor";
 import { useState, useEffect } from "react";
 import { Map } from "../../components/Map/Map";
 import { useAuth } from "../../hooks/useAuth";

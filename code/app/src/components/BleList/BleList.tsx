@@ -1,4 +1,4 @@
-import { BleClient, ScanMode } from "@capacitor-community/bluetooth-le";
+import { BleClient, ScanMode } from "../../services/capacitor";
 import { Group, Paper, Stack, Text } from "@mantine/core";
 import { useEffect, useState } from "react";
 import SignalStrength from "../SignalStrength/SignalStrength";

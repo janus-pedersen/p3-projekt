@@ -10,7 +10,7 @@ import {
 import parsePhoneNumberFromString from "libphonenumber-js";
 import { useEffect, useMemo, useState } from "react";
 import { getContactByPhone } from "../../utils/getUserContact";
-import type { ContactPayload } from "@capacitor-community/contacts";
+import type { ContactPayload } from "../../services/capacitor";
 import { Trash2 } from "lucide-react";
 
 export type ContactCardProps = {

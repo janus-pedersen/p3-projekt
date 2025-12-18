@@ -4,7 +4,7 @@ import { useAuth } from "./hooks/useAuth";
 import Navbar from "./components/Navbar/Navbar";
 import { Outlet } from "./components/Outlet/Outlet";
 import SignInPage from "./pages/SignIn";
-import { Keyboard } from "@capacitor/keyboard";
+import { Keyboard } from "./services/capacitor";
 import { RoutesProvider } from "./contexts/Routes/RoutesProvider";
 import { relativeRoutes, responderRoutes } from "./pages";
 

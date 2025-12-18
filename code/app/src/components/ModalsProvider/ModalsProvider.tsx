@@ -1,6 +1,6 @@
 import { GuardianModal } from "../../modals/GuardianModal";
 import { ModalsProvider as MantineModalsProvider } from "@mantine/modals";
-import { Keyboard } from "@capacitor/keyboard";
+import { Keyboard } from "../../services/capacitor";
 import { useEffect, useState } from "react";
 
 const modals = {

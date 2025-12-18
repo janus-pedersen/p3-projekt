@@ -1,3 +1,4 @@
+/// <reference types="vitest" />
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 // import mkcert from "vite-plugin-mkcert";
@@ -8,4 +9,9 @@ export default defineConfig({
     react(),
     // mkcert()
   ],
+  test: {
+    environment: "jsdom",
+    setupFiles: ["./src/test/setup.ts"],
+    css: true,
+  },
 });

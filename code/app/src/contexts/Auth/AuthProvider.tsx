@@ -1,19 +1,14 @@
-import { registerPlugin } from "@capacitor/core";
-import type { BackgroundGeolocationPlugin } from "@capacitor-community/background-geolocation";
-
 import { AuthContext } from "./AuthContext";
-import { FirebaseFunctions } from "@capacitor-firebase/functions";
 import {
+  BackgroundGeolocation,
+  Dialog,
   FirebaseAuthentication,
+  FirebaseFirestore,
+  FirebaseFunctions,
   type User,
-} from "@capacitor-firebase/authentication";
+} from "../../services/capacitor";
 import * as auth from "firebase/auth";
 import { useEffect, useState } from "react";
-import { Dialog } from "@capacitor/dialog";
-import { FirebaseFirestore } from "@capacitor-firebase/firestore";
-
-export const BackgroundGeolocation =
-  registerPlugin<BackgroundGeolocationPlugin>("BackgroundGeolocation");
 
 export type VerifyPayload = {
   phone: string;

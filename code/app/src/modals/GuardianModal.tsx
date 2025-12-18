@@ -12,7 +12,7 @@ import {
 import type { ContextModalProps } from "@mantine/modals";
 import { Header } from "../components/Header/Header";
 import { PhoneInput } from "../components/PhoneInput/PhoneInput";
-import { Contacts, PhoneType } from "@capacitor-community/contacts";
+import { Contacts, PhoneType } from "../services/capacitor";
 import { useForm } from "@mantine/form";
 import { zod4Resolver } from "mantine-form-zod-resolver";
 import z from "zod";

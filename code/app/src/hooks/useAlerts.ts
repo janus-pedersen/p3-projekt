@@ -1,4 +1,4 @@
-import { FirebaseFunctions } from "@capacitor-firebase/functions";
+import { FirebaseFunctions } from "../services/capacitor";
 import { useInterval, useSessionStorage } from "@mantine/hooks";
 import { useMemo } from "react";
 import type { FallAlert } from "../utils/alert";
