@@ -35,7 +35,7 @@ uint32_t freeFallTime, impactTime;
 /** Battery enable pin */
 #define BAT_EN 15
 #define BAT_ADC_PIN 0
-#define BAT_INTERVAL 10000  // Every 60 sec
+#define BAT_INTERVAL 60000  // Every 60 sec
 unsigned long last_bat = millis();
 
 /** Battery level estimation stuff */
