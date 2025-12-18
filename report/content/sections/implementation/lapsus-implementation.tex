@@ -1,17 +1,20 @@
 \subsection{Wristband}
-Lav intro til hele afsnittet
+The wristband is the embedded part of Lapsus. It continuously samples motion data from an onboard \gls{imu}, detects fall-related events locally, and forwards alarms to the phone over Bluetooth Low Energy (\gls{ble}). In addition, it exposes the battery level and supports a manual emergency alarm via a physical button. The firmware is implemented as an Arduino sketch for the ESP32-C6 and is located in \verb|code/firmware/ESP32C6/ESP32C6.ino|.
 
-The purpose of the wristband firmware is to continuously monitor the wearer for potential falls, expose the relevant signals over Bluetooth Low Energy (\textit{BLE}), and allow the wearer to manually trigger an alarm using the emergency button. All wristband firmware is implemented in \verb|code/firmware/ESP32C6/ESP32C6.ino|.
+At a high level, the firmware consists of an initialization phase (\verb|setup()|) where \gls{ble} services and sensor parameters are configured, followed by a continuous execution loop (\verb|loop()|) that (1) reads accelerometer samples, (2) updates the fall detection state machine, and (3) emits \gls{ble} notifications when an event is detected.
+
+\subsubsection{Firmware overview}
+The firmware is intentionally kept simple and event-driven to fit a battery-powered prototype. Most computation happens only when a new accelerometer sample is ready, and fall-related events are communicated as short \gls{ble} notifications to minimize latency and overhead. Power is saved by disabling the display backlight in software and by configuring the accelerometer for low-power sampling.
 
 \subsubsection{Board and sensors}
 For the prototype, we used a compact ESP32C6 watch development board with an onboard \gls{imu}. The board includes a QMI8658 accelerometer and gyroscope, which can be accessed over I\textsuperscript{2}C. The watch form factor was chosen to match the intended usage (worn on the wrist) while still providing an ESP32 platform with integrated \gls{ble} support. Documentation for the board can be found at \href{https://spotpear.com/wiki/ESP32-C6-1.69-inch-LCD-Display-TouchScreen-AI-Programmable-DeepSeek-Watch.html#Demo}{spotpear.com}.
 
-To reduce power consumption, the display backlight is disabled in software by pulling the backlight pin low (see \verb|LED_BL| in the firmware).
-
-The QMI8658 \gls{imu} is initialized using the Arduino \verb|Wire| library and communicates over I\textsuperscript{2}C (pins \verb|I2C_SDA| and \verb|I2C_SCL|). During startup, the firmware performs self-tests of both the accelerometer and gyroscope. For fall detection, we only enable the accelerometer and configure it for low-power sampling (4g range at 128~Hz) to balance responsiveness and battery life.
+The QMI8658 \gls{imu} is initialized using the Arduino \verb|Wire| library and communicates over I\textsuperscript{2}C (pins \verb|I2C_SDA| and \verb|I2C_SCL|). During startup, the firmware performs self-tests of both the accelerometer and gyroscope to validate the sensor before starting \gls{ble} advertising. For fall detection, we only enable the accelerometer and configure it for low-power sampling (4g range at 128~Hz). This is a compromise between capturing the fast dynamics of a fall and preserving battery life.
 
 \subsubsection{Fall detection algorithm}
-The fall detection is implemented as a lightweight state machine based on the three-phase model described in \cite{hsieh_novel_2017}. Compared to more complex machine learning approaches, a threshold-based algorithm is well suited for a battery-powered prototype because it is computationally cheap, deterministic and easy to tune.
+The fall detection is implemented as a lightweight state machine based on the three-phase model described in \cite{hsieh_novel_2017}. Compared to more complex machine learning approaches, a threshold-based algorithm is well suited for a battery-powered prototype because it is computationally cheap, deterministic, and easy to tune in controlled experiments.
+
+Rather than working with individual axes, the firmware computes the squared acceleration magnitude, $|a|^2 = a_x^2 + a_y^2 + a_z^2$. Using $|a|^2$ avoids an expensive square-root operation while still providing an orientation-independent measure of acceleration, which is important because the wristband may rotate during a fall. The implementation of this can be seen in \autoref{code-block:firmware/ESP32C6/ESP32C6.ino (229-262)}.
 
 \subsubsection{The fall}
 The paper \cite{hsieh_novel_2017} describes a fall as a sequence of three distinct phases, illustrated in \autoref{fig:sensor_fall_graph}.
@@ -32,19 +35,23 @@ The impact phase is characterized by a sudden and sharp spike in acceleration as
 \paragraph{Rest}
 After the impact, the body enters a rest phase where movement decreases significantly. The accelerometer readings stabilize, often showing minimal variation. Monitoring this phase helps distinguish real falls from false positives, as genuine falls usually include a period of low movement following the impact.
 
-\subsubsection{Emergency button}
-To support manual alarms, the firmware exposes an emergency button. We use the \textit{OneButton} library \href{https://github.com/mathertel/OneButton}{github.com/mathertel/OneButton} to detect a long press, which reduces accidental triggers compared to reacting on a short click. When a long press is detected, the wristband sends a \gls{ble}BL notification to the phone (see \autoref{code-block:firmware/ESP32C6/ESP32C6.ino(221--279)}).
-\subsubsection{Hard impact}
-In addition to the full fall sequence, the firmware also detects hard impacts above $7g$. This can be used to indicate events that do not fit the full fall profile, but still warrant attention. To avoid spamming notifications during repeated vibrations, hard impacts are rate-limited to one notification per second.
+\subsubsection{State machine implementation}
+The state machine tracks whether a free-fall was observed, whether an impact was detected within a short time window, and whether the signal subsequently becomes ``still''. Only when the sequence occurs in the correct order is a fall event raised. In practice, the thresholds and timing constraints are the main tuning parameters: they are chosen to be conservative enough to reject normal arm movement while still triggering quickly for a real fall as described in \autoref{code-block:firmware/ESP32C6/ESP32C6.ino (229-262)}.
 
-\insertcodeblock[cpp]{firmware/ESP32C6/ESP32C6.ino}{221}{279}{Fall detection, hard impact detection and alert notifications}
+\insertcodeblock[cpp]{firmware/ESP32C6/ESP32C6.ino}{229}{262}{Threshold-based fall detection with hard-impact alerts}
+
+\subsubsection{Emergency button}
+To support manual alarms, the firmware exposes an emergency button. We use the \textit{OneButton} library \href{https://github.com/mathertel/OneButton}{github.com/mathertel/OneButton} to detect a long press, which reduces accidental triggers compared to reacting on a short click. When a long press is detected, the wristband sends a \gls{ble} notification to the phone.
+
+\subsubsection{Hard impact}
+In addition to the full fall sequence, the firmware also detects hard impacts above $7g$. This can indicate events that do not fit the full fall profile (e.g., bumping into an obstacle), but still warrant attention. To avoid spamming notifications during repeated vibrations, hard impacts are rate-limited to one notification per second.
 
 \subsubsection{Communication}
-Communication between the wristband and the phone is implemented using the NimBLE-Arduino library \href{https://github.com/h2zero/NimBLE-Arduino}{github.com/h2zero/NimBLE-Arduino}. The ESP32-C6 acts as a \gls{ble} \textit{GATT server} and exposes two services: the standard Battery Service and a custom alert service for fall-related events.
+Communication between the wristband and the phone is implemented using the NimBLE-Arduino library \href{https://github.com/h2zero/NimBLE-Arduino}{github.com/h2zero/NimBLE-Arduino} and can be seen in \autoref{code-block:firmware/ESP32C6/ESP32C6.ino (89-117)}. The ESP32C6 acts as a \gls{ble} \textit{GATT server} and exposes two services: the standard Battery Service and a custom alert service for fall-related events. 
 
-To make pairing easier, the device name is generated from the device MAC address (\verb|Lapsus-XXXX|). On disconnect, the wristband immediately starts advertising again so the phone can reconnect without a reboot.
+To make pairing easier during testing, the device name is generated from the device MAC address (\verb|Lapsus-XXXX|). On disconnect, the wristband immediately starts advertising again so the phone can reconnect without a reboot. The services are added to the advertising payload so the phone can discover capabilities before connecting.
 
-\insertcodeblock{firmware/ESP32C6/ESP32C6.ino}{80}{118}{BLE server setup and advertising}[cpp]
+\insertcodeblock[cpp]{firmware/ESP32C6/ESP32C6.ino}{89}{117}{Creating BLE services and advertising them}
 
 \subsubsection{Alert service}
 The custom alert service (\verb|5f9c2a60-8f9b-4e5b-bae0-bb2e7b9d2c4f|) contains three characteristics used by the phone to subscribe to events:
@@ -54,7 +61,11 @@ The custom alert service (\verb|5f9c2a60-8f9b-4e5b-bae0-bb2e7b9d2c4f|) contains 
     \item \textbf{Emergency button pressed} (\verb|3a4b7c12-9fde-4b91-8c3a-1e2f4d6a8b9c|)
 \end{itemize}
 
-Each characteristic is configured with \verb|READ| and \verb|NOTIFY| so the phone can both read the current value and receive push updates. For the prototype, events are signaled by setting the characteristic to \verb|1| and sending a notification.
+Each characteristic is configured with \verb|READ|, \verb|WRITE|, and \verb|NOTIFY| so the phone can read the current value, receive push updates, and (optionally) write to the characteristic. The \verb|WRITE| property is included to allow remotely clearing an alarm. For the prototype, events are signaled by setting the characteristic to \verb|1| and sending a notification.
 
 \subsubsection{Battery service}
-Battery status is exposed using the standard Battery Service (\gls{uuid} \verb|180F|) and the Battery Level characteristic (\gls{uuid} \verb|2A19|). The battery voltage is measured using the \gls{adc} and a resistor divider ($R_1 = 200~\mathrm{k}\Omega$, $R_2 = 100~\mathrm{k}\Omega$). To reduce noise, the firmware averages 32 \gls{adc} readings and converts the measured pin voltage back to an estimated battery voltage using the divider ratio. The result is mapped linearly to a percentage and notified to the phone every 10 seconds.
+Battery status is exposed using the standard Battery Service (\gls{uuid} \verb|180F|) and the Battery Level characteristic (\gls{uuid} \verb|2A19|), created during startup (see \autoref{code-block:firmware/ESP32C6/ESP32C6.ino (89-117)}).
+
+The battery voltage is measured using the \gls{adc} and a resistor divider ($R_1 = 200~\mathrm{k}\Omega$, $R_2 = 100~\mathrm{k}\Omega$), which yields a divider ratio of 3. The firmware reads the battery \gls{adc} pin 32 times using \verb|analogReadMilliVolts| and averages the result to reduce noise. The averaged pin voltage is then converted back to an estimated battery voltage using the divider ratio, and mapped linearly to a percentage between \verb|V_MIN| and \verb|V_MAX| (clamped to 100\%). This conversion is implemented in \autoref{code-block:firmware/ESP32C6/ESP32C6.ino (290-315)}. The resulting percentage is periodically notified to the phone based on \verb|BAT_INTERVAL| (currently 60 seconds).
+
+\insertcodeblock[cpp]{firmware/ESP32C6/ESP32C6.ino}{290}{315}{Battery voltage estimation and percentage mapping}
