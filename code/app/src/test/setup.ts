@@ -198,7 +198,8 @@ vi.mock("@capacitor-firebase/firestore", () => ({
 
 vi.mock("@capacitor-firebase/functions", () => ({
   FirebaseFunctions: {
-    callByName: vi.fn(),
+    // Default to an empty payload so hooks that call this on mount don't crash.
+    callByName: vi.fn().mockResolvedValue({ data: { related: [], alerts: [] } }),
   },
 }));
 

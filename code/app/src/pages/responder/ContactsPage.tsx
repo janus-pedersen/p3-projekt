@@ -99,6 +99,7 @@ export function ContactsPage() {
       />
       {contacts.map((contact) => (
         <ContactCard
+          key={contact.id}
           phone={contact.phone}
           name={contact.name}
           onDelete={() => {
