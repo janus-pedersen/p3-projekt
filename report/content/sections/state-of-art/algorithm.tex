@@ -1,19 +1,4 @@
-Wearable fall detection with inertial measurement units (\gls{imu}s) typically uses a tri-axial accelerometer and gyroscope. Current methods can be grouped into threshold rules, classical machine learning, and deep learning (\gls{dl}), with a growing trend toward hybrids that combine fast, low-power triggers with learned models for confirmation \cite{Zhang2024_JMIR,Garcia2022_Neurocomputing,Hu2025_BSPC}.
-
-\subsubsection{Threshold rules}
-Classical systems fire an alarm when the resultant acceleration exceeds an impact threshold and is followed by low activity or a posture change, optionally checking angular velocity or tilt to reduce false positives. These methods are transparent, computationally lightweight, and practical for embedded wearables, but they require user- or device-specific tuning and can misclassify vigorous activities of daily living (ADLs) \cite{Stampfler2022_PervasiveAppsReview}. Recent implementations still report solid performance in controlled tests, yet sensitivity–specificity trade-offs remain sensitive to parameters and placement \cite{lee_development_2019}.
-
-\subsubsection{Classical machine learning}
-Supervised classifiers trained on hand-crafted features from accel/gyro windows (e.g., peaks, energy, variance, tilt rate) generally reduce false alarms compared to fixed thresholds. Common models include support vector machines, $k$-nearest neighbours, decision trees and ensembles. With adequate features and subject-independent validation, machine leaning approaches routinely achieve mid-90\% accuracy while remaining feasible for real-time execution on a phone or low-power edge device \cite{Stampfler2022_PervasiveAppsReview}. Generalisation is limited by the scarcity of real elderly fall data; many studies rely on simulated falls by young adults, which can inflate benchmark results \cite{Casilari2022_DatasetComparisons}.
-w
-\subsubsection{Deep learning}
-State-of-the-art performance is typically obtained with 1 dimensional convolutional neural networks (CNNs), recurrent models such as LSTMs, or CNN–LSTM hybrids that learn features directly from raw sequences. On public datasets (e.g., SisFall, MobiAct), recent CNN and CNN–LSTM models report sensitivities and specificities in the high 90s \cite{Zhang2024_JMIR,Garcia2022_Neurocomputing}. \gls{dl} improves robustness by learning spatio-temporal patterns of pre-impact, impact and post-impact phases but increases compute and memory cost. Practical deployments therefore use lightweight architectures, quantisation, or event-driven pipelines where a simple trigger gates the \gls{dl} inference \cite{Hu2025_BSPC}.
-
-\subsubsection{Pre-impact detection}
-To enable protective actions (e.g., airbags), pre-impact methods aim to detect a fall within a few hundred milliseconds before contact. Recent work explores residual CNNs and lightweight models tailored for low latency on \gls{imu} streams \cite{FDSNeXt2022_IASC,TinyFallNet2023_Sensors}. These systems show promising accuracy under lab conditions, but the specificity requirements for pre-impact actuation are stringent and real-world validation is still limited.
-
-\subsubsection{Datasets and validation}
-Performance is strongly affected by sensor placement (waist, wrist, pocket), windowing and evaluation protocol. SisFall remains a widely used benchmark with diverse ADLs and scripted falls \cite{Sucerquia2017_SisFall}. However, reviews highlight a gap between lab datasets and real-world behaviour of older adults, urging more ecologically valid data and reporting of computational and energy budgets alongside accuracy \cite{Casilari2022_DatasetComparisons,Stampfler2022_PervasiveAppsReview}.
+Wearable fall detection with inertial measurement units (\gls{imu}s) typically uses a tri-axial accelerometer and gyroscope. Current methods can be grouped into threshold rules, classical machine learning, and deep learning (\gls{dl}), with a growing trend toward hybrids that combine fast, low-power triggers with learned models for confirmation \cite{Zhang2024_JMIR,Garcia2022_Neurocomputing,Hu2025_BSPC}. Different models for fall detection that will be described in the following sections can be seen in this \autoref{tab:fall_detection_methods}.
 
 \begin{table}[H]
 \centering
@@ -21,13 +6,28 @@ Performance is strongly affected by sensor placement (waist, wrist, pocket), win
 \hline
 Method & Accuracy & Sensitivity & Specificity \\
 \hline
-1D CNN on accel/gyro (multi-dataset) \cite{Zhang2024_JMIR} & 98.8\% & 98.9\% & 99.8\% \\
-CNN–LSTM (wrist placement) \cite{Garcia2022_Neurocomputing} & 96.9\% & 98.3\% & 97–98\% \\
+1D CNN on accel/gyro (multi-dataset)\cite{Zhang2024_JMIR} & 98.8\% & 98.9\% & 99.8\% \\
+CNN–LSTM (wrist placement)\cite{Garcia2022_Neurocomputing} & 96.9\% & 98.3\% & 97–98\% \\
 Hybrid trigger + CNN–LSTM \cite{Hu2025_BSPC} & -- & 96.7\% & 100\% \\
 TinyFallNet pre-impact model \cite{TinyFallNet2023_Sensors} & -- & -- & -- \\
 Pervasive smartphone apps review \cite{Stampfler2022_PervasiveAppsReview} & 90–96\% & 90–95\% & 90–97\% \\
 \hline
 \end{tabular}
 \caption{Representative wearable \gls{imu} fall detection results. Metrics reported by the original papers on their own protocols.}
-\label{}
+\label{tab:fall_detection_methods}
 \end{table}
+
+\subsubsection{Threshold rules}
+Classical systems fire an alarm when the resultant acceleration exceeds an impact threshold and is followed by low activity or a posture change, optionally checking angular velocity or tilt to reduce false positives. These methods are transparent, computationally lightweight, and practical for embedded wearables, but they require user- or device-specific tuning and can misclassify vigorous activities of daily living (\gls{adl}s)\cite{Stampfler2022_PervasiveAppsReview}. Recent implementations still report solid performance in controlled tests, yet sensitivity–specificity trade-offs remain sensitive to parameters and placement \cite{lee_development_2019}.
+
+\subsubsection{Classical machine learning}
+Supervised classifiers trained on hand-crafted features from accel/gyro windows (e.g., peaks, energy, variance, tilt rate) generally reduce false alarms compared to fixed thresholds. Common models include support vector machines, $k$-nearest neighbours, decision trees and ensembles. With adequate features and subject-independent validation, machine leaning approaches routinely achieve mid-90\% accuracy while remaining feasible for real-time execution on a phone or low-power edge device \cite{Stampfler2022_PervasiveAppsReview}. Generalisation is limited by the scarcity of real elderly fall data; many studies rely on simulated falls by young adults, which can inflate benchmark results \cite{Casilari2022_DatasetComparisons}.
+
+\subsubsection{Deep learning}
+State-of-the-art performance is typically obtained with 1 dimensional convolutional neural networks (CNNs), recurrent models such as LSTMs, or CNN–LSTM hybrids that learn features directly from raw sequences. On public datasets (e.g., SisFall, MobiAct), recent CNN and CNN–LSTM models report sensitivities and specificities in the high 90s \cite{Zhang2024_JMIR,Garcia2022_Neurocomputing}. \gls{dl} improves robustness by learning spatio-temporal patterns of pre-impact, impact and post-impact phases but increases compute and memory cost. Practical deployments therefore use lightweight architectures, quantisation, or event-driven pipelines where a simple trigger gates the \gls{dl} inference \cite{Hu2025_BSPC}.
+
+\subsubsection{Pre-impact detection}
+To enable protective actions (e.g., airbags), pre-impact methods aim to detect a fall within a few hundred milliseconds before contact. Recent work explores residual CNNs and lightweight models tailored for low latency on \gls{imu} streams \cite{FDSNeXt2022_IASC,TinyFallNet2023_Sensors}. These systems show promising accuracy under lab conditions, but the specificity requirements for pre-impact actuation are stringent and real-world validation is still limited.
+
+\subsubsection{Datasets and validation}
+Performance is strongly affected by sensor placement (waist, wrist, pocket), windowing and evaluation protocol. SisFall remains a widely used benchmark with diverse \gls{adl}s and scripted falls \cite{Sucerquia2017_SisFall}. However, reviews highlight a gap between lab datasets and real-world behaviour of older adults, urging more ecologically valid data and reporting of computational and energy budgets alongside accuracy \cite{Casilari2022_DatasetComparisons,Stampfler2022_PervasiveAppsReview}.

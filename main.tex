@@ -40,14 +40,20 @@
 \pdfbookmark{Contents}{label:contents}
 % Remove the chapter numbers
 \renewcommand{\thesection}{\arabic{section}} 
-\setcounter{tocdepth}{2}
-\tableofcontents
+{
+    \linespread{1}\selectfont
+    %\setcounter{tocdepth}{2}
+    \tableofcontents
+}
 \newpage
 \pagestyle{fancy} % enable headers and footers again
 \fancyhf{} % clears all header/footer fields
 \fancyhead[R]{\thepage} % or L if you want it on the left
-\listoffigures
-\listoftables
+{
+    \linespread{1}\selectfont
+    \listoffigures
+    \listoftables
+}
 
 \newpage
 \pagenumbering{arabic}
@@ -71,7 +77,10 @@
 \label{main:end} % <-- Sidetal stopper her
 
 % --- Glossary, acronyms etc.
-\printnoidxglossaries
+{
+    \linespread{1}\selectfont
+    \printnoidxglossaries
+}
 \cleardoublepage
 
 \addcontentsline{toc}{section}{Bibliography}

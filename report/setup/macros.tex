@@ -131,16 +131,13 @@
 		\end{exa}
 }
 
-
-% Macro: \wrapimage{side}{width}{path}{caption}{label}
+% Macro: \wrapimage
 \newcommand{\wrapimage}[4]{%
-  \begin{wrapfigure}{#1}{0.5\textwidth}
-    \centering
-    \begin{minipage}{0.35\textwidth}
-      \includegraphics[width=\linewidth]{#2}
-      \captionsetup{width=\linewidth, justification=centering, font=footnotesize, labelfont=bf}
-      \caption{#3}
-      \label{fig:#4}
-    \end{minipage}
-  \end{wrapfigure}
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.35\linewidth]{#2}
+  \captionsetup{width=\linewidth, justification=centering, font=footnotesize, labelfont=bf}
+  \caption{#3}
+  \label{fig:#4}
+\end{figure}
 }
