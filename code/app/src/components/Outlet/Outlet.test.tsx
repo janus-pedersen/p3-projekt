@@ -4,6 +4,7 @@ import { Outlet } from "./Outlet";
 import { RouteContext, type Route } from "../../contexts/Routes/RouteContext";
 
 describe("<Outlet />", () => {
+  // Renders whatever the current route points to in RouteContext.
   it("renders the component for the current route", () => {
     render(
       <RouteContext.Provider
@@ -31,6 +32,7 @@ describe("<Outlet />", () => {
     expect(screen.getByText("Device Page")).toBeInTheDocument();
   });
 
+  // If the route doesn't exist, Outlet displays a small debug fallback.
   it("renders a fallback when route is missing", () => {
     render(
       <RouteContext.Provider
@@ -52,4 +54,3 @@ describe("<Outlet />", () => {
     expect(screen.getByText("wearer -missing")).toBeInTheDocument();
   });
 });
-

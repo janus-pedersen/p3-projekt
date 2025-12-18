@@ -47,6 +47,10 @@ function TestUI() {
 }
 
 describe("<RoutesProvider />", () => {
+  // RoutesProvider persists two things:
+  // - appMode in localStorage ("appMode")
+  // - currentRoute per mode ("currentRoute_<mode>")
+  // This test ensures switching modes preserves each mode's last route.
   it("defaults to the first route per mode and remembers per-mode route", async () => {
     localStorage.clear();
     const user = userEvent.setup();
@@ -57,18 +61,23 @@ describe("<RoutesProvider />", () => {
       </RoutesProvider>
     );
 
+    // Initial mode is the first key of `routes` (wearer).
     expect(screen.getByTestId("mode")).toHaveTextContent("wearer");
     expect(screen.getByText("Wearer Device")).toBeInTheDocument();
 
+    // Set wearer route to "profile".
     await user.click(screen.getByText("wearer-profile"));
     expect(screen.getByText("Wearer Profile")).toBeInTheDocument();
 
+    // Switch to guardian; should use guardian's default (first route).
     await user.click(screen.getByText("guardian"));
     expect(screen.getByText("Guardian Alerts")).toBeInTheDocument();
 
+    // Set guardian route to "map".
     await user.click(screen.getByText("guardian-map"));
     expect(screen.getByText("Guardian Map")).toBeInTheDocument();
 
+    // Switch back; wearer should still be on "profile".
     await user.click(screen.getByText("wearer"));
     expect(screen.getByText("Wearer Profile")).toBeInTheDocument();
   });

@@ -5,6 +5,8 @@ import { Keyboard } from "../../services/capacitor";
 import { MantineProvider } from "@mantine/core";
 
 describe("<ModalsProvider />", () => {
+  // Verifies that the provider wires up Keyboard listeners on mount and
+  // removes them on unmount (important to avoid leaking event handlers).
   it("registers and cleans up keyboard listeners", () => {
     const { unmount } = render(
       <MantineProvider>
