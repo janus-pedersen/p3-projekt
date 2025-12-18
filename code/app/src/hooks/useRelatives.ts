@@ -3,9 +3,9 @@ import { useAuth } from "./useAuth";
 import {
   FirebaseFirestore,
   type DocumentReference,
-} from "@capacitor-firebase/firestore";
+} from "../services/capacitor";
 import { useCallback, useEffect, useState } from "react";
-import { FirebaseFunctions } from "@capacitor-firebase/functions";
+import { FirebaseFunctions } from "../services/capacitor";
 
 export interface Relative {
   id: string;

@@ -5,10 +5,12 @@ import {
   type DeviceContextType,
   type LapsusAdvertisement,
 } from "./DeviceContext";
-import { BleClient } from "@capacitor-community/bluetooth-le";
-import { FirebaseFunctions } from "@capacitor-firebase/functions";
-import { Geolocation } from "@capacitor/geolocation";
-import { LocalNotifications } from "@capacitor/local-notifications";
+import {
+  BleClient,
+  FirebaseFunctions,
+  Geolocation,
+  LocalNotifications,
+} from "../../services/capacitor";
 
 const SERVICES = {
   BATTERY_SERVICE: {

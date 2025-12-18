@@ -12,7 +12,7 @@ import {
 import { UserAvatar } from "../components/UserAvatar/UserAvatar";
 import { useAuth } from "../hooks/useAuth";
 import { ChevronDown, Edit2Icon, LogOut } from "lucide-react";
-import { Dialog } from "@capacitor/dialog";
+import { Dialog } from "../services/capacitor";
 import { RouteContext, type AppMode } from "../contexts/Routes/RouteContext";
 import { useContext } from "react";
 import { locales } from "../i18n";

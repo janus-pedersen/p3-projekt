@@ -2,9 +2,8 @@ import { ActionIcon, Stack } from "@mantine/core";
 import { Header } from "../../components/Header/Header";
 import { useEffect, useState } from "react";
 import { useAuth } from "../../hooks/useAuth";
-import { FirebaseFirestore } from "@capacitor-firebase/firestore";
+import { Contacts, FirebaseFirestore } from "../../services/capacitor";
 import { ContactCard } from "../../components/ContactCard/ContactCard";
-import { Contacts } from "@capacitor-community/contacts";
 import { Plus } from "lucide-react";
 import { useModals } from "@mantine/modals";
 import { useTranslation } from "react-i18next";
@@ -100,6 +99,7 @@ export function ContactsPage() {
       />
       {contacts.map((contact) => (
         <ContactCard
+          key={contact.id}
           phone={contact.phone}
           name={contact.name}
           onDelete={() => {

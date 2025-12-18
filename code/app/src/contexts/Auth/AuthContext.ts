@@ -1,4 +1,4 @@
-import type { User } from "@capacitor-firebase/authentication";
+import type { User } from "../../services/capacitor";
 import { createContext } from "react";
 
 export interface AuthContextType {

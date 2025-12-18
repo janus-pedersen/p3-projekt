@@ -1,4 +1,4 @@
-import { Contacts } from "@capacitor-community/contacts";
+import { Contacts } from "../services/capacitor";
 import parsePhoneNumber from "libphonenumber-js";
 
 export const getContactByPhone = (target: string) => {
