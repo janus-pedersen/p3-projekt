@@ -6,6 +6,7 @@
 #include <NimBLEDevice.h>
 #include "OneButton.h"
 
+#include <math.h>
 #include <Wire.h>
 #include "SensorQMI8658.hpp"
 
@@ -28,8 +29,32 @@ SensorQMI8658 qmi;
 
 unsigned long lastHardImpactTime = 0;
 volatile bool alertBtnPressed = false;
-bool freeFall, impactDetected;
-uint32_t freeFallTime, impactTime;
+
+enum class FallState : uint8_t {
+  Idle,
+  FreeFall,
+  Impact,
+};
+
+// constexpr = this value can be evaluated at compile time (saves memory)
+static constexpr float FREE_FALL_G = 0.45f;
+static constexpr float IMPACT_G = 4.0f;
+static constexpr float HARD_IMPACT_G = 7.0f;
+static constexpr float REST_MIN_G = 0.85f;
+static constexpr float REST_MAX_G = 1.25f;
+
+static constexpr uint32_t FREE_FALL_MAX_MS = 300;
+static constexpr uint32_t IMPACT_TO_REST_IGNORE_MS = 500;
+static constexpr uint32_t REST_CONFIRM_MS = 300;
+static constexpr uint32_t IMPACT_TIMEOUT_MS = 3000;
+
+static constexpr float REST_JERK_MAX_G2 = 0.35f;  // max | |a|^2 delta | during rest
+
+FallState fallState = FallState::Idle;
+uint32_t freeFallTime = 0;
+uint32_t impactTime = 0;
+uint32_t restStableStartTime = 0;
+float lastMag2 = NAN;
 
 
 /** Battery enable pin */
@@ -232,31 +257,79 @@ void loop() {
       float mag2 = acc.x * acc.x + acc.y * acc.y + acc.z * acc.z;
       unsigned long now = millis();
 
-      // Free-fall detection
-      if (!freeFall && mag2 < 0.45*0.45) {
-        // Serial.println("Free-fall detection");
-        freeFall = true;
-        freeFallTime = now;
+      // Fall detection state machine:
+      // 1) brief free-fall (|a| drops), 2) impact spike, 3) rest (|a| ~ 1g and low variation).
+      const float freeFallThr2 = FREE_FALL_G * FREE_FALL_G;
+      const float impactThr2 = IMPACT_G * IMPACT_G;
+      const float restMin2 = REST_MIN_G * REST_MIN_G;
+      const float restMax2 = REST_MAX_G * REST_MAX_G;
+
+      const float mag2Delta = isnan(lastMag2) ? INFINITY : fabsf(mag2 - lastMag2);
+
+      switch (fallState) {
+        case FallState::Idle:
+          // IDLE: wait for a brief drop in acceleration magnitude (near-weightlessness).
+          if (mag2 < freeFallThr2) {
+            fallState = FallState::FreeFall;
+            freeFallTime = now;
+          }
+          break;
+
+        case FallState::FreeFall:
+          // FREE-FALL: must see an impact spike shortly after the free-fall trigger,
+          // otherwise reset to IDLE to avoid "stuck" free-fall on low-g motion.
+          if (mag2 > impactThr2) {
+            fallState = FallState::Impact;
+            impactTime = now;
+            restStableStartTime = 0;
+          } else if ((now - freeFallTime) > FREE_FALL_MAX_MS) {
+            fallState = FallState::Idle;
+          }
+          break;
+
+        case FallState::Impact: {
+          // IMPACT: after the spike, confirm the person is "down" by looking for a stable
+          // resting magnitude (~1g) with low variation for REST_CONFIRM_MS.
+          const uint32_t sinceImpact = now - impactTime;
+          if (sinceImpact > IMPACT_TIMEOUT_MS) {
+            // Too long without reaching rest: abandon this sequence.
+            fallState = FallState::Idle;
+            restStableStartTime = 0;
+            break;
+          }
+
+          if (sinceImpact < IMPACT_TO_REST_IGNORE_MS) {
+            // Ignore the immediate post-impact ringing/vibration before checking rest.
+            restStableStartTime = 0;
+            break;
+          }
+
+          const bool isRestMagnitude = (mag2 >= restMin2) && (mag2 <= restMax2);
+          const bool isLowJerk = mag2Delta <= REST_JERK_MAX_G2;
+          if (isRestMagnitude && isLowJerk) {
+            // Start (or continue) timing a stable "rest" period.
+            if (restStableStartTime == 0) restStableStartTime = now;
+            if ((now - restStableStartTime) >= REST_CONFIRM_MS) {
+              Serial.println("FALL DETECTED!");
+              pCharacteristicFall->setValue((uint8_t)1);
+              pCharacteristicFall->notify();
+
+              // Fall sequence completed; reset for the next detection.
+              fallState = FallState::Idle;
+              restStableStartTime = 0;
+            }
+          } else {
+            // Not stable rest yet; restart the confirmation timer.
+            restStableStartTime = 0;
+          }
+          break;
+        }
       }
 
-      // Impact detection
-      if (freeFall && mag2 > 3*3 && (now - freeFallTime) < 300) {
-        // Serial.println("Impact detection");
-        impactDetected = true;
-        impactTime = now;
-        freeFall = false;
-      }
-
-      // Stillness detection
-      if (impactDetected && mag2 < 0.8*0.8 && (now - impactTime) > 500) {
-        Serial.println("FALL DETECTED!");
-        impactDetected = false;
-        pCharacteristicFall->setValue((uint8_t)1);
-        pCharacteristicFall->notify();
-      }
+      lastMag2 = mag2;
 
       // Hard impact detection
-      if (mag2 > 7*7 && (now - lastHardImpactTime) > 1000) {
+      if (mag2 > HARD_IMPACT_G * HARD_IMPACT_G && (now - lastHardImpactTime) > 1000) {
         Serial.println("HARD IMPACT DETECTED!");
         pCharacteristicImpact->setValue((uint8_t)1);
         pCharacteristicImpact->notify();
@@ -291,11 +364,6 @@ void emergencyPress() {
 float getBatteryP() {
   float v = getBatteryV();
   float p = (v - V_MIN) / (V_MAX - V_MIN) * 100;
-
-  Serial.print(v);
-  Serial.print("v = ");
-  Serial.print(p);
-  Serial.println("%");
 
   if(p > 100) p = 100; // Clamp it for good measure
 
