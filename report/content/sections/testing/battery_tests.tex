@@ -1,0 +1,15 @@
+\subsection{Battery lifetime}
+The battery life of the device was an important factor in state of art section. Thus a tests of our solutions battery life was in order. The tests were setup as follows:
+\begin{itemize}
+    \item Charge the battery to 100\%
+    \item Connect the wristband to the app
+    \item Disconnect the wristband from power
+    \item Note the time and the battery percentage at a regular interval
+    \item Continue until the device disconnects, or is no longer
+    \item Calculate the battery life from the measured data
+\end{itemize}
+
+This test was repeated 2 times for \textit{some} consistency, though more tests would have been nice to further verify our results.
+
+From our tests (see \autoref{fig:battery_test_a} and \autoref{fig:battery_test_b} in the appendix) the battery lasted around 90 minutes. Compared to the mentioned requirement of an entire day, this is comparably low. 
+This could be improved with more specific hardware that doesn't draw power for components that aren't used at all, as well as optimizing the code to go in to a low power mode when applicable, and many more power optimizations. For a low-tech prototype of the hardware as this is, the current efficiency is more than satisfactory. 

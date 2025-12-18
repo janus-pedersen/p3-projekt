@@ -1,19 +1,21 @@
 \section{Background}
-The limitations of the report are made from, amongst other things, the requirements for the project. For the project, there was a requirement to make an embedded system. There is also a need to consider those who will use the technology. Earlier in the section, there was a population pyramid. However, despite the projection that there will be more elderly people in Denmark, a study by Ældresagen states that the population will not necessarily consist of more pensioners. Part of the reasoning behind this statement has to do with the rising retirement age. By the projection made by Ældresagen, this means that there will be 58.000 further people over the age of retirement, whereas in 2080, it will only be 7.000.\cite{noauthor_vi_nodate} All these numbers are compared to the number of people over the retirement age in 2024. 
+The limitations of the report are made from, amongst other things, the requirements for the project. For the project, there was a requirement to make an embedded system. There is also a need to consider those who will use the technology. In this report, \textit{user} and \textit{wearer} are used interchangeably to describe the person using the hardware, i.e. the wristband. The same is true for the terms \textit{relative} and \textit{guardian}, which are used interchangeably to characterize the person receiving the alerts regarding the person with the wristband. 
+
+Despite the projection that there will be more elderly people in Denmark (see \autoref{fig:pop2070}), a study by Ældresagen states that the population will not necessarily consist of more pensioners. Part of the reasoning behind this statement has to do with the rising retirement age. By the projection made by Ældresagen, this means that there will be 58.000 further people over the age of retirement, whereas in 2080, it will only be 7.000 \cite{noauthor_vi_nodate}. All these numbers are compared to the number of people over the retirement age in 2024. 
 
 Another part of the limitations is set by how the users view the use of technology in healthcare. In a study from 2025, the population's attitude towards municipal use of welfare technology for elderly care was investigated. Three requirements for welfare technology were found: 
 
 \begin{enumerate}
-\item \textit{You need to choose yourself. }
+\item \textbf{You need to choose yourself. }
 This is in regard to a primarily positive attitude towards the use of welfare technology; however, with a stance that the individual should have the possibility to select or deselect welfare technology.
 
-\item \textit{Fear of loneliness. }
+\item \textbf{Fear of loneliness. }
 This refers to a worry about whether or not the municipal use of welfare technology causes loneliness among elderly people, due to the municipal staff's fewer visits. 
 
-\item \textit{The responsibility of municipalities in the use of welfare technology.} This reflects the general opinion that the elderly person should not have to pay for welfare themselves if the municipality stops offering the welfare to the people in need. This opinion stretches to the attitude that the responsibility of the municipality also includes paying, installing, operations and data security in terms of the use of welfare technology. \cite{noauthor_undersogelse_nodate}
+\item \textbf{The responsibility of municipalities in the use of welfare technology. }This reflects the general opinion that the elderly person should not have to pay for welfare themselves if the municipality stops offering the welfare to the people in need. This opinion stretches to the attitude that the responsibility of the municipality also includes paying, installing, operations and data security in terms of the use of welfare technology \cite{noauthor_undersogelse_nodate}.
 \end{enumerate}
 
-In the article above, a set of limitations to technology came about. What is also important to note is the experiences of older people with technology, thereby their abilities and lack thereof (challenges hereof/involved). A study by Epinion has delved into what experiences and challenges the elderly demographic experiences when using technology. In the study 35\% agree that the challenges they experience with technology are, to some extent, great or very high. Of these, 10\% say the challenges they face are high or very high; this corresponds to approximately half a million people. 
+In the article above, a set of limitations to technology were identified. What is also important to note is the experiences of older people with technology, thereby their abilities and lack thereof (challenges hereof/involved). A study by Epinion has delved into what experiences and challenges the elderly demographic experiences when using technology. In the study 35\% agree that the challenges they experience with technology are, to some extent, great or very high. Of these, 10\% say the challenges they face are high or very high; this corresponds to approximately half a million people. 
 
 The study also takes a look at the population's view of how digitalisation impacts them. To this, 40\% of people aged 75 or older feel forced to incorporate digital solutions in their everyday lives without wanting to do so. In terms of younger demographics, 29\% of 55-64-year-olds, 26\% of 35-54-year-olds and 28\% of 18-34-year-olds said the same thing. This leads to a need for digital help, guidance and assistance. 71\% of the population experience needing digital help, whereas 41\% of the population feel that they need this guidance occasionally or more often.
 
@@ -23,9 +25,11 @@ As many as 41\% of the population feel they need help, advice, or guidance from 
 71\% of the population may feel they need digital assistance
 
 \subsection{Problem statement}
-With a growing elderly population and an increased focus on independent living, there is a need for reliable technological solutions that can support safety in everyday life. 
+With a growing elderly population and an increased focus on independent living, there is a need for reliable technological solutions that can support safety in everyday life. So from everything mentioned beforehand, the following problem statement was formed
 
 \textbf{How can embedded systems and fall detection algorithms be used to support elderly citizens living independently by detecting falls and ensuring timely notification of relatives?}
+
+To accompany this statement, the following sub questions have been formulated.
 \begin{itemize}
     \item Which fall detection algorithms are suitable for implementation in low-power wearable devices?
     \item Which sensors are best suited for fall detection in an embedded system?

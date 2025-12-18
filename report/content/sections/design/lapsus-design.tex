@@ -1,12 +1,10 @@
 \subsection{Wristband design}
-The wristband is designed as the primary sensing unit of the system and therefore plays a critical role in both functionality and user acceptance. As the device is intended to be worn continuously, comfort, size, and simplicity were key design considerations.
+The placement of the wearable device is an important design consideration, as it directly affects both fall detection accuracy and user acceptance. From a purely technical perspective, the optimal placement for sensors used in fall detection is around the user’s waist, as this position is close to the body’s center of mass and provides stable and representative motion data \cite{Garcia2022_Neurocomputing}. This placement was therefore considered during the initial phase of the project.
 
-The wrist-worn form factor was chosen based on findings from the State of Art analysis, where wrist-based solutions were shown to be widely accepted and familiar to users. A wristband resembles a conventional watch, which reduces stigmatization and increases the likelihood of consistent use.
+However, a waist-mounted solution was assessed to pose potential usability challenges for elderly users. Wearing a belt or device around the waist may be uncomfortable, difficult to attach independently, and intrusive during daily activities. Furthermore, such a solution would require the device to be worn either under clothing, which raises comfort and accessibility concerns, or visibly on top of clothing, which may reduce user acceptance.
 
-The wristband is designed to operate independently of user interaction during normal operation. The user is not required to initiate measurements or confirm system status, except in cases where the emergency button is intentionally pressed or a false alarm must be cancelled through the mobile application.
+In addition to usability considerations, a waist-mounted design would increase the complexity of product development. Ensuring that the device remains comfortable, discreet, and securely positioned throughout the day would require more advanced mechanical design and potentially custom textile solutions.
 
-du kan omskrive krav 17 (detect 90 percent falls) til at have en parentes med senitivity, da det er et begreb Peter nævner i table 2 fra SOTA
+Based on these considerations, the wrist was chosen as the preferred placement for the device. A wrist-worn form factor was chosen based on findings from the state of art analysis, where wrist-based solutions were shown to be widely accepted and familiar to users closely. This increases the likelihood of consistent use, which is critical for the effectiveness of a fall detection system. While wrist placement may introduce additional challenges in terms of motion variability, it was ultimately considered a more suitable compromise between detection performance, comfort, and usability for the target group.
 
-\begin{itemize}
-    \item input fra Peter: noget med hvorfor vi har valgt at den skal sidde på håndleddet i stedet for om livet, hvor den ellers detekter fald mere præcist
-\end{itemize}
+The wristband is designed to operate independently of user interaction during normal operation. The user is not required to initiate measurements or confirm system status, except in cases where the emergency button is intentionally pressed or a false alarm must be canceled through the mobile application.
