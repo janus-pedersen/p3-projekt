@@ -1,14 +1,42 @@
 \subsection{Accuracy, Sensitivity, and Specificity}
-
 In order to test the algoritm's accuracy, i.e. its sensitivity and specificity, a series of simulations were made. 
 
-Initially the test of the algorithm was tested with an impact value of 4g. As seen in table ? a total of 15 simulations were tested. Of said simulations only two out of ten falls were detected as positive, the eight rest were not detected at all. These tests were done landing on hard ground, a softer ground, while landing on multiple sides. In terms of testing for false positives four out of five simulations tested negative while also predicting so. These tests were made to simulate respectively roughly sitting down in a chair, practicing yoga, doing boxing and picking vegetables. The simulation, which was a false positive was done while simulating going on a run. 
+It was assessed that replicating real-life falls in a safe and realistic manner would be difficult, and that such attempts would therefore not result in valid tests. 
 
-After the previous tests, the impact value was changed to a value of 3g, in which five fall simulations were made on soft ground. Out of the five falls, none of them tested positive by the algorithm, therefore testes for false positives was not conducted. 
+Attempts were initially made to conduct simulated fall tests involving multiple test participants. Beanbag chairs were positioned for the participants to fall into in order to imitate a fall scenario. However, several participants reported discomfort and pain during these attempts. Consequently, it was decided to discontinue the simulated fall tests and instead proceed with drop tests. This approach was chosen to protect test participants while still allowing an investigation into whether the wristband could detect the three required stages for triggering a fall alarm: fall, impact, and rest.
 
-On the basis of the first set of tests
-- beregn specificity
+The drop tests were conducted from several different heights, with the lowest height being 5 cm above the surface and the highest being 100 cm. It was observed that 19 of the drop tests were registered as falls by the system.
 
-forklar omkring valg af falsk positive aktiviteter
+However, several potential sources of error were identified in the testing procedure. First, it is unknown how the wristband detects falls when worn on a user’s body, as the product was only released freely during testing. Second, real-world falls occur in many different forms, whereas this test covered only a single type of fall, namely a free drop. The results should therefore be interpreted with caution.
 
-argumenter for hvorfor man ikke kan kalde det et rigtigt fald
+In addition, attempts were made to simulate common arm movements as well as minor impacts to the wristband in order to mimic normal daily user behavior. A total of 20 test trials were conducted, of which 6 impacts were incorrectly detected as falls. This indicates the presence of false positives, which constitute a significant source of error that must be addressed in further development.
+
+\begin{table} [H]
+    \centering
+    \begin{tabular}{cccc}
+         &  &  Predicted& Condition\\
+         &  &  Positive (PP)& Negative (PN)\\
+         Actual&  Positive (P)&  19 (TP)& 6 (FN)\\
+         Condition&  Negative (N)&  1 (FP)&  14 (TN)\\
+    \end{tabular}
+    \caption{Caption}
+    \label{tab:placeholder}
+\end{table}
+
+From \autoref{tab:confusion_matrix}, the following performance metrics are calculated:
+
+\begin{align}
+\text{Sensitivity} &= \frac{TP}{TP+FN}
+= \frac{19}{19+6}
+= 0.76 \;\; (76\%) \\
+\text{Specificity} &= \frac{TN}{TN+FP}
+= \frac{14}{14+1}
+\approx 0.93 \;\; (93\%) \\
+\text{Accuracy} &= \frac{TP+TN}{TP+TN+FP+FN}
+= \frac{19+14}{40}
+= 0.825 \;\; (82.5\%)
+\end{align}
+
+The results show that the system detects 76\% of the fall events (sensitivity), meaning that 6 out of 25 falls were not detected (false negatives). The specificity of approximately 93\% indicates that the system correctly classifies most non-fall trials, with only one false positive in 15 non-fall cases. Overall, the accuracy is 82.5\%. These results suggest that the current implementation is relatively conservative with respect to false positives, but further improvements are required to reduce missed falls, especially under more realistic conditions where the wristband is worn by a user.
+
+In future work, more extensive and valid testing of the fall detection algorithm could be conducted, including tests with the wristband worn by a user and using a larger and more diverse test dataset, in order to reduce the number of false detections.
