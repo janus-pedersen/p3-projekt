@@ -11,16 +11,19 @@ However, several potential sources of error were identified in the testing proce
 
 In addition, attempts were made to simulate common arm movements as well as minor impacts to the wristband in order to mimic normal daily user behavior. A total of 20 test trials were conducted, of which 6 impacts were incorrectly detected as falls. This indicates the presence of false positives, which constitute a significant source of error that must be addressed in further development.
 
-\begin{table} [H]
+\begin{table}[H]
     \centering
-    \begin{tabular}{cccc}
-         &  &  Predicted& Condition\\
-         &  &  Positive (PP)& Negative (PN)\\
-         Actual&  Positive (P)&  19 (TP)& 6 (FN)\\
-         Condition&  Negative (N)&  1 (FP)&  14 (TN)\\
+    \renewcommand{\arraystretch}{1.2}
+    \begin{tabular}{c|cc}
+        \multicolumn{1}{c}{} & \multicolumn{2}{c}{\textbf{Predicted}} \\
+        \cline{2-3}
+        \textbf{Actual} & \textbf{Positive} & \textbf{Negative} \\
+        \hline
+        \textbf{Positive} & 19 (TP) & 6 (FN) \\
+        \textbf{Negative} & 1 (FP)  & 14 (TN) \\
     \end{tabular}
-    \caption{Caption}
-    \label{tab:placeholder}
+    \caption{Confusion matrix for the fall detection evaluation based on the conducted test trials ($N=40$).}
+    \label{tab:confusion_matrix}
 \end{table}
 
 From \autoref{tab:confusion_matrix}, the following performance metrics are calculated:
