@@ -1,155 +1,23 @@
 \subsection{Design of the solution}
-This section presents the design of the fall detection system, Lapsus. The section is based on knowledge gathered through the analysis presented in the state of art section, as well as an interview conducted with a representative from the system’s primary target group. The combination of theoretical insights and empirical user data has formed the foundation for defining both the functional and non-functional requirements on which the further development of the system is based.
+This section describes the design of the overall Lapsus solution, with a focus on the system’s structure. The design is based on the knowledge and insights obtained through analysis and the state of art section and translates these into a technical solution.
 
-To ensure that the system’s functionality meets user needs, a set of user stories has been developed for the two identified user roles: user and relative. These user stories served as the basis for the creation of a use case diagram, which visualizes the key interactions between users and the system.
+The section introduces the core system components and their relationships and provides the foundation for the subsequent diagrams that illustrate system interactions and architecture. The purpose is to present a clear and structured overview of how the system is constructed.
 
-The use case diagram, together with the defined requirements, was subsequently used to develop a context diagram. The context diagram provides a high-level overview of the system’s functionalities and illustrates the interaction between the system’s internal components and its external actors. As such, the diagram serves as a consolidated and structured representation of the system’s position and role within the overall context.
+\subsubsection{Use case diagram}
+The use case diagram (see \autoref{fig:use-case-diagram}) highlights the use cases in the system boundary. Here, it is seen that the user can log in through the backend. The user can also add relatives to the database. Furthermore, the user can connect to the wristband through Bluetooth between the wristband and a phone. The user can also cancel the alarm and press the emergency button, which goes through the database and backend. In the system boundary, the relatives can log in and view the \gls{gps} location of the user in real time, both of which use the backend.
 
-\subsubsection{Requirements}
-Based on the state of art section, the interview conducted with a user from the target group, and the identified technical constraints, two requirement tables have been created, consisting of functional and non-functional requirements. The tables specify the origin of each requirement, indicating whether it derives from literature, user input, or technical considerations, as well as how the associated functionality is prioritized within the development process.
-
-The prioritization of requirements is carried out using the MoSCoW model, which enables a systematic classification of requirements into Must, Should, Could, and Won’t. This approach supports a structured and realistic development process by ensuring that emphasis is placed on the most critical functionalities.
-
-The resulting functional and non-functional requirements are presented in \autoref{tab:funktionelle_krav_tabel} and \autoref{tab:ikke_funktionelle_krav_tabel}. Together, these requirements form the basis for the subsequent system design, ensuring traceability from problem statement and analysis to concrete design and implementation decisions.
-
-
-\renewcommand{\arraystretch}{1.3}
-
-\begin{longtable}{|c|p{8cm}|p{4cm}|}
-\hline
-\textbf{Nr.} & \textbf{Functional requirement} & \textbf{Comment} \\
-\hline
-\endfirsthead
-
-\hline
-\textbf{Nr.} & \textbf{Functional requirement} & \textbf{Comment} \\
-\hline
-\endhead
-
-\hline
-\multicolumn{3}{r}{\textit{(Continued)}} \\
-\hline
-\endfoot
-
-\hline
-\endlastfoot
-
-1 & The wristband should be able to detect falls & Must have - Problem statement  \\
-\hline
-2 & The system should be able notify the users relatives, if an alarm has been triggerede & Must have - state of art (Sensorem and Cekura)  \\
-\hline
-3 & The wristband should be waterproof, to limit the scenarios in which it should be taken off & Should have - state of art (Sensorem) \\
-\hline
-4 & The wristband should run on a rechargeable battery & Should have - state of art (Sensorem)  \\
-\hline
-5 & The wristband should be able to detect inactivity, within set time intervals & Could have - state of art (Sensorem) \\
-\hline
-6 & The users relatives should be able to see the users realtime GPS location at all times & Must have - state of art (Sensorem, Sensio and Cekura)  \\
-\hline
-7 & The wristband has to have an emergency button, so the user can notify their relatives if they are feeling unwell or an emergency has occurred & Must have - state of art (Sensorem, Sensio and Cekura)  \\
-\hline
-8 & The user should be able to add relatives to the notification list in the application & Must have - state of art (Sensorem and Cekura)  \\
-\hline
-9 & The system should alert the user when the wristband needs to be recharged & Must have - Brainstorm \\
-\hline
-10 & The user should be able to cancel an alarm, if it is a false alarm & Should have - Brainstorm  \\
-\hline
-11 & The user should be able to add multiple relatives to the notification list & Must have - Brainstorm \\
-\hline
-12 & The user should be able to remove relatives from the notification list & Must have - Brainstorm \\
-\hline
-13 & The user should be able to see the battery percentage in the application & Should have - Brainstorm \\
-\hline
-14 & The wristband should be able to detect hard impacts & Should have - Brainstorm \\
-\hline
-15 & The system should be able to send the location of the user when a alarm is triggered & Must have - Brainstorm \\
-\hline
-16 & The user and relatives should be able to see all alarms that have ever been triggered. & Should have - Brainstorm \\
-\hline
-17 & The wristband must be able to emit an audible signal when an alarm is activated on the device in order to notify the user that the alarm has been triggered. & Could have - Brainstorm \\
-\hline
-18 & The system must be capable of distinguishing between different types of alarms (emergency alarm, fall, and impact) and correctly forwarding the corresponding information to the user’s relatives. & Must have - Brainstorm \\
-\hline
-\caption{Table of functional system requirements}
-\label{tab:funktionelle_krav_tabel}
-\end{longtable}
-
-The state of art analysis provided a foundation for identifying baseline functionality expected of modern fall detection systems, such as automatic fall detection, GPS-based location sharing, and emergency notifications to relatives. Existing commercial solutions, particularly Sensorem, highlighted the importance of combining fall detection with inactivity monitoring and manual emergency activation.
-
-Technical considerations, such as battery capacity, wireless communication range, and sensor limitations, further constrained the design space. These constraints resulted in explicit non-functional requirements regarding battery life, communication distance, and system response time.
-
-
-\renewcommand{\arraystretch}{1.3}
-
-\begin{longtable}{|c|p{8cm}|p{4cm}|}
-\hline
-\textbf{Nr.} & \textbf{Non-functional requirement} & \textbf{Comment} \\
-\hline
-\endfirsthead
-
-\hline
-\textbf{Nr.} & \textbf{Non-functional requirement} & \textbf{Comment} \\
-\hline
-\endhead
-
-\hline
-\multicolumn{3}{r}{\textit{(Continued)}} \\
-\hline
-\endfoot
-
-\hline
-\endlastfoot
-
-
-19 & The system has to notify the relatives within 1 minute after a fall is detected & Should have - Defined to set a technical limit  \\
-\hline
-20 & The product needs to be easy to use, because there is no requirement for the user to have any technological knowledge & Must have - Introduction (Ældresagen) \\
-\hline
-21 & The battery needs to hold power for at least 1 day without recharging & Should have - state of art (Sensorem and Smart watches) \\
-\hline
-22 & The application needs to be in Danish & Must have - Introduction \\
-\hline
-23 & The product design needs to be compact, because it should be & Should have \\
-\hline
-24 & The system is required to detect 90\% of all falls (sensitivity) & Should have - Best practice \\
-\hline
-25 & The system is required to have 99\% up-time & Must have -  Best practice\\
-\hline
-26 & The wristband should be able to communicate with the users phone with a distance of at least 10 meters & Must have - Defined to set a technical limit\\
-\hline
-27 & The GPS signal must have an accuracy of 10 meters, as GPS signals are inherently imprecise and therefore provide only an estimated location of the user & Must have - Defined to set a technical limit\\
-\hline
-28 & The wristband must be able to be fully charged within a maximum of one hour in order to minimize the amount of time the user is required to be without the device & Must have - Defined to set a technical limit\\
-\hline
-29 & The application must be compatible with both Android and iOS operating systems & Should have \\
-\hline
-\caption{Table of non-functional system requirements}
-\label{tab:ikke_funktionelle_krav_tabel}
-\end{longtable}
-
-The non-functional requirements define the quality attributes and constraints under which the Lapsus system must operate. While the functional requirements describe the system’s capabilities, the non-functional requirements specify how reliably, efficiently, and accessibly these capabilities must be delivered.
-
-
-
-The requirements presented in \autoref{tab:ikke_funktionelle_krav_tabel} address key aspects such as usability, performance, reliability, and technical limitations. Several of the requirements are derived from best practice within safety-critical and wearable systems, including constraints on system uptime, response time, and detection performance. These requirements ensure that the system can be trusted in emergency situations, where delayed or unreliable behavior may have serious consequences.
-
-Usability-related requirements play a central role due to the system’s elderly target group. Requirements concerning ease of use, language localization, and charging time are included to reduce barriers to adoption and ensure that the system can be operated without prior technical knowledge.
-
-Technical constraints such as battery lifetime, communication range, GPS accuracy, and platform compatibility reflect the limitations of embedded hardware and mobile devices. By explicitly defining these constraints as requirements, design decisions can be evaluated against measurable criteria throughout the development process.
-
-Together, the non-functional requirements provide a clear framework for evaluating the quality and feasibility of the Lapsus system and form the basis for design and implementation choices described in the subsequent sections.
-
-In addition to the defined functional and non-functional requirements, cost is an important consideration for the feasibility and adoption of the Lapsus system. Many existing fall detection solutions rely on subscription-based business models. Such subscription-based solutions often include an internal alarm central responsible for receiving and responding to alarms. While this may increase perceived safety, it also introduces continuous operational costs that are ultimately passed on to the user. In the Lapsus system, the decision was therefore made to exclude an internal alarm central. Instead, the system is designed around the user’s relatives, who are notified directly when an alarm is triggered and are responsible for responding. This architectural choice eliminates the need for continuous staffing and operational infrastructure, thereby significantly reducing running costs.
-
-As a result, the system is deliberately designed without reliance on a mandatory subscription model. By minimizing operational costs and avoiding specialized infrastructure, the system aims to remain economically accessible without requiring recurring payments.
-
-Price-related aspects have not been formalized as explicit non-functional requirements in this project, as the primary focus is on technical feasibility and system design. However, the intention to avoid subscription-based dependency has implicitly guided several design choices, including the selection of hardware, communication methods, and backend services.
+\begin{figure} [H]
+    \centering
+    \includegraphics[width=1\linewidth]{report/images/Use case diagram P3.drawio.png}
+    \caption{Use case diagram}
+    \label{fig:use-case-diagram}
+\end{figure}
 
 \subsubsection{Context diagram}
-The defined requirements, together with insights from the State of the Art analysis, form the foundation for the overall system structure of Lapsus. Based on this knowledge, the context diagram was developed to provide a high-level representation of the system and its interaction with external entities. The diagram reflects key design decisions derived from the requirements, including the central role of the mobile application, the exclusion of an internal alarm center, and the reliance on relatives as the primary responders.
+The defined requirements, together with insights from the state of art analysis, form the foundation for the overall system structure of Lapsus. Based on this knowledge, the context diagram was developed to provide a high-level representation of the system and its interaction with external entities. The diagram reflects key design decisions derived from the requirements, including the central role of the mobile application, the exclusion of an internal alarm center, and the reliance on relatives as the primary responders.
 
 The context diagram in \autoref{fig:contextdiagram} gives an overview of the application as a system. Here it is seen that there are four external entities: wristband, user, Firebase and relatives. 
-The first dataflow 'detect fall' goes from 'wristband' to the application. Then, from the user, the data 'add relatives' and 'cancel alert' flows to the application. From the application, the dataflows 'fall detection alert' and 'location data' are sent to the relatives. Lastly, the application sends the 'add users and relatives', 'location data' and 'login request' data to Firebase, where Firebase can send the 'list of relatives', 'location history' and 'login token (JWT)' data to the application. 
+The first dataflow \textit{detect fall} goes from \textit{wristband} to the application. Then, from the user, the data \textit{add relatives} and \textit{cancel alert} flows to the application. From the application, the dataflows \textit{fall detection alert} and \textit{location data} are sent to the relatives. Lastly, the application sends the \textit{add users and relatives}, \textit{location data} and \textit{login request} data to Firebase, where Firebase can send the \textit{list of relatives}, \textit{location history} and \textit{login token (\gls{jwt})} data to the application. 
 
 \begin{figure}[H]
     \centering
@@ -158,33 +26,7 @@ The first dataflow 'detect fall' goes from 'wristband' to the application. Then,
     \label{fig:contextdiagram}
 \end{figure}
 
-\subsubsection{User stories}
-As described above, the Lapsus system has several users with different functionality. In which their functionalities were found through the functional requirements presented and sorted in the subsection above. These unfold what it means to be a user or relative in Lapsus and what actions are associated with these, as well as the purpose of these actions. 
-
-\begin{enumerate}
-    \item As a user, I want to press the emergency button so that I can alert my relatives. 
-    \item As a user, I want to send an alert when I fall so that I can notify my relatives. 
-    \item As a user, I want to be able to cancel an alarm so that I don't have an active alarm when I am not in an emergency.
-    \item As a user, I want to be able to log in to the application so that I have an overview of my relatives and my alarms.
-    \item As a user, I want to add multiple relatives to my notification list so that multiple relatives receive an alarm and help me. 
-    \item As a user, I want to see the battery percentage in my app so that I can ensure my wristband is charged. 
-    \item As a relative, I want to be notified when an alert has been triggered so that I can react to the alarm.
-    \item As a relative, I want to know when, where and how alerts have been triggered so that I know the scope of the emergency.
-    \item As a relative, I want to see the user's real-time GPS location so that I am aware of where the user is at all times.
-    
-\end{enumerate}
-
-The user stories presented in this section capture the system’s functionality from the perspective of its primary actors and describe how different users are expected to interact with the system in practical scenarios. By focusing on user goals rather than technical implementation, the user stories help ensure that the system design remains aligned with real user needs and expectations.
-
-These user stories form the basis for identifying the core interactions between actors and the system. In the following section, they are translated into a use case diagram, which provides a structured and visual representation of the system’s functional behavior.
 
 
-\subsubsection{Use case diagram}
-The use case diagram (see \autoref{fig:use-case-diagram}) highlights the use cases in the system boundary. Here, it is seen that the user can log in through the backend. The user can also add relatives to the database. Furthermore, the user can connect to the wristband through Bluetooth between the wristband and a phone. The user can also cancel the alarm and press the emergency button, which goes through the database and backend. In the system boundary, the relatives can log in and view the \gls{gps} location of the user in real time, both of which use the backend.
 
-\begin{figure} [H]
-    \centering
-    \includegraphics[width=1\linewidth]{Use case diagram P3.drawio.png}
-    \caption{Use case diagram}
-    \label{fig:use-case-diagram}
-\end{figure}
+

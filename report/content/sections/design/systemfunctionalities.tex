@@ -11,30 +11,67 @@ The solution revolves around being able to detect the falls that the wearer of t
     \label{fig:state_diagram}
 \end{figure}
 
-The designed algorithm consists of three \textit{states}, \verb|free-falling|, \verb|impact| and \verb|fall detected|. It uses this three step state machine to filter out some, but probably not all \gls{adl}'s. It works by first detecting a \verb|free-fall| state, where the wearer experiences a negative G-force, correlating with falling towards the direction of gravity. When the wearer is in this state, it await a high impact, that could be described hitting the ground or some other obstacle on their way down. If this is detected, the wearer is now in an \verb|Impact| state. If this impact is not detected within some set time period, the wearer is determined to not be falling and the state machine finishes. Once the impact has been detected, it waits for any more impacts, and if any arise, it will discard the state as being a fall, and contribute the forces to \gls{adl}'s (eg. boxing, washing dishes or other activities where the hands are involved). If no major motion is detected after the impact, it interprets it as if the wearer has landed from their fall, and the alert is sent out to the app and further on to their relatives.
-
+The designed algorithm consists of three \textit{states}, \verb|free-falling|, \verb|impact| and \verb|fall detected|. It uses this three step state machine to filter out some, but probably not all \gls{adl}'s. It works by first detecting a \verb|free-fall| state, where the wearer experiences a negative G-force, correlating with falling towards the direction of gravity. When the wearer is in this state, it awaits a high impact, that could be described as hitting the ground or some other obstacle on their way down. If this is detected, the wearer is now in an \verb|Impact| state. If this impact is not detected within some set time period, the wearer is determined to not be falling and the state machine finishes. Once the impact has been detected, it waits for any more impacts, and if any arise, it will discard the state as being a fall, and contribute the forces to \gls{adl}'s (eg. boxing, washing dishes or other activities where the hands are involved). If no major motion is detected after the impact, it interprets it as if the wearer has landed from their fall, and the alert is sent out to the app and further on to their relatives.
 
 \subsubsection{Data flow diagram}
-The data flow diagram provides an overview of the system's processes.  At the top of the diagram, it is seen that the external entity 'User' sends the phone number and the corresponding code to the process 'Login'. To which the process 'Login' sends login information to the data store 'Users', which responds with the user profile. Process 2: 'Add/Remove relatives' gets the 'relative information' from the 'User'. The process then sends this data to the data store 'Relatives'. Process 3: 'Connect wristband'. Process 4: 'Cancel alert' receives the data 'press cancel on alert' from 'User' to which it establishes a \gls{ble} connection with the external entity 'Wristband'. 
-Process 5: 'Store \gls{gps} location' sends the data '\gls{gps} coordinates' from 'User', sends the 'store location snapshot' to the data store 'Locations', which then sends the 'Receive stored data' to Process 8: 'View real-time \gls{gps}', where the display map is sent to the external entity 'Relative'. Process 6: 'Emergency alert' receives 'notify backend' from process number 9. After that, process 6 creates an alert, which is sent to the data store 'alerts' and process 7: send SMS alert. Process 7 then sends an SMS to the external entity called 'relative'. Process 8: View real-time \gls{gps} retrieves stored data from the data store 'location', then it displays the map to the external entity named 'relative'. Lastly, process 9 receives data regarding the accelerometer/gyroscope, and it then notifies the backend, specifically process 6. 
+To further clarify the system behavior illustrated in the data flow diagram (see \autoref{fig:dataflow_diagram}), each process is described below.
+
+\begin{itemize}
+\item \textbf{Process 1: Login}
+The external entity \textit{User} provides a phone number and a corresponding verification code.
+The \textit{Login} process forwards this information to the data store \textit{Users}, which returns the associated user profile upon successful authentication.
+
+\item \textbf{Process 2: Add/Remove relatives}
+The \textit{User} submits relative information, which is processed and stored in the data store \textit{Relatives}. This allows the user to manage which relatives are notified in case of an emergency.
+
+\item \textbf{Process 3: Connect wristband}
+This process establishes a connection between the mobile application and the \textit{Wristband}.
+The connection enables the system to receive sensor data from the accelerometer, which is required for fall detection and emergency monitoring.
+
+\item \textbf{Process 4: Cancel alert}
+The \textit{User} can cancel an active alert through the application.
+This process initiates a \gls{ble} connection with the \textit{Wristband} to confirm that the alert should be dismissed.
+
+\item \textbf{Process 5: Store \gls{gps} location}
+The \textit{User} provides \gls{gps} coordinates, which are stored as a location snapshot in the data store \textit{Locations}.
+
+\item \textbf{Process 6: Emergency alert}
+This process receives a notification from Process 9 when a potential fall is detected.
+An alert is created and stored in the data store \textit{Alerts}.
+
+\item \textbf{Process 7: Send \gls{sms} alert}
+Upon creation of an emergency alert, an \gls{sms} notification is sent to the external entity \textit{Relative}.
+
+\item \textbf{Process 8: View real-time \gls{gps}}
+Stored location data is retrieved from the data store \textit{Locations} and displayed as a map in the app for the \textit{Relative}.
+
+\item \textbf{Process 9: Sensor monitoring}
+Sensor data from the accelerometer and gyroscope is continuously monitored. When a fall is detected, the backend is notified, triggering the emergency alert process.
+\end{itemize}
+
 \begin{figure} [H]
     \centering
     \includegraphics[width=1\linewidth]{report/images/Dataflow-Diagram-med-line-jumps.pdf}
     \caption{Data flow diagram over Lapsus}
-    \label{fig:placeholder}
+    \label{fig:dataflow_diagram}
 \end{figure}
 
 \subsubsection{Sequence diagram}
-The sequence diagram below describes the sequence when a fall is detected. The fall is detected by the wristband, which then notifies the mobile app. The mobile app creates the alert, and a new entry is created in the database in the backend. After this, the backend alerts the relative, where they can then respond to the alert. The ‘optional’ shows how a fall can be canceled by the user, in which case the mobile app cancels the alert, and the backend updates the corresponding database entry. After this, the backend notifies the relative, who can then contact the user regarding the canceled alert.  
+Where the data flow diagram provides an overview of the systems processes and how data is exchanged between components, it does not capture the temporal order in which these interactions occur. To complement this perspective, a sequence diagram is introduced in the following section.
+
+The sequence diagram in \autoref{fig:sequence_diagram} illustrates the chronological flow of events during a fall incident, showing how the wristband, mobile application, backend services, and relatives interact over time. This temporal view helps clarify the systems dynamic behavior and highlights how individual components cooperate to handle both emergency situations and user-initiated actions.
+ 
 \begin{figure}[H]
     \centering
     \includegraphics[width=1\linewidth]{report/images/Sequence-Diagram-Sequence-Diagram.pdf}
-    \caption{Enter Caption}
-    \label{fig:placeholder}
+    \caption{Sequence diagram of a fall}
+    \label{fig:sequence_diagram}
 \end{figure}
 
+A fall is detected by the wristband, which then notifies the mobile app. The mobile app creates the alert, and a new entry is created in the database in the backend. After this, the backend alerts the relative, where they can then respond to the alert. The ‘optional’ shows how a fall can be canceled by the user, in which case the mobile app cancels the alert, and the backend updates the corresponding database entry. After this, the backend notifies the relative, who can then contact the user regarding the canceled alert. 
+
 \subsubsection{Deployment diagram}
-In the previous section, the workings of the wristband and application were highlighted. In the following deployment diagram, it is shown how all of these individual elements work together. The device 'wristband' runs the firmware and connects via Bluetooth Low Energy to the device 'user's smartphone' where the four components 'UI/Webview', 'Capacity API', Firebase SDK' and 'BLE API' run either in an Android or iOS environment. The user's smartphone connects to the cloud company Firebase/Google Cloud Platform through TCP/HTTPS (Firebase SDK). In the node 'Firebase/GCP', there is an artefact, the 'Firebase Functions' and a database, the 'Firebase Firestone'. The previously mentioned node connects via TCP and HTTPS to another cloud company called Twilio, in which the component 'Twilio API' is used. Lastly, this node connects with the relative's smartphone by the use of SMS/text messages.
+In the previous section, the workings of the wristband and application were highlighted. In the following deployment diagram, it is shown how all of these individual elements work together. The device \textit{wristband} runs the firmware and connects via \gls{ble} to the device \textit{user}s smartphone\textit{ where the four components }\gls{ui}/Webview', \textit{Capacitor \gls{api}}, \textit{Firebase \gls{sdk}} and \textit{\gls{ble} \gls{api}} run either in an Android or iOS environment. The user's smartphone connects to the cloud company Firebase/Google Cloud Platform through \gls{tcp}/\gls{https} (Firebase \gls{sdk}). In the node \textit{Firebase/\gls{gcp}}, there is an artefact, the \textit{Firebase Functions} and a database, the \textit{Firebase Firestone}. The previously mentioned node connects via \gls{tcp} and \gls{https} to another cloud company called Twilio, in which the component \textit{Twilio \gls{api}} is used. Lastly, this node connects with the relative's smartphone by the use of \gls{sms}/text messages.
 \begin{figure} [H]
     \centering
     \includegraphics[width=1\linewidth]{report/images/Deployment-Diagram-Deployment-Diagram.pdf}

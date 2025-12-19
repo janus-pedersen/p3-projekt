@@ -26,7 +26,7 @@ The \verb|BatteryIndicatorProps| describes the inputs that the component takes, 
 
 For the foundation of the application, a simple navigation framework was implemented to handle transitions between pages. It supports the two distinct views described in the design section (see \autoref{fig:wearer_pages} and \autoref{fig:guardian_pages}). Instead of importing a larger navigation framework for this limited use case, a lightweight custom solution was implemented.
 
-The system is based on two dictionaries, one for each view, where each key–value pair represents a page within that view. Navigation is handled by tracking the current view and page, and updating the variables used to index the dictionaries whenever a page transition occurs.
+The system is based on two dictionaries, one for each view, where each key-value pair represents a page within that view. Navigation is handled by tracking the current view and page, and updating the variables used to index the dictionaries whenever a page transition occurs.
 
 \begin{figure}[H]
   \centering
@@ -62,7 +62,7 @@ The \textit{Firestore} database is setup in a way where a collection can have a 
     \label{fig:database-reference}
 \end{figure}
 
-The documents, collections and their references between could be visualized like the following (see \autoref{fig:database-diagram})
+The documents, collections and their references could be visualized like the following (see \autoref{fig:database-diagram})
 
 \begin{figure}[H]
     \centering
@@ -76,11 +76,11 @@ Here is a simplified example of how the database is setup. Where each user has t
 Getting and storing data in the database was quite easy due to the large community support around the Firebase ecosystem. There were existing \textit{'plugins'} for capacitor that would take advantage of the native system that the app was running on to improve the performance and usability of the plugin. One of these plugins was meant for the Firebase Firestore database, and allows for subscribing to changes in the database, as well as regular getting, setting and deleting of documents.
 
 \subsubsection{Contacts}
-The user needs to have the ability to add their friends and family as their emergency contacts. To make this as easy as possible, the app makes use of the contact list stored on the users device. From here the user can choose to import a contact, and it will auto fill their information. There is of course also a way to add them manually, but even here, if it finds a contact with the same number in your contacts, it will auto fill the name and image with that found in the contacts list.
+The user needs to have the ability to add their friends and family as their emergency contacts. To make this as easy as possible, the app makes use of the contact list stored on the users device. From here the user can choose to import a contact, and it will auto fill their information. There is of course also a way to add them manually, but even if it finds a contact with the same number in your contacts, it will auto fill the name and image found in the contacts list.
 
 \insertcodeblock{app/src/utils/getUserContact.ts}{4}{26}{Retreiving contact info from a phone number}
 
-Here in \autoref{code-block:app/src/utils/getUserContact.ts (4-26)} is the code responsible for fetching the stored image and image from the users contacts, from a phone number. It works by looping through all the contacts that it has access to, and finding the first contact that has a phone number that matches that of the first parameter. 
+Here in \autoref{code-block:app/src/utils/getUserContact.ts (4-26)} is the code responsible for fetching the stored name and image from the users contacts, from a phone number. It works by looping through all the contacts that it has access to, and finding the first contact that has a phone number that matches that of the first parameter. 
 
 
 \subsubsection{Connecting to wristband}
@@ -89,18 +89,18 @@ To connect to a Lapsus Wristband, the user must find the device in the device pa
 
 It also keeps listening to make sure that the device stays connected, and if ever it becomes unresponsive, the user will be alerted with a notification.
 
-When a wristband is connected, the device page switches from a "connect your device" page, to more of a "configure your device" (see \autoref{fig:device_page}). Although currently, the only information available at the moment is the battery percentage.
+When a wristband is connected, the device page switches from a "connect your device" page, to a "configure your device" page (see \autoref{fig:device_page}). Although currently, the only information available at the moment is the battery percentage.
 
 
 \subsubsection{\gls{gps} updates}
-To allow allow the relatives to see a history of where they have been, the app needs to capture the location of the device, even when the user has the app in the background. This presented some challenges, as most native systems won't allow permanent location tracking due to battery consumption and privacy concerns. The real solution would be to move the \gls{gps} module to the wristband, as that would increase the precision of the location if eg. the user was in their garden and the app reported the location to be indoors, as that was where they left their phone. Due to the prototype nature of the current solution, it was the easiest to just use the \gls{gps} from the device, as that still provides a general idea of where the user is located.
+To allow the relatives to see a history of where the user has been, the app needs to capture the location of the device, even when the user has the app in the background. This presented some challenges, as most native systems won't allow permanent location tracking due to battery consumption and privacy concerns. The real solution would be to move the \gls{gps} module to the wristband, as that would increase the precision of the location if eg. the user was in their garden and the app reported the location to be indoors, as that was where they left their phone. Due to the prototype nature of the current solution, it was the easiest to use the \gls{gps} from the device, as that still provides a general idea of where the user is located.
 
-Both Android and iOS have luckily thought of this, and provides a way to listen for \gls{gps} updates natively. It wakes up a small part of the app to handle the update, giving us just enough time to upload it to the database to display to the relatives.
+Both Android and iOS have luckily thought of this, and provides a way to listen for \gls{gps} updates natively. It wakes up a small part of the app to handle the update, giving the system just enough time to upload it to the database to display to the relatives.
 
 \clearpage
 \insertcodeblock{app/src/contexts/Auth/AuthProvider.tsx}{44}{81}{Background \gls{gps} listener}
 
 
-This here (see \autoref{code-block:app/src/contexts/Auth/AuthProvider.tsx (44-81)}), is the code that is responsible for listening to, and uploading your location history to the database. As you can see, it starts off by requesting the permission to access the users permission, even when the app is closes. If that permission is not granted, the user is prompted to update the permissions settings. This is done because the location data is very central to the functionality of the system, as all the alerts would just be \textit{somewhere} if the location tracking was disabled. Once it has that permission, it will listen for the updates that it receives from the device. For every update, it creates a document in the database, under the users location history collection, as described in \autoref{sec:database-connection} (see \autoref{fig:database-reference} and \autoref{fig:database-diagram}). This document then contains the latitude, longitude and a metric for the accuracy of the \gls{gps} measurement.
+In \autoref{code-block:app/src/contexts/Auth/AuthProvider.tsx (44-81)} is the code that is responsible for listening to, and uploading the location history to the database. As presented, it starts off by requesting the permission to access the users location, even when the app is closes. If that permission is not granted, the user is prompted to update the permissions settings. This is done because the location data is very central to the functionality of the system, as all the alerts would just be \textit{somewhere} if the location tracking was disabled. Once it has that permission, it will listen for the updates that it receives from the device. For every update, it creates a document in the database, under the users location history collection, as described in \autoref{sec:database-connection} (see \autoref{fig:database-reference} and \autoref{fig:database-diagram}). This document then contains the latitude, longitude and a metric for the accuracy of the \gls{gps} measurement.
 
     

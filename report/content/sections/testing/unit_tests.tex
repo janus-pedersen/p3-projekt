@@ -1,25 +1,30 @@
 \subsection{Automated testing}
-Throughout development, automated tests were an important part of validating the functionality of our system. The majority of the tests were regrettably implemented relatively late, and therefor not able to take full advantage of the bonuses that comes from having them. 
+Throughout development, automated tests were an important part of validating the functionality of the system.
 
 \subsubsection{Unit tests}
-The
+The first implemented tests were the unit tests. They are often simpler to implement as they revolve around less code, usually only a single function or class .
 
-The prioritized tests are the ones that are responsible for critical things in the app. One such example is the \verb|RoutesProvider|. That's the component responsible for showing the correct components depending on the view mode, and the selected page. To test this component, a series of automated page and view switches was setup, followed by evaluating what's displayed on the screen and comparing that to the expected result.
+\clearpage
+\insertcodeblock{app/src/contexts/Routes/RoutesProvider.test.tsx}{64}{82}{Unit tests examples}
+
+The prioritized tests are the ones that are responsible for critical things in the app. One such example is the \verb|RoutesProvider| in \autoref{code-block:app/src/contexts/Routes/RoutesProvider.test.tsx (64-82)} (The code example shows 5 different unit tests). 
+
+That's the part responsible for showing the correct components depending on the view mode, and the selected page. To test this component, a series of automated page and view switches was setup, followed by evaluating what's displayed and comparing that to the expected result.
 
 \subsubsection{Integration tests}
-Another form of automated testing that was implemented, is so called \textit{integration tests}. This is where the entire app, from start to finish is tested. This means that we open up a virtual app, look for certain things on the screen, virtually press the buttons and evaluate what changes to make sure that all the different system that have been implemented work together.
+Another form of automated testing that was implemented, is so called \textit{integration tests}. This is where the entire app, from start to finish is tested. This means that the tests open up a virtual app, look for certain things on the screen, virtually press the buttons and evaluate what changes, to make sure that all the different components that have been implemented work together.
 
-The following cases were tested with integration tests.
+The following cases were tested with integration tests:
 \begin{itemize}
-    \item Opening the app without an active user session (being logged out) and signing in
-    \item Opening the app while signed in, and making sure the correct screen is shown
-    \item Switching to the contacts page, and checking to see if the correct emergency contacts are displayed withing a reasonable time
+    \item Opening the app without an active user session (being logged out) and signing in.
+    \item Opening the app while signed in, and making sure the correct screen is shown.
+    \item Switching to the contacts page, and checking to see if the correct emergency contacts are displayed within a reasonable time.
 \end{itemize}
 
-These tests don't cover all the aspects of the app, but they serve as a good sanity check to make sure that nothing too major is broken.
+These tests don't cover all the aspects of the app, but they serve as a good sanity check to make sure that nothing major is broken.
 
 \subsubsection{Test results}
-Since the tests were implemented quite late, it was only really for the last few days of development that any good came from them. Every time we changed the code, the tests were ran to verify that it was at least somewhat still functional. One such result could look something like the following (see \autoref{code-block:example-test-result}).
+Each time modifications were made to the codebase, the test suite was executed to ensure that the system remained functional. An example of such a result is shown below in \autoref{code-block:example-test-result}.
 
 
 \clearpage
