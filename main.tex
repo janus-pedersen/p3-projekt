@@ -7,7 +7,7 @@
     Janus Langkilde Pedersen \& 
     Peter Kaae Thorhauge
 }
-\newcommand{\reporttitle}{Fall detection using accelerometers for elderly citizens}
+\newcommand{\reporttitle}{Fall detection using an embedded system for elderly citizens}
 \newcommand{\subject}{Embedded Systems Programming}
 
 % --- preamble first ---
@@ -15,6 +15,7 @@
 
 % --- glossaries setup ---
 \usepackage[acronym]{glossaries-extra}
+\usepackage{csquotes}
 \makenoidxglossaries
 
 % --- glossary entries ---
@@ -42,7 +43,7 @@
 \renewcommand{\thesection}{\arabic{section}} 
 {
     \linespread{1}\selectfont
-    %\setcounter{tocdepth}{2}
+    \setcounter{tocdepth}{2}
     \tableofcontents
 }
 \newpage
@@ -59,7 +60,7 @@
 \pagenumbering{arabic}
 
 % --- Indsæt content filer her ---
-
+\input{report/content/chapters/prerequisites}
 \input{report/content/chapters/introduction}
 \input{report/content/chapters/background}
 \input{report/content/chapters/methodology}
@@ -88,7 +89,7 @@
 \cleardoublepage
 
 \appendix
-\renewcommand{\thesubsection}{\Alph{subsection}}
+%\renewcommand{\thesubsection}{\Alph{subsection}}
 
 \input{report/content/chapters/appendix}
 \end{document}

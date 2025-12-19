@@ -1,7 +1,7 @@
 \subsection{Application design}
 The mobile application is a central component of the Lapsus system, acting as the interface between the wristband, the backend infrastructure, and the system’s users. The application is designed to handle alerts, manage user and relative information, and provide a simple overview of system status.
 
-The application was developed using the Capacitor framework \cite{ionic_capacitor_nodate}, which enables a single codebase to be compiled into both iOS and Android applications, reducing development time and overall complexity. Capacitor provides access to native device APIs, allowing the application to interact with underlying hardware without being constrained by typical web platform limitations, while still offering functionality comparable to fully native apps.
+The application was developed using the Capacitor framework \cite{ionic_capacitor_nodate}, which enables a single codebase to be compiled into both iOS and Android applications, reducing development time and overall complexity. Capacitor provides access to native device \gls{api}s, allowing the application to interact with underlying hardware without being constrained by typical web platform limitations, while still offering functionality comparable to fully native apps.
 
 For user interface rendering, the React framework (not React Native) was chosen due to its minimal setup requirements and suitability for web-based applications.
 
@@ -10,20 +10,20 @@ To accelerate development and simplify implementation, a dedicated framework was
 
 Maintaining a streamlined user experience is essential, and this becomes particularly important when designing for an elderly target audience \cite{gomez-hernandez_design_2023}. As motor limitations and vision impairments become more common with age \cite{noauthor_people_nodate}, additional consideration is required in areas such as button spacing, text readability, and the gestures required to interact with the application.
 
-Because a large portion of the multilingual population is within the 15–25 age range \cite{noauthor_eurobarometer_nodate}, the user interface is localized to the user’s native language. This improves accessibility for older users, who are less likely to be multilingual.
+Because a large portion of the multilingual population is within the 15--25 age range \cite{noauthor_eurobarometer_nodate}, the user interface is localized to the user’s native language. This improves accessibility for older users, who are less likely to be multilingual.
 
 By prioritizing large touch targets, simple navigation, and a limited number of screens, the application is designed to reduce cognitive load for elderly users.
 
 \subsubsection{Infrastructure \& Cloud}
-It would not be responsible to rely entirely on the end-users device to store, manage and transfer all the information required to make the system work. Therefor a cloud solutions would take this responsibly. It should be able to accommodate the following:
+It would not be responsible to rely entirely on the end-users device to store, manage and transfer all the information required to make the system work. Therefore a cloud solution would take this responsibly. It should be able to accommodate the following:
 
 \begin{itemize}
     \item Provide a structured way of storing information about the user and their relatives
-    \item Allow secure access to third party api's (eg. sms services, geodecoding etc.)
-    \item Provide a solution for authenticating users and their requests
+    \item Allow secure access to third party \gls{api}s (eg. \gls{sms} services, geodecoding etc.).
+    \item Provide a solution for authenticating users and their requests.
     \item Handle spreading the alerts to the correct relatives
-    \item Support scaling to handle multiple users sending multiple alerts at the same time
-    \item Allow for future services and integrations
+    \item Support scaling to handle multiple users sending multiple alerts at the same time.
+    \item Allow for future services and integrations.
 \end{itemize}
 
 The process began by comparing the characteristics and features of several widely used cloud solutions. As the system requirements were not particularly specialized, most cloud providers were capable of meeting them. The evaluation therefore focused on ease of use and the level of support for the selected frameworks. Based on these criteria, Firebase was chosen \cite{noauthor_firebase_nodate} due to its strong library support and straightforward setup.
@@ -31,14 +31,14 @@ The process began by comparing the characteristics and features of several widel
 Firebase’s built-in authentication is used to manage users, session handling, and database access permissions. In addition, the Firestore document database is utilized to store data such as emergency contacts, location history, and previous alerts.
 
 \subsubsection{App Features}
-To simplify the app for the individual user, it would be nice to split the app into two distinct "views", one for the guardian, and one for the wearer. Separating wearer and guardian views further ensures that users are only presented with information relevant to their role, reducing confusion and improving overall usability.
+To simplify the app for the individual user, it would be preffered to split the app into two distinct "views", one for the guardian, and one for the wearer. Separating wearer and guardian views further ensures that users are only presented with information relevant to their role, reducing confusion and improving overall usability.
 
-The wearer view is the primary view for the app, as this is where the required functionality lies. It should facilitate the connection to the wristband, setting up your emergency contacts and editing your own profile.
+The wearer view is the primary view for the app, as this is where the required functionality lies. It should facilitate the connection to the wristband, setting up the emergency contacts and editing the  profile.
 
-On the other hand, the guardian view is only there to supplement the text message alerts. A nice feature would be to see your relatives on a map, and maybe to see a history of a previous alerts, but neither of those are necessary for the functionality of the solution. The text message should contain enough information to assess and respond to the situation.
+On the other hand, the guardian view is only there to supplement the text message alerts. A desired new feature would be the ability to see your relatives on a map and view a history of previous alerts, but neither of these is necessary for the functionality of the solution. The text message should contain enough information to assess and respond to the situation.
 
 This separation of functionality ensures that the wearer can focus on safety and ease of use, while the guardian has access to contextual information needed to respond effectively to alerts. By limiting guardian features to supplementary information rather than critical system operation, the system avoids over-reliance on the application in emergency situations.
 
-SMS was chosen as the primary notification method for alerting relatives due to its reliability and wide availability. Unlike app-based push notifications, SMS messages do not require the recipient to have a specific application installed, nor do they depend on active internet connectivity. 
+\gls{sms} was chosen as the primary notification method for alerting relatives due to its reliability and wide availability. Unlike app-based push notifications, \gls{sms} messages do not require the recipient to have a specific application installed, nor do they depend on active internet connectivity. 
 
-As many relatives may not use smartphones consistently or may disable notifications, SMS ensures that critical alerts are delivered with minimal delay. This design choice aligns with the system’s focus on robustness and accessibility, particularly in emergency situations where reliability is important.
+As many relatives may not use smartphones consistently or may disable notifications, \gls{sms} ensures that critical alerts are delivered with minimal delay. This design choice aligns with the system’s focus on robustness and accessibility, particularly in emergency situations where reliability is important.

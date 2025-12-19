@@ -1,0 +1,139 @@
+\subsubsection{Requirements}
+Based on the state of art section, the interview conducted with a user from the target group, the identified technical constraints, and the user stories, two requirement tables have been created, consisting of functional and non-functional requirements. The tables specify the origin of each requirement, indicating whether it derives from literature, user input, or technical considerations, as well as how the associated functionality is prioritized within the development process.
+
+The prioritization of requirements is carried out using the MoSCoW model, which enables a systematic classification of requirements into Must, Should, Could, and Won't. This approach supports a structured and realistic development process by ensuring that emphasis is placed on the most critical functionalities \cite{noauthor_moscow_nodate}.
+
+The resulting functional and non-functional requirements are presented in \autoref{tab:funktionelle_krav_tabel} and \autoref{tab:ikke_funktionelle_krav_tabel}. Together, these requirements form the basis for the subsequent system design, ensuring traceability from problem statement and analysis to concrete design and implementation decisions.
+
+
+\renewcommand{\arraystretch}{1.3}
+
+\begin{longtable}{|c|p{8cm}|p{4cm}|}
+\hline
+\textbf{Nr.} & \textbf{Functional requirement} & \textbf{Comment} \\
+\hline
+\endfirsthead
+
+\hline
+\textbf{Nr.} & \textbf{Functional requirement} & \textbf{Comment} \\
+\hline
+\endhead
+
+\hline
+\multicolumn{3}{r}{\textit{(Continued)}} \\
+\hline
+\endfoot
+
+\hline
+\endlastfoot
+
+1 & The wristband should be able to detect falls & Must have - Problem statement  \\
+\hline
+2 & The system should be able notify the users relatives, if an alarm has been triggered & Must have - state of art (Sensorem and Cekura)  \\
+\hline
+3 & The wristband should be waterproof, to limit the scenarios in which it should be taken off & Should have - state of art (Sensorem) \\
+\hline
+4 & The wristband should run on a rechargeable battery & Should have - state of art (Sensorem)  \\
+\hline
+5 & The wristband should be able to detect inactivity, within set time intervals & Could have - state of art (Sensorem) \\
+\hline
+6 & The users relatives should be able to see the users realtime \gls{gps} location at all times & Must have - state of art (Sensorem, Sensio and Cekura)  \\
+\hline
+7 & The wristband has to have an emergency button, so the user can notify their relatives if they are feeling unwell or an emergency has occurred & Must have - state of art (Sensorem, Sensio and Cekura)  \\
+\hline
+8 & The user should be able to add relatives to the notification list in the application & Must have - state of art (Sensorem and Cekura)  \\
+\hline
+9 & The system should alert the user when the wristband needs to be recharged & Must have - Brainstorm \\
+\hline
+10 & The user should be able to cancel an alarm, if it is a false alarm & Should have - Brainstorm  \\
+\hline
+11 & The user should be able to add multiple relatives to the notification list & Must have - Brainstorm \\
+\hline
+12 & The user should be able to remove relatives from the notification list & Must have - Brainstorm \\
+\hline
+13 & The user should be able to see the battery percentage in the application & Should have - Brainstorm \\
+\hline
+14 & The wristband should be able to detect hard impacts & Should have - Brainstorm \\
+\hline
+15 & The system should be able to send the location of the user when a alarm is triggered & Must have - Brainstorm \\
+\hline
+16 & The user and relatives should be able to see all alarms that have ever been triggered. & Should have - Brainstorm \\
+\hline
+17 & The wristband must be able to emit an audible signal when an alarm is activated on the device in order to notify the user that the alarm has been triggered. & Could have - Brainstorm \\
+\hline
+18 & The system must be capable of distinguishing between different types of alarms (emergency alarm, fall, and impact) and correctly forwarding the corresponding information to the user’s relatives. & Must have - Brainstorm \\
+\hline
+\caption{Table of functional system requirements}
+\label{tab:funktionelle_krav_tabel}
+\end{longtable}
+
+The state of art analysis provided a foundation for identifying baseline functionality expected of modern fall detection systems, such as automatic fall detection, \gls{gps}-based location sharing, and emergency notifications to relatives. Existing commercial solutions, particularly Sensorem, highlighted the importance of combining fall detection with inactivity monitoring and manual emergency activation.
+
+Technical considerations, such as battery capacity, wireless communication range, and sensor limitations, further constrained the design space. These constraints resulted in explicit non-functional requirements regarding battery life, communication distance, and system response time.
+
+
+\renewcommand{\arraystretch}{1.3}
+
+\begin{longtable}{|c|p{8cm}|p{4cm}|}
+\hline
+\textbf{Nr.} & \textbf{Non-functional requirement} & \textbf{Comment} \\
+\hline
+\endfirsthead
+
+\hline
+\textbf{Nr.} & \textbf{Non-functional requirement} & \textbf{Comment} \\
+\hline
+\endhead
+
+\hline
+\multicolumn{3}{r}{\textit{(Continued)}} \\
+\hline
+\endfoot
+
+\hline
+\endlastfoot
+
+
+19 & The system has to notify the relatives within 1 minute after a fall is detected & Should have - Defined to set a technical limit  \\
+\hline
+20 & The product needs to be easy to use, because there is no requirement for the user to have any technological knowledge & Must have - Introduction (Ældresagen) \\
+\hline
+21 & The battery needs to hold power for at least 1 day without recharging & Should have - state of art (Sensorem and Smart watches) \\
+\hline
+22 & The application needs to be in Danish & Must have - Introduction \\
+\hline
+23 & The product design needs to be compact, allowing for better wearability & Should have \\
+\hline
+24 & The system is required to detect 90\% of all falls (sensitivity) & Should have - Best practice \\
+\hline
+25 & The system is required to have 99\% up-time & Must have -  Best practice\\
+\hline
+26 & The wristband should be able to communicate with the users phone with a distance of at least 10 meters & Must have - Defined to set a technical limit\\
+\hline
+27 & The \gls{gps} signal must have an accuracy of 10 meters, as \gls{gps} signals are inherently imprecise and therefore provide only an estimated location of the user & Must have - Defined to set a technical limit\\
+\hline
+28 & The wristband must be able to be fully charged within a maximum of one hour in order to minimize the amount of time the user is required to be without the device & Must have - Defined to set a technical limit\\
+\hline
+29 & The application must be compatible with both Android and iOS operating systems & Should have \\
+\hline
+\caption{Table of non-functional system requirements}
+\label{tab:ikke_funktionelle_krav_tabel}
+\end{longtable}
+
+The non-functional requirements define the quality attributes and constraints under which the Lapsus system must operate. While the functional requirements describe the system’s capabilities, the non-functional requirements specify how reliably, efficiently, and accessibly these capabilities must be delivered.
+
+
+
+The requirements presented in \autoref{tab:ikke_funktionelle_krav_tabel} address key aspects such as usability, performance, reliability, and technical limitations. Several of the requirements are derived from best practice within safety-critical and wearable systems, including constraints on system uptime, response time, and detection performance. These requirements ensure that the system can be trusted in emergency situations, where delayed or unreliable behavior may have serious consequences.
+
+Usability-related requirements play a central role due to the system’s elderly target group. Requirements concerning ease of use, language localization, and charging time are included to reduce barriers to adoption and ensure that the system can be operated without prior technical knowledge.
+
+Technical constraints such as battery lifetime, communication range, \gls{gps} accuracy, and platform compatibility reflect the limitations of embedded hardware and mobile devices. By explicitly defining these constraints as requirements, design decisions can be evaluated against measurable criteria throughout the development process.
+
+Together, the non-functional requirements provide a clear framework for evaluating the quality and feasibility of the Lapsus system and form the basis for design and implementation choices described in the subsequent sections.
+
+In addition to the defined functional and non-functional requirements, cost is an important consideration for the feasibility and adoption of the Lapsus system. Many existing fall detection solutions rely on subscription-based business models. Such subscription-based solutions often include an internal alarm central responsible for receiving and responding to alarms. While this may increase perceived safety, it also introduces continuous operational costs that are ultimately passed on to the user. In the Lapsus system, the decision was therefore made to exclude an internal alarm central. Instead, the system is designed around the user’s relatives, who are notified directly when an alarm is triggered and are responsible for responding. This architectural choice eliminates the need for continuous staffing and operational infrastructure, thereby significantly reducing running costs.
+
+As a result, the system is deliberately designed without reliance on a mandatory subscription model. By minimizing operational costs and avoiding specialized infrastructure, the system aims to remain economically accessible without requiring recurring payments.
+
+Price-related aspects have not been formalized as explicit non-functional requirements in this project, as the primary focus is on technical feasibility and system design. However, the intention to avoid subscription-based dependency has implicitly guided several design choices, including the selection of hardware, communication methods, and backend services.
