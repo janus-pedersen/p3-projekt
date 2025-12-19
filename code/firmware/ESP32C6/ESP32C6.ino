@@ -40,13 +40,13 @@ enum class FallState : uint8_t {
 static constexpr float FREE_FALL_G = 0.45f;
 static constexpr float IMPACT_G = 4.0f;
 static constexpr float HARD_IMPACT_G = 7.0f;
-static constexpr float REST_MIN_G = 0.85f;
+static constexpr float REST_MIN_G = 0.75f;
 static constexpr float REST_MAX_G = 1.25f;
 
-static constexpr uint32_t FREE_FALL_MAX_MS = 300;
-static constexpr uint32_t IMPACT_TO_REST_IGNORE_MS = 500;
-static constexpr uint32_t REST_CONFIRM_MS = 300;
-static constexpr uint32_t IMPACT_TIMEOUT_MS = 3000;
+static constexpr uint32_t FREE_FALL_MAX_MS = 500;
+static constexpr uint32_t IMPACT_TO_REST_IGNORE_MS = 250;
+static constexpr uint32_t REST_CONFIRM_MS = 350;
+static constexpr uint32_t IMPACT_TIMEOUT_MS = 6000;
 
 static constexpr float REST_JERK_MAX_G2 = 0.35f;  // max | |a|^2 delta | during rest
 
@@ -197,7 +197,7 @@ void setup(void) {
         *  LPF_MODE_3     //13.37% of ODR
         *  LPF_OFF        // OFF Low-Pass Fitter
         * */
-    SensorQMI8658::LPF_MODE_2);
+    SensorQMI8658::LPF_MODE_3);
 
   qmi.configGyroscope(
     /*
